@@ -8,6 +8,7 @@ import rus.setv.adminbackend.dto.*
 import rus.setv.adminbackend.model.AppEntity
 import rus.setv.adminbackend.repository.AppRepository
 import rus.setv.adminbackend.service.ApkParserService
+import rus.setv.adminbackend.service.FileStorageService
 import java.time.LocalDateTime
 import java.util.*
 
@@ -16,7 +17,8 @@ import java.util.*
 @CrossOrigin(origins = ["http://localhost:5173"])
 class AppController(
     private val appRepository: AppRepository,
-    private val apkParserService: ApkParserService
+    private val apkParserService: ApkParserService,
+    private val fileStorageService: FileStorageService
 ) {
 
     // =========================
@@ -112,11 +114,12 @@ class AppController(
     // =========================
     @DeleteMapping("/{id}")
     fun deleteApp(@PathVariable id: UUID): ResponseEntity<Void> {
-        return if (appRepository.existsById(id)) {
-            appRepository.deleteById(id)
-            ResponseEntity.noContent().build()
-        } else {
-            ResponseEntity.notFound().build()
-        }
+        val app = appRepository.findById(id).orElse(null)
+            ?: return ResponseEntity.notFound().build()
+        // Удаляем APK
+        fileStorageService.deleteApkFile(app.apkUrl)
+        // Удаляем запись из БД
+        appRepository.delete(app)
+        return ResponseEntity.noContent().build()
     }
 }

@@ -9,12 +9,11 @@ import java.nio.file.Paths
 class FileStorageService {
 
     private val apkStoragePath: Path =
-        Paths.get("uploads/apks").toAbsolutePath().normalize()
+        Paths.get("storage/apk").toAbsolutePath().normalize()
 
     fun deleteApkFile(apkUrl: String?) {
         if (apkUrl.isNullOrBlank()) return
 
-        // Если apkUrl = "/files/apks/app.apk"
         val fileName = apkUrl.substringAfterLast("/")
         val filePath = apkStoragePath.resolve(fileName)
 
