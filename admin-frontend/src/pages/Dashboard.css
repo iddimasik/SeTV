@@ -1,0 +1,47 @@
+.dashboard-container {
+    display: flex;
+    justify-content: center; /* горизонтальное центрирование */
+    align-items: flex-start; /* вертикально сверху */
+    min-height: 100vh;
+    padding: 30px 20px;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+/* Основной блок */
+.dashboard-box {
+    width: 100%;
+    max-width: 900px;
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 2px 15px rgba(255, 255, 255, 0.5);
+}
+
+/* Заголовок и кнопка сверху */
+.dashboard-header {
+    text-align: center; /* центрируем текст заголовка */
+    margin-bottom: 50px;
+}
+
+.dashboard-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+/* Кнопка добавления */
+.add-button {
+    padding: 12px 20px;
+    background: linear-gradient(to right, #fbfbfb, #737373);
+    color: #000000;
+    border-radius: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.3s;
+    box-shadow: 0 1px 10px rgb(255, 255, 255);
+}
+
+.add-button:hover {
+    background: linear-gradient(to right, rgb(0, 0, 0), #272727);
+    color: #ffffff;
+}

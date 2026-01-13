@@ -1,0 +1,109 @@
+/* Контейнер */
+.app-details-container {
+    width: 100%;
+    max-width: 1200px; /* большой экран */
+    margin: 40px auto;
+    padding: 30px 20px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgb(251, 251, 251);
+    color: #000;
+}
+
+/* Заголовок */
+.app-details-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+/* Абзацы */
+.app-details-container p {
+    margin-bottom: 20px; /* отступ между строками */
+    font-size: 16px;
+}
+
+/* Статусы */
+.status-active {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.status-inactive {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* Кнопки */
+.app-details-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.edit-button, .back-button, .delete-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+    cursor: pointer;
+    border: none;
+}
+
+.edit-button {
+    background-color: #2563eb;
+}
+
+.edit-button:hover {
+    background-color: #1d4ed8;
+}
+
+.back-button {
+    background-color: #6b7280;
+}
+
+.back-button:hover {
+    background-color: #4b5563;
+}
+
+.delete-button {
+    background-color: #dc2626;
+}
+
+.delete-button:hover {
+    background-color: #b91c1c;
+}
+
+/* Загрузка */
+.loading {
+    text-align: center;
+    margin-top: 100px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .app-details-container {
+        padding: 20px 15px;
+        border-radius: 12px;
+    }
+
+    .app-details-title {
+        font-size: 22px;
+    }
+
+    .app-details-buttons {
+        flex-direction: column;
+    }
+
+    .edit-button,
+    .back-button,
+    .delete-button {
+        width: 100%;
+        text-align: center;
+    }
+}
