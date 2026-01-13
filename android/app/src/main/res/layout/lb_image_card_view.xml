@@ -65,7 +65,5 @@
                 android:maxLines="2" />
 
         </LinearLayout>
-
     </com.google.android.material.card.MaterialCardView>
-
 </FrameLayout>

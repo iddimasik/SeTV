@@ -17,11 +17,15 @@ class BannerCarousel @JvmOverloads constructor(
 ) : FrameLayout(context, attrs) {
 
     private val imageView: ImageView
+
     private var banners: List<BannerItem> = emptyList()
     private var index = 0
 
     private val switchDelay = 5000L
     private val animDuration = 300L
+
+    // 🔥 callback клика
+    var onBannerClick: ((BannerItem) -> Unit)? = null
 
     private val runnable = object : Runnable {
         override fun run() {
@@ -50,10 +54,29 @@ class BannerCarousel @JvmOverloads constructor(
     }
 
     init {
+        isFocusable = true
+        isFocusableInTouchMode = true
+
         LayoutInflater.from(context)
             .inflate(R.layout.view_banner_carousel, this, true)
 
         imageView = findViewById(R.id.bannerImage)
+
+        // ───────── FOCUS EFFECT ─────────
+        setOnFocusChangeListener { _, hasFocus ->
+            animate()
+                .scaleX(if (hasFocus) 1.05f else 1f)
+                .scaleY(if (hasFocus) 1.05f else 1f)
+                .setDuration(150)
+                .start()
+        }
+
+        // ───────── CLICK ─────────
+        setOnClickListener {
+            banners.getOrNull(index)?.let { banner ->
+                onBannerClick?.invoke(banner)
+            }
+        }
     }
 
     fun setBanners(list: List<BannerItem>) {
