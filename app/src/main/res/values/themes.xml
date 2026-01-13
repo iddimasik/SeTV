@@ -1,0 +1,16 @@
+<resources>
+    <style name="Theme.SeTV" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- ОБЯЗАТЕЛЬНО -->
+        <item name="materialCardViewStyle">@style/Widget.MaterialComponents.CardView</item>
+
+        <!-- TV-safe цвета -->
+        <item name="colorPrimary">#1E1E1E</item>
+        <item name="colorPrimaryVariant">#121212</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+
+        <item name="colorSecondary">#FFFFFF</item>
+        <item name="colorOnSecondary">@android:color/black</item>
+
+        <item name="android:windowBackground">#000000</item>
+    </style>
+</resources>

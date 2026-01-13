@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sidebar_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#181818"
+    android:paddingTop="24dp">
+
+    <!-- APPS -->
+    <LinearLayout
+        android:id="@+id/menu_apps"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:focusable="true"
+        android:background="@drawable/sidebar_item_bg">
+
+        <ImageView
+            android:id="@+id/icon_apps"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_apps"
+            app:tint="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/text_apps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Приложения"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- GAMES -->
+    <LinearLayout
+        android:id="@+id/menu_games"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:focusable="true"
+        android:background="@drawable/sidebar_item_bg">
+
+        <ImageView
+            android:id="@+id/icon_games"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_games"
+            app:tint="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/text_games"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Игры"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- SETTINGS -->
+    <LinearLayout
+        android:id="@+id/menu_settings"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:focusable="true"
+        android:background="@drawable/sidebar_item_bg">
+
+        <ImageView
+            android:id="@+id/icon_settings"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_settings"
+            app:tint="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/text_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Настройки"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</LinearLayout>

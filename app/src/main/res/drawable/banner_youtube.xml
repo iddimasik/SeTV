@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="400dp"
+    android:height="200dp"
+    android:viewportWidth="400"
+    android:viewportHeight="200">
+
+    <!-- Фон -->
+    <path
+        android:fillColor="#FF0000"
+        android:pathData="M0,0h400v200h-400z" />
+
+    <!-- Play кнопка -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M200,85l30,20l-30,20z" />
+</vector>
