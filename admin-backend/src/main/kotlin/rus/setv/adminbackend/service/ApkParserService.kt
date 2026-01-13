@@ -1,18 +1,27 @@
 package rus.setv.adminbackend.service
 
 import net.dongliu.apk.parser.ApkFile
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import rus.setv.adminbackend.dto.ApkParseResultDto
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.*
 
 @Service
-class ApkParserService {
+class ApkParserService(
 
-    private val uploadDir: Path = Path.of("storage/apk")
+    @Value("\${app.base-url}")
+    private val baseUrl: String,
+
+    @Value("\${app.apk.storage-path}")
+    private val storagePath: String
+) {
+
+    private val uploadDir: Path =
+        Paths.get(storagePath).toAbsolutePath().normalize()
 
     init {
         Files.createDirectories(uploadDir)
@@ -25,7 +34,10 @@ class ApkParserService {
 
         val fileName = "${UUID.randomUUID()}.apk"
         val targetPath = uploadDir.resolve(fileName)
-        file.transferTo(targetPath)
+
+        file.inputStream.use { input ->
+            Files.copy(input, targetPath)
+        }
 
         ApkFile(targetPath.toFile()).use { apk ->
             val meta = apk.apkMeta
@@ -34,7 +46,7 @@ class ApkParserService {
                 name = meta.label ?: "Unknown",
                 packageName = meta.packageName,
                 versionName = meta.versionName,
-                apkUrl = "/files/apk/$fileName"
+                apkUrl = "$baseUrl/files/apk/$fileName"
             )
         }
     }
