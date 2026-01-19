@@ -51,10 +51,10 @@ dependencies {
     // ───── UI
     implementation(libs.material)
 
-    // ───── Filament (у тебя уже есть)
+    // ───── Filament
     implementation(libs.filament.android)
 
-    // ───── Networking (ОЧЕНЬ ВАЖНО)
+    // ───── Networking
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
