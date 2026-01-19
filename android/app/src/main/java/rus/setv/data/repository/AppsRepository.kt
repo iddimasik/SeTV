@@ -16,7 +16,8 @@ class AppsRepository {
                     apkUrl = dto.apkUrl!!,
                     iconUrl = dto.iconUrl,
                     version = dto.version,
-                    featured = dto.featured
+                    featured = dto.featured,
+                    category = dto.category
                 )
             }
     }
