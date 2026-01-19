@@ -30,10 +30,12 @@ class AppCardPresenter(
 
         val image = root.findViewById<ImageView>(R.id.main_image)
         val title = root.findViewById<TextView>(R.id.title_text)
+        val category = root.findViewById<TextView>(R.id.category_text)
         val desc = root.findViewById<TextView>(R.id.content_text)
         val content = root.findViewById<View>(R.id.cardContent)
 
         title.text = app.name
+        category.text = app.category
         desc.text = app.description
 
         // 🔥 ЗАГРУЗКА ИКОНКИ С СЕРВЕРА
