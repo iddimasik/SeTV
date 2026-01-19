@@ -31,7 +31,9 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
     private lateinit var installButton: MaterialButton
     private lateinit var backButton: MaterialButton
 
-    // 🔥 RECEIVER УСТАНОВКИ
+    // ───────────────────────
+    // RECEIVER УСТАНОВКИ
+    // ───────────────────────
     private val installReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val data = intent.data ?: return
@@ -69,12 +71,10 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
 
     override fun onStart() {
         super.onStart()
-
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED)
             addDataScheme("package")
         }
-
         requireContext().registerReceiver(installReceiver, filter)
     }
 
@@ -96,19 +96,15 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
             .error(R.drawable.ic_app_placeholder)
             .into(image)
 
-        if (isAppInstalled(app.packageName)) {
-            app.status = AppStatus.INSTALLED
-        }
-
         updateUi()
     }
 
     private fun setupButtons() {
         installButton.setOnClickListener {
-            if (isAppInstalled(app.packageName)) {
-                openApp(app.packageName)
-            } else {
-                startDownloadAndInstall()
+            when {
+                !isAppInstalled(app.packageName) -> startDownloadAndInstall()
+                isUpdateAvailable() -> startDownloadAndInstall()
+                else -> openApp(app.packageName)
             }
         }
 
@@ -117,19 +113,17 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
         }
     }
 
-    /**
-     * 🔥 ВСЕ UI ИЗМЕНЕНИЯ ТОЛЬКО В MAIN THREAD
-     */
+    // ───────────────────────
+    // UI
+    // ───────────────────────
     private fun updateUi() {
         if (!isAdded) return
 
         requireActivity().runOnUiThread {
             progress.visibility = View.GONE
-            progress.isIndeterminate = false
             status.text = ""
 
             when (app.status) {
-
                 AppStatus.DOWNLOADING -> {
                     progress.visibility = View.VISIBLE
                     progress.isIndeterminate = false
@@ -145,14 +139,7 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
                     installButton.isEnabled = false
                 }
 
-                AppStatus.INSTALLED -> {
-                    progress.visibility = View.GONE
-                    status.text = "Приложение установлено"
-                    installButton.isEnabled = true
-                }
-
                 AppStatus.ERROR -> {
-                    progress.visibility = View.GONE
                     status.text = "Ошибка загрузки"
                     installButton.isEnabled = true
                 }
@@ -162,34 +149,31 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
                 }
             }
 
-            installButton.text =
-                if (isAppInstalled(app.packageName)) "Открыть" else "Установить"
+            installButton.text = when {
+                !isAppInstalled(app.packageName) -> "Установить"
+                isUpdateAvailable() -> "Обновить"
+                else -> "Открыть"
+            }
         }
     }
 
+    // ───────────────────────
+    // INSTALL / UPDATE
+    // ───────────────────────
     private fun startDownloadAndInstall() {
-        Toast.makeText(
-            requireContext(),
-            "Загрузка ${app.name}",
-            Toast.LENGTH_SHORT
-        ).show()
-
         ApkDownloader.download(
             context = requireContext(),
             app = app,
-
-            onProgress = { progress ->
+            onProgress = {
                 app.status = AppStatus.DOWNLOADING
-                app.progress = progress
+                app.progress = it
                 updateUi()
             },
-
             onDone = { file ->
                 app.status = AppStatus.INSTALLING
                 updateUi()
                 ApkInstaller.install(requireContext(), file)
             },
-
             onError = {
                 app.status = AppStatus.ERROR
                 updateUi()
@@ -197,13 +181,52 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
         )
     }
 
-    private fun isAppInstalled(pkg: String): Boolean =
+    // ───────────────────────
+    // VERSION LOGIC (STRING)
+    // ───────────────────────
+    private fun getInstalledVersionName(pkg: String): String? =
         try {
-            requireContext().packageManager.getPackageInfo(pkg, 0)
-            true
+            requireContext()
+                .packageManager
+                .getPackageInfo(pkg, 0)
+                .versionName
         } catch (_: PackageManager.NameNotFoundException) {
-            false
+            null
         }
+
+    private fun isUpdateAvailable(): Boolean {
+        val installedVersion = getInstalledVersionName(app.packageName)
+            ?: return false
+
+        return isServerVersionNewer(
+            server = app.version,
+            installed = installedVersion
+        )
+    }
+
+    private fun isServerVersionNewer(
+        server: String?,
+        installed: String?
+    ): Boolean {
+        if (server.isNullOrBlank() || installed.isNullOrBlank()) return false
+
+        val serverParts = server.split(".").map { it.toIntOrNull() ?: 0 }
+        val installedParts = installed.split(".").map { it.toIntOrNull() ?: 0 }
+
+        val maxSize = maxOf(serverParts.size, installedParts.size)
+
+        for (i in 0 until maxSize) {
+            val s = serverParts.getOrElse(i) { 0 }
+            val iV = installedParts.getOrElse(i) { 0 }
+
+            if (s > iV) return true
+            if (s < iV) return false
+        }
+        return false
+    }
+
+    private fun isAppInstalled(pkg: String): Boolean =
+        getInstalledVersionName(pkg) != null
 
     private fun openApp(pkg: String) {
         requireContext()
