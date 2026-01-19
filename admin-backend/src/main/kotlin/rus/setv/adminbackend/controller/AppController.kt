@@ -93,6 +93,10 @@ class AppController(
     ): ResponseEntity<AppDto> {
 
         return appRepository.findById(id).map { app ->
+
+            val oldApkUrl = app.apkUrl
+
+            // обновляем поля
             app.name = dto.name
             app.packageName = dto.packageName
             app.version = dto.version
@@ -105,7 +109,18 @@ class AppController(
             app.featured = dto.featured
             app.updatedAt = LocalDateTime.now()
 
-            ResponseEntity.ok(appRepository.save(app).toDto())
+            val savedApp = appRepository.save(app)
+
+            if (
+                oldApkUrl != null &&
+                dto.apkUrl != null &&
+                oldApkUrl != dto.apkUrl
+            ) {
+                fileStorageService.deleteApkFile(oldApkUrl)
+            }
+
+            ResponseEntity.ok(savedApp.toDto())
+
         }.orElse(ResponseEntity.notFound().build())
     }
 
@@ -116,10 +131,13 @@ class AppController(
     fun deleteApp(@PathVariable id: UUID): ResponseEntity<Void> {
         val app = appRepository.findById(id).orElse(null)
             ?: return ResponseEntity.notFound().build()
+
         // Удаляем APK
         fileStorageService.deleteApkFile(app.apkUrl)
+
         // Удаляем запись из БД
         appRepository.delete(app)
+
         return ResponseEntity.noContent().build()
     }
 }
