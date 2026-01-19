@@ -15,6 +15,7 @@ data class AppItem(
     val version: String? = null,
     val featured: Boolean = false,
 
+    val category: String? = null,
     // ───── состояние на устройстве ─────
     var status: AppStatus = AppStatus.NOT_INSTALLED,
     var progress: Int = 0
