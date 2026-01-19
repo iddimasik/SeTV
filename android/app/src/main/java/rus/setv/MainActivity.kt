@@ -10,6 +10,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var sidebar: View
     var isSidebarOpen = true
+        private set
 
     private val SIDEBAR_OPEN_DP = 240
     private val SIDEBAR_CLOSED_DP = 60
@@ -39,12 +40,18 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    // ───────────────────────
+    // SIDEBAR CONTROL
+    // ───────────────────────
+
     fun openSidebar(force: Boolean = false) {
         if (isSidebarOpen && !force) return
         isSidebarOpen = true
 
         animateSidebarDp(SIDEBAR_OPEN_DP)
         sidebar.post { sidebar.requestFocus() }
+
+        notifySidebarOpened()
     }
 
     fun closeSidebar() {
@@ -53,7 +60,33 @@ class MainActivity : AppCompatActivity() {
 
         animateSidebarDp(SIDEBAR_CLOSED_DP)
         findViewById<View>(R.id.main_container)?.requestFocus()
+
+        notifySidebarClosed()
     }
+
+    // ───────────────────────
+    // NOTIFY LISTENERS
+    // ───────────────────────
+
+    private fun notifySidebarOpened() {
+        supportFragmentManager.fragments.forEach { fragment ->
+            if (fragment is SidebarListener) {
+                fragment.onSidebarOpened()
+            }
+        }
+    }
+
+    private fun notifySidebarClosed() {
+        supportFragmentManager.fragments.forEach { fragment ->
+            if (fragment is SidebarListener) {
+                fragment.onSidebarClosed()
+            }
+        }
+    }
+
+    // ───────────────────────
+    // ANIMATION
+    // ───────────────────────
 
     private fun animateSidebarDp(targetDp: Int) {
         val targetPx = dpToPx(targetDp)
@@ -70,6 +103,19 @@ class MainActivity : AppCompatActivity() {
             start()
         }
     }
+
+    // ───────────────────────
+    // INTERFACE
+    // ───────────────────────
+
+    interface SidebarListener {
+        fun onSidebarOpened()
+        fun onSidebarClosed()
+    }
+
+    // ───────────────────────
+    // UTILS
+    // ───────────────────────
 
     private fun dpToPx(dp: Int): Int =
         (dp * resources.displayMetrics.density).toInt()
