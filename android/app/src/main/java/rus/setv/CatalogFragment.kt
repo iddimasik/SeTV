@@ -19,8 +19,8 @@ import rus.setv.ui.AppCardPresenter
 import rus.setv.ui.BannerCarousel
 import rus.setv.ui.RecommendedAppView
 
-class CatalogFragment : Fragment(R.layout.fragment_catalog) {
-
+class CatalogFragment : Fragment(R.layout.fragment_catalog),
+    MainActivity.SidebarListener {
     // ───────────────────────
     // UI
     // ───────────────────────
@@ -205,6 +205,14 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog) {
         grid.setNumColumns(columns)
     }
 
+    override fun onSidebarOpened() {
+        updateGridColumns()
+    }
+
+    override fun onSidebarClosed() {
+        updateGridColumns()
+    }
+
     // ───────────────────────
     // DETAILS
     // ───────────────────────
@@ -215,3 +223,4 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog) {
             .commit()
     }
 }
+
