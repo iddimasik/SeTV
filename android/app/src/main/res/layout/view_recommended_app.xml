@@ -16,7 +16,7 @@
         android:id="@+id/cardContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardCornerRadius="0dp"
+        app:cardCornerRadius="12dp"
         app:cardUseCompatPadding="false"
         app:cardPreventCornerOverlap="true"
         android:backgroundTint="#1E1E1E"

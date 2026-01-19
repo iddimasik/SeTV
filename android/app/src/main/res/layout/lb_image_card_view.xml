@@ -15,7 +15,6 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <!-- КОНТЕНТ КАРТОЧКИ -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContent"
         android:layout_width="wrap_content"
@@ -33,36 +32,59 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="6dp">
 
-            <!-- IMAGE -->
-            <ImageView
-                android:id="@+id/main_image"
-                android:layout_width="150dp"
-                android:layout_height="75dp"
-                android:scaleType="centerCrop" />
-
-            <!-- TITLE -->
-            <TextView
-                android:id="@+id/title_text"
-                android:layout_width="match_parent"
+            <!-- ICON + TITLE + CATEGORY -->
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                android:maxLines="1" />
+                android:orientation="horizontal">
+
+                <!-- ICON -->
+                <ImageView
+                    android:id="@+id/main_image"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:scaleType="centerInside" />
+
+                <!-- TEXT BLOCK -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/title_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/category_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textColor="#B0B0B0"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
 
             <!-- DESCRIPTION -->
             <TextView
                 android:id="@+id/content_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                android:paddingBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:maxLines="2"
+                android:ellipsize="end"
                 android:textColor="#B0B0B0"
-                android:textSize="10sp"
-                android:maxLines="2" />
+                android:textSize="10sp" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
