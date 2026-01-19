@@ -4,9 +4,6 @@
 
     <!-- 🔥 Доступ к установленным приложениям (Android 11+) -->
     <queries>
-
-        <package android:name="org.videolan.vlc" />
-
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
