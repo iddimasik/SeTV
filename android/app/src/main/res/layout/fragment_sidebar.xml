@@ -67,7 +67,42 @@
             android:visibility="gone"/>
     </LinearLayout>
 
-    <!-- SETTINGS -->
+    <!-- СПЕЙСЕР — выталкивает нижние пункты вниз -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <!-- UPDATE APP -->
+    <LinearLayout
+        android:id="@+id/menu_update"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:focusable="true"
+        android:background="@drawable/sidebar_item_bg">
+
+        <ImageView
+            android:id="@+id/icon_update"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_update"
+            app:tint="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/text_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Обновить приложение"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- SETTINGS (в самом низу) -->
     <LinearLayout
         android:id="@+id/menu_settings"
         android:layout_width="match_parent"
