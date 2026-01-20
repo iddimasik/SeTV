@@ -2,7 +2,6 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- 🔥 Доступ к установленным приложениям (Android 11+) -->
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -11,7 +10,6 @@
 
     </queries>
 
-    <!-- Android TV -->
     <uses-feature
         android:name="android.software.leanback"
         android:required="true" />
@@ -20,19 +18,17 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
-    <!-- Сеть и установка APK -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
         android:allowBackup="true"
-        android:banner="@drawable/banner"
-        android:label="SeTV Store"
-        android:icon="@mipmap/ic_launcher"
+        android:banner="@mipmap/banner_launcher_foreground"
+        android:label="A-Store"
+        android:icon="@mipmap/icon_launcher"
         android:theme="@style/Theme.SeTV"
         android:networkSecurityConfig="@xml/network_security_config">
 
-        <!-- 🔥 ГЛАВНАЯ АКТИВНОСТЬ TV -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -47,7 +43,6 @@
 
         </activity>
 
-        <!-- FileProvider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
