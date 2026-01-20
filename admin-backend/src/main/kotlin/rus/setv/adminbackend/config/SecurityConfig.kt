@@ -18,29 +18,42 @@ class SecurityConfig(
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
+
         http
+            // CORS
             .cors { }
+
+            // CSRF выключаем (JWT + REST)
             .csrf { it.disable() }
+
+            // Stateless (JWT)
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
+
+            // Авторизация
             .authorizeHttpRequests {
 
                 // 🔓 Авторизация
                 it.requestMatchers("/api/auth/**").permitAll()
 
-                // 🔒 Админка
-                it.requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // 🔒 Все API админки (apps, parse-apk и т.д.)
+                it.requestMatchers("/api/apps/**").hasRole("ADMIN")
 
-                // 🔒 Swagger (по желанию)
+                // 🔒 Swagger
                 it.requestMatchers(
                     "/swagger",
                     "/swagger/**",
-                    "/v3/api-docs/**"
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html"
                 ).hasRole("ADMIN")
 
+                // 🔒 Всё остальное
                 it.anyRequest().authenticated()
             }
+
+            // JWT Filter
             .addFilterBefore(
                 JwtFilter(jwtService),
                 UsernamePasswordAuthenticationFilter::class.java
@@ -49,16 +62,27 @@ class SecurityConfig(
         return http.build()
     }
 
+    /**
+     * Глобальный CORS
+     */
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
+
         configuration.allowedOriginPatterns = listOf("*")
-        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        configuration.allowedMethods = listOf(
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS"
+        )
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = false
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
+
         return source
     }
 }
