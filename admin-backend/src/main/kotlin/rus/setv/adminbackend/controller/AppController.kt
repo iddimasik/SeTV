@@ -21,9 +21,6 @@ class AppController(
     private val fileStorageService: FileStorageService
 ) {
 
-    // =========================
-    // APK PARSE (UPLOAD ONLY)
-    // =========================
     @PostMapping(
         "/parse-apk",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
@@ -44,9 +41,6 @@ class AppController(
         return ResponseEntity.ok(result)
     }
 
-    // =========================
-    // CREATE APP
-    // =========================
     @PostMapping
     fun createApp(@RequestBody dto: AppRequest): AppDto {
         val app = AppEntity(
@@ -66,16 +60,10 @@ class AppController(
         return appRepository.save(app).toDto()
     }
 
-    // =========================
-    // READ ALL
-    // =========================
     @GetMapping
     fun getAllApps(): List<AppDto> =
         appRepository.findAll().map { it.toDto() }
 
-    // =========================
-    // READ ONE
-    // =========================
     @GetMapping("/{id}")
     fun getAppById(@PathVariable id: UUID): ResponseEntity<AppDto> {
         return appRepository.findById(id)
@@ -83,9 +71,6 @@ class AppController(
             .orElse(ResponseEntity.notFound().build())
     }
 
-    // =========================
-    // UPDATE
-    // =========================
     @PutMapping("/{id}")
     fun updateApp(
         @PathVariable id: UUID,
@@ -96,7 +81,6 @@ class AppController(
 
             val oldApkUrl = app.apkUrl
 
-            // обновляем поля
             app.name = dto.name
             app.packageName = dto.packageName
             app.version = dto.version
@@ -124,18 +108,13 @@ class AppController(
         }.orElse(ResponseEntity.notFound().build())
     }
 
-    // =========================
-    // DELETE
-    // =========================
     @DeleteMapping("/{id}")
     fun deleteApp(@PathVariable id: UUID): ResponseEntity<Void> {
         val app = appRepository.findById(id).orElse(null)
             ?: return ResponseEntity.notFound().build()
 
-        // Удаляем APK
         fileStorageService.deleteApkFile(app.apkUrl)
 
-        // Удаляем запись из БД
         appRepository.delete(app)
 
         return ResponseEntity.noContent().build()

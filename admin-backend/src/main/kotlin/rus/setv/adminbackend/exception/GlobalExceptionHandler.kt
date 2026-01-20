@@ -10,9 +10,6 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
-    /**
-     * APK слишком большого размера
-     */
     @ExceptionHandler(MaxUploadSizeExceededException::class)
     fun handleMaxSize(
         ex: MaxUploadSizeExceededException
@@ -27,9 +24,6 @@ class GlobalExceptionHandler {
             )
     }
 
-    /**
-     * Дублирование package_name (UNIQUE constraint)
-     */
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun handleDuplicatePackage(
         ex: DataIntegrityViolationException
@@ -52,9 +46,6 @@ class GlobalExceptionHandler {
             )
     }
 
-    /**
-     * Фолбэк на все остальные ошибки
-     */
     @ExceptionHandler(Exception::class)
     fun handleGeneric(
         ex: Exception
