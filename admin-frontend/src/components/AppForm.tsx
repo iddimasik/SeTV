@@ -24,18 +24,12 @@ const AppForm: React.FC = () => {
     const [apkFile, setApkFile] = useState<File | null>(null);
     const [loadingApk, setLoadingApk] = useState(false);
 
-    // ───────────────────────
-    // LOAD FOR EDIT
-    // ───────────────────────
     useEffect(() => {
         if (id) {
             getApp(id).then((res) => setFormData(res.data));
         }
     }, [id]);
 
-    // ───────────────────────
-    // INPUT CHANGE
-    // ───────────────────────
     const handleChange = (
         e: React.ChangeEvent<
             HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -51,9 +45,6 @@ const AppForm: React.FC = () => {
         }));
     };
 
-    // ───────────────────────
-    // SUBMIT
-    // ───────────────────────
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -71,9 +62,6 @@ const AppForm: React.FC = () => {
         }
     };
 
-    // ───────────────────────
-    // APK PARSER (JWT FIX)
-    // ───────────────────────
     const handleApkSelect = async (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
@@ -123,9 +111,6 @@ const AppForm: React.FC = () => {
         }
     };
 
-    // ───────────────────────
-    // UI
-    // ───────────────────────
     return (
         <div className="form-container">
             <div className="form-box">

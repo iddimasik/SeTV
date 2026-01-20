@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import AppList from "../components/AppList";
-import "./Dashboard.css"; // подключаем CSS
+import "./Dashboard.css";
 
 const Dashboard: React.FC = () => {
     return (

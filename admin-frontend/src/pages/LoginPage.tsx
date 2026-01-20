@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 
-// API-функция для логина
 async function loginApi(login: string, password: string): Promise<string> {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: "POST",

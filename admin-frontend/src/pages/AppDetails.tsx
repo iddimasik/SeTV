@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getApp, deleteApp } from "../api/appApi";
-import "./AppDetails.css"; // подключаем CSS
+import "./AppDetails.css";
 
 interface AppDetailsProps {}
 

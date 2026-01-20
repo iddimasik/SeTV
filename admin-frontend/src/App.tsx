@@ -14,10 +14,8 @@ const App: React.FC = () => {
     return (
         <Router>
             <Routes>
-                {/* 🔓 Логин */}
                 <Route path="/login" element={<LoginPage />} />
 
-                {/* 🔒 Админка */}
                 <Route
                     path="/"
                     element={

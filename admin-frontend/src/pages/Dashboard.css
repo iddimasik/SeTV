@@ -1,13 +1,12 @@
 .dashboard-container {
     display: flex;
-    justify-content: center; /* горизонтальное центрирование */
-    align-items: flex-start; /* вертикально сверху */
+    justify-content: center;
+    align-items: flex-start;
     min-height: 100vh;
     padding: 30px 20px;
     background-color: rgba(0, 0, 0, 0.75);
 }
 
-/* Основной блок */
 .dashboard-box {
     width: 100%;
     max-width: 900px;
@@ -17,9 +16,8 @@
     box-shadow: 0 2px 15px rgba(255, 255, 255, 0.5);
 }
 
-/* Заголовок и кнопка сверху */
 .dashboard-header {
-    text-align: center; /* центрируем текст заголовка */
+    text-align: center;
     margin-bottom: 50px;
 }
 
@@ -29,7 +27,6 @@
     color: #ffffff;
 }
 
-/* Кнопка добавления */
 .add-button {
     padding: 12px 20px;
     background: linear-gradient(to right, #fbfbfb, #737373);

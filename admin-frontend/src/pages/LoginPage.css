@@ -1,4 +1,3 @@
-/* Контейнер страницы логина */
 .login-container {
     display: flex;
     justify-content: center;
@@ -8,7 +7,6 @@
     background-color: rgba(0, 0, 0, 0.75);
 }
 
-/* Основной блок */
 .login-box {
     width: 100%;
     max-width: 400px;
@@ -18,7 +16,6 @@
     box-shadow: 0 2px 15px rgba(255, 255, 255, 0.5);
 }
 
-/* Заголовок */
 .login-title {
     text-align: center;
     font-size: 26px;
@@ -27,14 +24,12 @@
     margin-bottom: 30px;
 }
 
-/* Форма */
 .login-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-/* Поля ввода */
 .login-input {
     padding: 10px;
     font-size: 16px;
@@ -43,7 +38,6 @@
     outline: none;
 }
 
-/* Кнопка входа */
 .login-button {
     padding: 12px;
     font-size: 16px;
@@ -67,7 +61,6 @@
     cursor: not-allowed;
 }
 
-/* Ошибка */
 .login-error {
     color: red;
     text-align: center;

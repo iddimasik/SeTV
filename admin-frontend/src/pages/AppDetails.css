@@ -1,7 +1,6 @@
-/* Контейнер */
 .app-details-container {
     width: 100%;
-    max-width: 1200px; /* большой экран */
+    max-width: 1200px;
     margin: 40px auto;
     padding: 30px 20px;
     background-color: #ffffff;
@@ -10,7 +9,6 @@
     color: #000;
 }
 
-/* Заголовок */
 .app-details-title {
     text-align: center;
     font-size: 28px;
@@ -18,13 +16,11 @@
     margin-bottom: 30px;
 }
 
-/* Абзацы */
 .app-details-container p {
-    margin-bottom: 20px; /* отступ между строками */
+    margin-bottom: 20px;
     font-size: 16px;
 }
 
-/* Статусы */
 .status-active {
     color: #16a34a;
     font-weight: 600;
@@ -35,7 +31,6 @@
     font-weight: 600;
 }
 
-/* Кнопки */
 .app-details-buttons {
     display: flex;
     gap: 15px;
@@ -78,7 +73,6 @@
     background-color: #b91c1c;
 }
 
-/* Загрузка */
 .loading {
     text-align: center;
     margin-top: 100px;
