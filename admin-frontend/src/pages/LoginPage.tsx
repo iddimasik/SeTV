@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./LoginPage.css";
 
 // API-функция для логина
 async function loginApi(login: string, password: string): Promise<string> {
-    const res = await fetch("http://192.168.0.105:8080/api/auth/login", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -33,8 +34,8 @@ export default function LoginPage() {
 
         try {
             const token = await loginApi(login, password);
-            localStorage.setItem("token", token); // сохраняем JWT
-            navigate("/admin"); // редирект в админку
+            localStorage.setItem("token", token);
+            navigate("/admin");
         } catch (err: any) {
             setError(err.message || "Ошибка входа");
         } finally {
@@ -43,34 +44,40 @@ export default function LoginPage() {
     };
 
     return (
-        <div style={{ maxWidth: 400, margin: "100px auto", textAlign: "center" }}>
-            <h2>Вход в админку</h2>
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <input
-                    type="text"
-                    placeholder="Логин"
-                    value={login}
-                    onChange={(e) => setLogin(e.target.value)}
-                    required
-                    style={{ padding: 8, fontSize: 16 }}
-                />
-                <input
-                    type="password"
-                    placeholder="Пароль"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    style={{ padding: 8, fontSize: 16 }}
-                />
-                <button
-                    type="submit"
-                    disabled={loading}
-                    style={{ padding: 10, fontSize: 16, cursor: "pointer" }}
-                >
-                    {loading ? "Вход..." : "Войти"}
-                </button>
-                {error && <p style={{ color: "red" }}>{error}</p>}
-            </form>
+        <div className="login-container">
+            <div className="login-box">
+                <h2 className="login-title">Введите данные для входа</h2>
+
+                <form className="login-form" onSubmit={handleSubmit}>
+                    <input
+                        className="login-input"
+                        type="text"
+                        placeholder="Логин"
+                        value={login}
+                        onChange={(e) => setLogin(e.target.value)}
+                        required
+                    />
+
+                    <input
+                        className="login-input"
+                        type="password"
+                        placeholder="Пароль"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+
+                    <button
+                        className="login-button"
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading ? "Вход..." : "Войти"}
+                    </button>
+
+                    {error && <p className="login-error">{error}</p>}
+                </form>
+            </div>
         </div>
     );
 }

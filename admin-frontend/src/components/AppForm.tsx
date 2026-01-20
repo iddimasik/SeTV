@@ -67,12 +67,12 @@ const AppForm: React.FC = () => {
             navigate("/");
         } catch (err) {
             console.error("Save error:", err);
-            alert("Ошибка при сохранении приложения (такой package name уже существует)");
+            alert("Ошибка при сохранении приложения");
         }
     };
 
     // ───────────────────────
-    // APK PARSER
+    // APK PARSER (JWT FIX)
     // ───────────────────────
     const handleApkSelect = async (
         e: React.ChangeEvent<HTMLInputElement>
@@ -85,13 +85,18 @@ const AppForm: React.FC = () => {
         const formDataUpload = new FormData();
         formDataUpload.append("file", file);
 
+        const token = localStorage.getItem("token");
+
         try {
             setLoadingApk(true);
 
             const res = await fetch(
-                "http://localhost:8080/api/apps/parse-apk",
+                `${import.meta.env.VITE_API_URL}/api/apps/parse-apk`,
                 {
                     method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                     body: formDataUpload,
                 }
             );
