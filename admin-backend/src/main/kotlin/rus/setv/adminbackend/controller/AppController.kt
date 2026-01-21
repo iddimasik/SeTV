@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import rus.setv.adminbackend.dto.*
 import rus.setv.adminbackend.model.AppEntity
+import rus.setv.adminbackend.model.AppStatus
 import rus.setv.adminbackend.repository.AppRepository
 import rus.setv.adminbackend.service.ApkParserService
 import rus.setv.adminbackend.service.FileStorageService
@@ -25,7 +26,7 @@ class AppController(
     @GetMapping("/public/apps")
     fun getPublicApps(): List<AppDto> =
         appRepository.findAll()
-            .filter { it.status == "ACTIVE" }
+            .filter { it.status == AppStatus.ACTIVE }
             .map { it.toDto() }
 
     // ================= ADMIN =================
