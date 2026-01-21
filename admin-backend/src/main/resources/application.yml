@@ -2,7 +2,7 @@ server:
   port: 8080
 
 app:
-  base-url: http://192.168.0.106:8080
+  base-url: http://109.69.21.17
   apk:
     storage-path: storage/apk
 
@@ -16,7 +16,7 @@ jwt:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/market
+    url: jdbc:postgresql://postgres:5432/market
     username: market_user
     password: market_pass
 
