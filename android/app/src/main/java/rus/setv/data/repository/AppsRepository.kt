@@ -1,15 +1,14 @@
 package rus.setv.data.repository
 
-import kotlinx.coroutines.runBlocking
 import rus.setv.data.network.RetrofitClient
 import rus.setv.model.AppItem
 
 class AppsRepository {
-    suspend fun loadApps(): List<AppItem> {
-        RetrofitClient.ensureLoggedIn()
 
-        return RetrofitClient.api.getApps()
-            .filter { it.status == "ACTIVE" && it.apkUrl != null }
+    suspend fun loadApps(): List<AppItem> {
+
+        return RetrofitClient.api.getPublicApps()
+            .filter { it.apkUrl != null }
             .map { dto ->
                 AppItem(
                     name = dto.name,

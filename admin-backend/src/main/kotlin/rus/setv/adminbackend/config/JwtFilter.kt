@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.web.filter.OncePerRequestFilter
 import rus.setv.adminbackend.service.JwtService
 
@@ -20,7 +19,16 @@ class JwtFilter(
         filterChain: FilterChain
     ) {
 
-        // ✅ ОБЯЗАТЕЛЬНО: пропускаем OPTIONS
+        val path = request.requestURI
+
+        if (
+            path.startsWith("/api/public") ||
+            path.startsWith("/api/auth")
+        ) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         if (request.method.equals("OPTIONS", ignoreCase = true)) {
             filterChain.doFilter(request, response)
             return
@@ -28,26 +36,26 @@ class JwtFilter(
 
         val authHeader = request.getHeader("Authorization")
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader.isNullOrBlank() || !authHeader.startsWith("Bearer ")) {
+            response.status = HttpServletResponse.SC_FORBIDDEN
+            return
+        }
 
-            val token = authHeader.substring(7)
-            val username = jwtService.validateToken(token)
+        val token = authHeader.removePrefix("Bearer ").trim()
 
-            if (username != null &&
-                SecurityContextHolder.getContext().authentication == null
-            ) {
-
-                val authentication = UsernamePasswordAuthenticationToken(
-                    username,
-                    null,
-                    listOf(SimpleGrantedAuthority("ROLE_ADMIN"))
-                )
-
-                authentication.details =
-                    WebAuthenticationDetailsSource().buildDetails(request)
-
-                SecurityContextHolder.getContext().authentication = authentication
+        val username = jwtService.validateToken(token)
+            ?: run {
+                response.status = HttpServletResponse.SC_FORBIDDEN
+                return
             }
+
+        if (SecurityContextHolder.getContext().authentication == null) {
+            val authentication = UsernamePasswordAuthenticationToken(
+                username,
+                null,
+                listOf(SimpleGrantedAuthority("ROLE_ADMIN"))
+            )
+            SecurityContextHolder.getContext().authentication = authentication
         }
 
         filterChain.doFilter(request, response)

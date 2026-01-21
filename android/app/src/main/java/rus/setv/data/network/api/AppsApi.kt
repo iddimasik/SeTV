@@ -6,5 +6,5 @@ import rus.setv.data.network.dto.AppDto
 interface AppsApi {
 
     @GET("public/apps")
-    suspend fun getApps(): List<AppDto>
+    suspend fun getPublicApps(): List<AppDto>
 }

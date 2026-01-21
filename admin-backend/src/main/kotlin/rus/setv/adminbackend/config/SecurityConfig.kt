@@ -20,26 +20,33 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
         http
+            // 🔓 CORS (Android, Web, nginx)
             .cors { }
+
+            // ❌ CSRF не нужен для JWT
             .csrf { it.disable() }
 
+            // 🚫 Без сессий
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
 
             .authorizeHttpRequests {
 
-                it.requestMatchers("/api/auth/**").permitAll()
-
-                // ✅ ANDROID
+                // 🔓 PUBLIC API (Android TV)
                 it.requestMatchers("/api/public/**").permitAll()
 
-                // 🔒 АДМИНКА
+                // 🔓 AUTH
+                it.requestMatchers("/api/auth/**").permitAll()
+
+                // 🔒 ADMIN API
                 it.requestMatchers("/api/apps/**").hasRole("ADMIN")
 
-                it.anyRequest().authenticated()
+                // ❌ всё остальное — запрещено
+                it.anyRequest().denyAll()
             }
 
+            // 🔐 JWT фильтр
             .addFilterBefore(
                 JwtFilter(jwtService),
                 UsernamePasswordAuthenticationFilter::class.java
@@ -50,14 +57,22 @@ class SecurityConfig(
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        val config = CorsConfiguration()
-        config.allowedOriginPatterns = listOf("*")
-        config.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
-        config.allowedHeaders = listOf("*")
-        config.allowCredentials = false
+        val configuration = CorsConfiguration()
+
+        configuration.allowedOriginPatterns = listOf("*")
+        configuration.allowedMethods = listOf(
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS"
+        )
+        configuration.allowedHeaders = listOf("*")
+        configuration.allowCredentials = false
 
         val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", config)
+        source.registerCorsConfiguration("/**", configuration)
+
         return source
     }
 }
