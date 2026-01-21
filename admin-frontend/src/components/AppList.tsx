@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getApps, deleteApp } from "../api/appApi";
-import { App } from "../types/app"; // ✅ ВАЖНО
+import { App } from "../types/app";
 import "./AppList.css";
 
 const AppList: React.FC = () => {

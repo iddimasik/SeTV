@@ -21,15 +21,11 @@ class AppController(
     private val fileStorageService: FileStorageService
 ) {
 
-    // ================= ANDROID =================
-
     @GetMapping("/public/apps")
     fun getPublicApps(): List<AppDto> =
         appRepository.findAll()
             .filter { it.status == AppStatus.ACTIVE }
             .map { it.toDto() }
-
-    // ================= ADMIN =================
 
     @PostMapping(
         "/apps/parse-apk",
@@ -68,6 +64,40 @@ class AppController(
     @GetMapping("/apps")
     fun getAllApps(): List<AppDto> =
         appRepository.findAll().map { it.toDto() }
+
+    @GetMapping("/apps/{id}")
+    fun getAppById(@PathVariable id: UUID): ResponseEntity<AppDto> {
+        val app = appRepository.findById(id).orElse(null)
+            ?: return ResponseEntity.notFound().build()
+
+        return ResponseEntity.ok(app.toDto())
+    }
+
+    @PutMapping("/apps/{id}")
+    fun updateApp(
+        @PathVariable id: UUID,
+        @RequestBody dto: AppRequest
+    ): ResponseEntity<AppDto> {
+
+        val app = appRepository.findById(id).orElse(null)
+            ?: return ResponseEntity.notFound().build()
+
+        app.name = dto.name
+        app.packageName = dto.packageName
+        app.version = dto.version
+        app.description = dto.description
+        app.iconUrl = dto.iconUrl
+        app.bannerUrl = dto.bannerUrl
+        app.apkUrl = dto.apkUrl
+        app.category = dto.category
+        app.status = dto.status
+        app.featured = dto.featured
+        app.updatedAt = LocalDateTime.now()
+
+        return ResponseEntity.ok(
+            appRepository.save(app).toDto()
+        )
+    }
 
     @DeleteMapping("/apps/{id}")
     fun deleteApp(@PathVariable id: UUID): ResponseEntity<Void> {

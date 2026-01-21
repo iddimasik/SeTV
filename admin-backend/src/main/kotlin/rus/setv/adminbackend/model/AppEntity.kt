@@ -9,7 +9,7 @@ import java.util.*
 class AppEntity(
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID? = null,
 
     @Column(nullable = false)

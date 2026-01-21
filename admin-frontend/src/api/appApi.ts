@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { App } from "../types/app";
 import { getToken, logout } from "../store/auth";
 
-const BASE_URL = `${import.meta.env.VITE_API_URL}/api/apps`;
+const BASE_URL = `${import.meta.env.VITE_API_URL}/apps`;
 
 const axiosWithAuth = async <T = any>(
     config: AxiosRequestConfig = {}

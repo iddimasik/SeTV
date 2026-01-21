@@ -79,7 +79,7 @@ const AppForm: React.FC = () => {
             setLoadingApk(true);
 
             const res = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/apps/parse-apk`,
+                `${import.meta.env.VITE_API_URL}/apps/parse-apk`,
                 {
                     method: "POST",
                     headers: {
