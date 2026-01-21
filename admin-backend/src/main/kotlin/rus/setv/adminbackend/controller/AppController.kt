@@ -13,35 +13,39 @@ import java.time.LocalDateTime
 import java.util.*
 
 @RestController
-@RequestMapping("/api/apps")
-@CrossOrigin(origins = ["http://localhost:5173"])
+@RequestMapping("/api")
 class AppController(
     private val appRepository: AppRepository,
     private val apkParserService: ApkParserService,
     private val fileStorageService: FileStorageService
 ) {
 
+    // ================= ANDROID =================
+
+    @GetMapping("/public/apps")
+    fun getPublicApps(): List<AppDto> =
+        appRepository.findAll()
+            .filter { it.status == "ACTIVE" }
+            .map { it.toDto() }
+
+    // ================= ADMIN =================
+
     @PostMapping(
-        "/parse-apk",
+        "/apps/parse-apk",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
     )
     fun parseApk(
         @RequestPart("file") file: MultipartFile
     ): ResponseEntity<ApkParseResultDto> {
 
-        if (file.isEmpty) {
+        if (file.isEmpty || !file.originalFilename.orEmpty().endsWith(".apk")) {
             return ResponseEntity.badRequest().build()
         }
 
-        if (!file.originalFilename.orEmpty().endsWith(".apk")) {
-            return ResponseEntity.badRequest().build()
-        }
-
-        val result = apkParserService.parseAndStore(file)
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok(apkParserService.parseAndStore(file))
     }
 
-    @PostMapping
+    @PostMapping("/apps")
     fun createApp(@RequestBody dto: AppRequest): AppDto {
         val app = AppEntity(
             name = dto.name,
@@ -60,61 +64,16 @@ class AppController(
         return appRepository.save(app).toDto()
     }
 
-    @GetMapping
+    @GetMapping("/apps")
     fun getAllApps(): List<AppDto> =
         appRepository.findAll().map { it.toDto() }
 
-    @GetMapping("/{id}")
-    fun getAppById(@PathVariable id: UUID): ResponseEntity<AppDto> {
-        return appRepository.findById(id)
-            .map { ResponseEntity.ok(it.toDto()) }
-            .orElse(ResponseEntity.notFound().build())
-    }
-
-    @PutMapping("/{id}")
-    fun updateApp(
-        @PathVariable id: UUID,
-        @RequestBody dto: AppRequest
-    ): ResponseEntity<AppDto> {
-
-        return appRepository.findById(id).map { app ->
-
-            val oldApkUrl = app.apkUrl
-
-            app.name = dto.name
-            app.packageName = dto.packageName
-            app.version = dto.version
-            app.description = dto.description
-            app.iconUrl = dto.iconUrl
-            app.bannerUrl = dto.bannerUrl
-            app.apkUrl = dto.apkUrl
-            app.category = dto.category
-            app.status = dto.status
-            app.featured = dto.featured
-            app.updatedAt = LocalDateTime.now()
-
-            val savedApp = appRepository.save(app)
-
-            if (
-                oldApkUrl != null &&
-                dto.apkUrl != null &&
-                oldApkUrl != dto.apkUrl
-            ) {
-                fileStorageService.deleteApkFile(oldApkUrl)
-            }
-
-            ResponseEntity.ok(savedApp.toDto())
-
-        }.orElse(ResponseEntity.notFound().build())
-    }
-
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/apps/{id}")
     fun deleteApp(@PathVariable id: UUID): ResponseEntity<Void> {
         val app = appRepository.findById(id).orElse(null)
             ?: return ResponseEntity.notFound().build()
 
         fileStorageService.deleteApkFile(app.apkUrl)
-
         appRepository.delete(app)
 
         return ResponseEntity.noContent().build()

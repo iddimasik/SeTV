@@ -20,6 +20,12 @@ class JwtFilter(
         filterChain: FilterChain
     ) {
 
+        // ✅ ОБЯЗАТЕЛЬНО: пропускаем OPTIONS
+        if (request.method.equals("OPTIONS", ignoreCase = true)) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val authHeader = request.getHeader("Authorization")
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -31,22 +37,16 @@ class JwtFilter(
                 SecurityContextHolder.getContext().authentication == null
             ) {
 
-                val authorities = listOf(
-                    SimpleGrantedAuthority("ROLE_ADMIN")
-                )
-
                 val authentication = UsernamePasswordAuthenticationToken(
                     username,
                     null,
-                    authorities
+                    listOf(SimpleGrantedAuthority("ROLE_ADMIN"))
                 )
 
                 authentication.details =
                     WebAuthenticationDetailsSource().buildDetails(request)
 
-                SecurityContextHolder
-                    .getContext()
-                    .authentication = authentication
+                SecurityContextHolder.getContext().authentication = authentication
             }
         }
 

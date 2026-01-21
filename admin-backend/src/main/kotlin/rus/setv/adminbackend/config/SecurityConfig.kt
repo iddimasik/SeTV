@@ -21,7 +21,6 @@ class SecurityConfig(
 
         http
             .cors { }
-
             .csrf { it.disable() }
 
             .sessionManagement {
@@ -31,14 +30,12 @@ class SecurityConfig(
             .authorizeHttpRequests {
 
                 it.requestMatchers("/api/auth/**").permitAll()
+
+                // ✅ ANDROID
+                it.requestMatchers("/api/public/**").permitAll()
+
+                // 🔒 АДМИНКА
                 it.requestMatchers("/api/apps/**").hasRole("ADMIN")
-                it.requestMatchers(
-                    "/swagger",
-                    "/swagger/**",
-                    "/v3/api-docs/**",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html"
-                ).hasRole("ADMIN")
 
                 it.anyRequest().authenticated()
             }
@@ -53,22 +50,14 @@ class SecurityConfig(
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        val configuration = CorsConfiguration()
-
-        configuration.allowedOriginPatterns = listOf("*")
-        configuration.allowedMethods = listOf(
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "OPTIONS"
-        )
-        configuration.allowedHeaders = listOf("*")
-        configuration.allowCredentials = false
+        val config = CorsConfiguration()
+        config.allowedOriginPatterns = listOf("*")
+        config.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        config.allowedHeaders = listOf("*")
+        config.allowCredentials = false
 
         val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", configuration)
-
+        source.registerCorsConfiguration("/**", config)
         return source
     }
 }

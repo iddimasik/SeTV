@@ -8,7 +8,7 @@ import rus.setv.data.network.api.AppsApi
 
 object RetrofitClient {
 
-    private const val BASE_URL = "http://109.69.21.17:8080/"
+    private const val BASE_URL = "http://109.69.21.17/api/"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
