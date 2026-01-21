@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: market
+      POSTGRES_USER: market_user
+      POSTGRES_PASSWORD: market_pass
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/market
+      SPRING_DATASOURCE_USERNAME: market_user
+      SPRING_DATASOURCE_PASSWORD: market_pass
+      JWT_SECRET: K3r9vP0sLxA7mQ8N2B6R5ZCwYH1FJdEe
+    volumes:
+      - ./storage:/app/storage
+    expose:
+      - "8080"
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: always
+    expose:
+      - "80"
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  pg_data:
