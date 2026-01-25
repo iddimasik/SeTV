@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="1200dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#202020"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <!-- ЗАГОЛОВОК -->
+    <TextView
+        android:layout_width="1200dp"
+        android:layout_height="wrap_content"
+        android:text="ВНИМАНИЕ"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:paddingBottom="16dp"/>
+
+    <!-- ТЕКСТ С ПРОКРУТКОЙ -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#DDDDDD"
+                android:textSize="14sp"
+                android:lineSpacingExtra="6dp"
+                android:text="Это приложение представляет собой простой установщик для загрузки программ из встроенных файлов или файлов, предоставленных пользователем." />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="#DDDDDD"
+                android:textSize="14sp"
+                android:lineSpacingExtra="6dp"
+                android:text="Если во время установки, использования, распространения или обмена этим приложением и связанными с ним материалами вы нарушаете применимые законы или права третьих лиц, вы несете полную ответственность за свои действия. Разработчик и издатель этого приложения не несут ответственности за любые подобные нарушения. Некоторые функции или контент этого приложения могут включать рекламу третьих лиц." />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="#DDDDDD"
+                android:textSize="14sp"
+                android:lineSpacingExtra="6dp"
+                android:text="Большинство приложений получены с форума 4PDA и из интернета и не содержат вирусов. Если у вас есть какие-либо опасения, пожалуйста, закройте приложение и удалите его." />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="#DDDDDD"
+                android:textSize="14sp"
+                android:lineSpacingExtra="6dp"
+                android:text="Нажимая кнопку «Согласен» или продолжая использовать это приложение, вы подтверждаете, что полностью прочитали, поняли и приняли эти условия." />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- КНОПКИ -->
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp"
+       android:layout_marginStart="550dp">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="150dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Отмена"
+            android:textAllCaps="false"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:backgroundTint="#666666"
+            android:textColor="@android:color/white"/>
+
+        <Button
+            android:id="@+id/btn_accept"
+            android:layout_width="150dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:text="Согласен"
+            android:textAllCaps="false"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:backgroundTint="#3DDC84"
+            android:textColor="@android:color/black"/>
+    </LinearLayout>
+
+</LinearLayout>

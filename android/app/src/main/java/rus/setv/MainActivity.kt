@@ -1,7 +1,9 @@
 package rus.setv
 
 import android.animation.ValueAnimator
+import android.app.AlertDialog
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +16,12 @@ class MainActivity : AppCompatActivity() {
 
     private val SIDEBAR_OPEN_DP = 240
     private val SIDEBAR_CLOSED_DP = 60
+
+    // ───────────────────────
+    // WARNING PREFS
+    // ───────────────────────
+    private val PREFS_NAME = "app_prefs"
+    private val KEY_WARNING_ACCEPTED = "warning_accepted"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +36,8 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
+        showWarningIfNeeded()
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (isSidebarOpen) {
@@ -38,6 +48,45 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    // ───────────────────────
+    // WARNING DIALOG
+    // ───────────────────────
+
+    private fun showWarningIfNeeded() {
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val accepted = prefs.getBoolean(KEY_WARNING_ACCEPTED, false)
+
+        if (accepted) return
+
+        val dialogView = LayoutInflater.from(this)
+            .inflate(R.layout.dialog_warning, null)
+
+        val dialog = AlertDialog.Builder(
+            this,
+            android.R.style.Theme_DeviceDefault_Dialog_NoActionBar
+        )
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        dialogView.findViewById<View>(R.id.btn_accept).setOnClickListener {
+            prefs.edit()
+                .putBoolean(KEY_WARNING_ACCEPTED, true)
+                .apply()
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<View>(R.id.btn_cancel).apply {
+            setOnClickListener {
+                dialog.dismiss()
+                finishAffinity()
+            }
+            requestFocus()
+        }
+
+        dialog.show()
     }
 
     // ───────────────────────
