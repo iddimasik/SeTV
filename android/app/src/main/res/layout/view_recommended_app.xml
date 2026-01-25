@@ -76,6 +76,7 @@
                 android:paddingVertical="2dp"
                 android:text="Рекомендовано"
                 android:textSize="9sp"
+                android:textColor="@android:color/black"
                 android:background="@drawable/bg_badge"
                 android:visibility="gone" />
         </FrameLayout>
