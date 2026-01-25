@@ -18,7 +18,7 @@ class RecommendedAppView @JvmOverloads constructor(
 
     private val image: ImageView
     private val title: TextView
-    private val description: TextView
+    private val category: TextView
     private val badgeRecommended: TextView
 
     private var boundApp: AppItem? = null
@@ -32,7 +32,7 @@ class RecommendedAppView @JvmOverloads constructor(
 
         image = findViewById(R.id.recommendedImage)
         title = findViewById(R.id.recommendedTitle)
-        description = findViewById(R.id.recommendedDescription)
+        category = findViewById(R.id.recommendedCategory)
         badgeRecommended = findViewById(R.id.badgeRecommended)
 
         // ───────────────────────
@@ -51,9 +51,7 @@ class RecommendedAppView @JvmOverloads constructor(
         // CLICK
         // ───────────────────────
         setOnClickListener {
-            boundApp?.let { app ->
-                onAppClick?.invoke(app)
-            }
+            boundApp?.let { onAppClick?.invoke(it) }
         }
     }
 
@@ -64,12 +62,11 @@ class RecommendedAppView @JvmOverloads constructor(
         boundApp = app
 
         title.text = app.name
-        description.text = app.description ?: ""
+        category.text = app.category ?: ""
 
-        // показываем бэйдж только если приложение featured
-        badgeRecommended.visibility = if (app.featured) View.VISIBLE else View.GONE
+        badgeRecommended.visibility =
+            if (app.featured) View.VISIBLE else View.GONE
 
-        // 🔥 ЗАГРУЗКА ИКОНКИ С СЕРВЕРА
         Glide.with(this)
             .load(app.iconUrl)
             .placeholder(R.drawable.ic_app_placeholder)
@@ -82,6 +79,5 @@ class RecommendedAppView @JvmOverloads constructor(
         Glide.with(this).clear(image)
     }
 
-    // callback на клик по приложению
     var onAppClick: ((AppItem) -> Unit)? = null
 }

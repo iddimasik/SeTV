@@ -10,21 +10,41 @@
     android:paddingTop="24dp">
 
     <!-- SEARCH -->
-    <EditText
-        android:id="@+id/search_input"
+    <LinearLayout
+        android:id="@+id/menu_search"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="16dp"
-        android:hint="Поиск приложений"
-        android:textColor="@android:color/white"
-        android:textColorHint="#888888"
-        android:background="@drawable/ic_search"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
-        android:singleLine="true"
-        android:imeOptions="actionSearch"
         android:focusable="true"
-        android:inputType="text"/>
+        android:background="@drawable/sidebar_item_bg">
+
+        <ImageView
+            android:id="@+id/icon_search"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_search"
+            app:tint="@android:color/white"/>
+
+        <EditText
+            android:id="@+id/search_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:hint="Поиск"
+            android:textColor="@android:color/white"
+            android:textColorHint="#888888"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp"
+            android:singleLine="true"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:background="@android:color/transparent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+    </LinearLayout>
 
     <!-- APPS -->
     <LinearLayout
@@ -84,13 +104,13 @@
             android:visibility="gone"/>
     </LinearLayout>
 
-    <!-- СПЕЙСЕР — выталкивает нижние пункты вниз -->
+    <!-- СПЕЙСЕР -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <!-- UPDATE APP -->
+    <!-- UPDATE -->
     <LinearLayout
         android:id="@+id/menu_update"
         android:layout_width="match_parent"
@@ -119,7 +139,7 @@
             android:visibility="gone"/>
     </LinearLayout>
 
-    <!-- SETTINGS (в самом низу) -->
+    <!-- SETTINGS -->
     <LinearLayout
         android:id="@+id/menu_settings"
         android:layout_width="match_parent"

@@ -1,90 +1,83 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="260dp"
+    android:layout_height="60dp"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:background="@drawable/card_focus_background"
-    android:padding="8dp"
+    android:padding="0dp"
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <!-- КАРТОЧКА -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="10dp"
         app:cardUseCompatPadding="false"
         app:cardPreventCornerOverlap="true"
-        android:backgroundTint="#1E1E1E"
-        android:clipChildren="true"
-        android:clipToPadding="true">
+        android:backgroundTint="#1E1E1E">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- Содержимое карточки -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp">
 
-                <!-- IMAGE / BANNER -->
                 <ImageView
                     android:id="@+id/recommendedImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/ic_app_placeholder"
+                    android:clipToOutline="true" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:scaleType="centerCrop" />
+                    android:orientation="vertical"
+                    android:layout_marginStart="10dp">
 
-                <!-- TITLE -->
-                <TextView
-                    android:id="@+id/recommendedTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
+                    <TextView
+                        android:id="@+id/recommendedTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
 
-                <!-- DESCRIPTION -->
-                <TextView
-                    android:id="@+id/recommendedDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp"
-                    android:textColor="#B0B0B0"
-                    android:textSize="12sp"
-                    android:maxLines="2"
-                    android:ellipsize="end" />
-
+                    <TextView
+                        android:id="@+id/recommendedCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#9E9E9E"
+                        android:textSize="11sp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- БЭЙДЖ RECOMMENDED -->
             <TextView
                 android:id="@+id/badgeRecommended"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
                 android:layout_margin="8dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:text="Recommended"
-                android:textColor="@android:color/white"
-                android:textSize="10sp"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:text="Рекомендовано"
+                android:textSize="9sp"
                 android:background="@drawable/bg_badge"
-                android:visibility="gone"/>
+                android:visibility="gone" />
         </FrameLayout>
-
     </com.google.android.material.card.MaterialCardView>
-
 </FrameLayout>
