@@ -30,7 +30,7 @@
             <ImageView
                 android:id="@+id/appImage"
                 android:layout_width="260dp"
-                android:layout_height="160dp"
+                android:layout_height="260dp"
                 android:scaleType="centerCrop" />
 
             <!-- INFO -->
@@ -104,7 +104,7 @@
                 android:text="Установить"
                 app:cornerRadius="16dp"
                 style="@style/Widget.MaterialComponents.Button"
-                android:backgroundTint="#3DDC84"
+                android:backgroundTint="#09E490"
                 android:textColor="@android:color/black"/>
 
         </LinearLayout>

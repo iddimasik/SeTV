@@ -98,7 +98,7 @@
             android:textAllCaps="false"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:backgroundTint="#3DDC84"
+            android:backgroundTint="#09E490"
             android:textColor="@android:color/black"/>
     </LinearLayout>
 

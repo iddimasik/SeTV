@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AppItem(
-    // ───── данные с сервера ─────
+
     val name: String,
     val packageName: String,
     val apkUrl: String,
@@ -16,7 +16,7 @@ data class AppItem(
     val featured: Boolean = false,
 
     val category: String? = null,
-    // ───── состояние на устройстве ─────
+
     var status: AppStatus = AppStatus.NOT_INSTALLED,
     var progress: Int = 0
 ) : Parcelable

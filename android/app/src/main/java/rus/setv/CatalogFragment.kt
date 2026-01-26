@@ -36,7 +36,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private var recommendedApps: List<AppItem> = emptyList()
     private var recIndex = 0
 
-    private val bannerDelay = 5000L
+    private val bannerDelay = 30000L
     private val RECOMMENDED_COUNT = 5
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

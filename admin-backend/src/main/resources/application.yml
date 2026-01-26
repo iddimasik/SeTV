@@ -2,7 +2,7 @@ server:
   port: 8080
 
 app:
-  base-url: http://109.69.21.17
+  base-url: http://109.69.21.17:8080
   apk:
     storage-path: storage/apk
 
@@ -12,7 +12,7 @@ admin:
 
 jwt:
     secret: ${JWT_SECRET}
-    expiration: 7200000
+    expiration: 86400000
 
 spring:
   datasource:
