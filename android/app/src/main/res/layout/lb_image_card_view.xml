@@ -73,7 +73,7 @@
                         android:ellipsize="end"
                         android:includeFontPadding="false"
                         android:maxLines="1"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@android:color/white"
                         android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>

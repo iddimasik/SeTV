@@ -25,7 +25,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_search"
-            app:tint="@android:color/white"/>
+            app:tint="@drawable/text_color_focus"
+            android:duplicateParentState="true"/>
 
         <EditText
             android:id="@+id/search_input"
@@ -34,7 +35,7 @@
             android:layout_weight="1"
             android:layout_marginStart="4dp"
             android:hint="Поиск"
-            android:textColor="@android:color/white"
+            android:textColor="@drawable/text_color_focus"
             android:textColorHint="#888888"
             android:paddingHorizontal="12dp"
             android:paddingVertical="8dp"
@@ -45,6 +46,12 @@
             android:focusable="true"
             android:focusableInTouchMode="true"/>
     </LinearLayout>
+
+    <!-- СПЕЙСЕР -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
     <!-- APPS -->
     <LinearLayout
@@ -62,7 +69,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_apps"
-            app:tint="@android:color/white"/>
+            app:tint="@drawable/text_color_focus"
+            android:duplicateParentState="true"/>
 
         <TextView
             android:id="@+id/text_apps"
@@ -70,7 +78,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Приложения"
-            android:textColor="@android:color/white"
+            android:textColor="@drawable/text_color_focus"
+            android:duplicateParentState="true"
             android:textSize="16sp"
             android:visibility="gone"/>
     </LinearLayout>
@@ -91,7 +100,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_games"
-            app:tint="@android:color/white"/>
+            app:tint="@drawable/text_color_focus"
+            android:duplicateParentState="true"/>
 
         <TextView
             android:id="@+id/text_games"
@@ -99,7 +109,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Игры"
-            android:textColor="@android:color/white"
+            android:textColor="@drawable/text_color_focus"
+            android:duplicateParentState="true"
             android:textSize="16sp"
             android:visibility="gone"/>
     </LinearLayout>
@@ -126,7 +137,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_update"
-            app:tint="@android:color/white"/>
+            app:tint="@drawable/text_color_focus"
+            android:duplicateParentState="true"/>
 
         <TextView
             android:id="@+id/text_update"
@@ -134,7 +146,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Обновить приложение"
-            android:textColor="@android:color/white"
+            android:textColor="@drawable/text_color_focus"
+            android:duplicateParentState="true"
             android:textSize="16sp"
             android:visibility="gone"/>
     </LinearLayout>
@@ -155,7 +168,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_settings"
-            app:tint="@android:color/white"/>
+            app:tint="@drawable/text_color_focus"
+            android:duplicateParentState="true"/>
 
         <TextView
             android:id="@+id/text_settings"
@@ -163,7 +177,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Настройки"
-            android:textColor="@android:color/white"
+            android:textColor="@drawable/text_color_focus"
+            android:duplicateParentState="true"
             android:textSize="16sp"
             android:visibility="gone"/>
     </LinearLayout>
