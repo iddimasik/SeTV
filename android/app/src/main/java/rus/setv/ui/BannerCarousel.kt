@@ -24,7 +24,6 @@ class BannerCarousel @JvmOverloads constructor(
     private val switchDelay = 5000L
     private val animDuration = 300L
 
-    // 🔥 callback клика
     var onBannerClick: ((BannerItem) -> Unit)? = null
 
     private val runnable = object : Runnable {

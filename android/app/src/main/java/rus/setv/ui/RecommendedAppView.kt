@@ -55,9 +55,6 @@ class RecommendedAppView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Привязка данных приложения к карточке
-     */
     fun bind(app: AppItem) {
         boundApp = app
 

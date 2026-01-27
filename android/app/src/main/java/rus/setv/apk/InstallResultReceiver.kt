@@ -25,7 +25,6 @@ class InstallResultReceiver : BroadcastReceiver() {
         when (status) {
 
             PackageInstaller.STATUS_PENDING_USER_ACTION -> {
-                // 🔥 ОБЯЗАТЕЛЬНО
                 val confirmIntent =
                     intent.getParcelableExtra<Intent>(
                         Intent.EXTRA_INTENT
