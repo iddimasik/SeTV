@@ -4,5 +4,6 @@ data class ApkParseResultDto(
     val name: String,
     val packageName: String,
     val versionName: String?,
-    val apkUrl: String
+    val apkUrl: String,
+    val iconUrl: String?
 )

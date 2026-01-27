@@ -39,7 +39,9 @@ class AppController(
             return ResponseEntity.badRequest().build()
         }
 
-        return ResponseEntity.ok(apkParserService.parseAndStore(file))
+        return ResponseEntity.ok(
+            apkParserService.parseAndStore(file)
+        )
     }
 
     @PostMapping("/apps")
@@ -81,6 +83,14 @@ class AppController(
         val app = appRepository.findById(id).orElse(null)
             ?: return ResponseEntity.notFound().build()
 
+        if (app.apkUrl != dto.apkUrl) {
+            fileStorageService.deleteApkFile(app.apkUrl)
+        }
+
+        if (app.iconUrl != dto.iconUrl) {
+            fileStorageService.deleteIconFile(app.iconUrl)
+        }
+
         app.name = dto.name
         app.packageName = dto.packageName
         app.version = dto.version
@@ -103,6 +113,8 @@ class AppController(
             ?: return ResponseEntity.notFound().build()
 
         fileStorageService.deleteApkFile(app.apkUrl)
+        fileStorageService.deleteIconFile(app.iconUrl)
+
         appRepository.delete(app)
 
         return ResponseEntity.noContent().build()

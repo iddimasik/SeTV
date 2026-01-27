@@ -5,6 +5,8 @@ app:
   base-url: http://109.69.21.17:8080
   apk:
     storage-path: storage/apk
+  icon:
+    storage-path: storage/icons
 
 admin:
   login: admin

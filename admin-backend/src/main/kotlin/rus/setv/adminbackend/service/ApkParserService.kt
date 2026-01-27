@@ -17,14 +17,21 @@ class ApkParserService(
     private val baseUrl: String,
 
     @Value("\${app.apk.storage-path}")
-    private val storagePath: String
+    private val apkStoragePath: String,
+
+    @Value("\${app.icon.storage-path}")
+    private val iconStoragePath: String
 ) {
 
-    private val uploadDir: Path =
-        Paths.get(storagePath).toAbsolutePath().normalize()
+    private val apkUploadDir: Path =
+        Paths.get(apkStoragePath).toAbsolutePath().normalize()
+
+    private val iconUploadDir: Path =
+        Paths.get(iconStoragePath).toAbsolutePath().normalize()
 
     init {
-        Files.createDirectories(uploadDir)
+        Files.createDirectories(apkUploadDir)
+        Files.createDirectories(iconUploadDir)
     }
 
     fun parseAndStore(file: MultipartFile): ApkParseResultDto {
@@ -32,21 +39,37 @@ class ApkParserService(
             throw IllegalArgumentException("APK file is empty")
         }
 
-        val fileName = "${UUID.randomUUID()}.apk"
-        val targetPath = uploadDir.resolve(fileName)
+        // ===== Save APK =====
+        val apkFileName = "${UUID.randomUUID()}.apk"
+        val apkTargetPath = apkUploadDir.resolve(apkFileName)
 
         file.inputStream.use { input ->
-            Files.copy(input, targetPath)
+            Files.copy(input, apkTargetPath)
         }
 
-        ApkFile(targetPath.toFile()).use { apk ->
+        ApkFile(apkTargetPath.toFile()).use { apk ->
             val meta = apk.apkMeta
+
+            // ===== Extract icon =====
+            var iconUrl: String? = null
+
+            val icon = apk.iconFile
+            if (icon != null) {
+                val iconFileName = "${UUID.randomUUID()}.png"
+                val iconTargetPath = iconUploadDir.resolve(iconFileName)
+
+                val iconBytes = apk.getFileData(icon.path)
+                Files.write(iconTargetPath, iconBytes)
+
+                iconUrl = "$baseUrl/files/icons/$iconFileName"
+            }
 
             return ApkParseResultDto(
                 name = meta.label ?: "Unknown",
                 packageName = meta.packageName,
                 versionName = meta.versionName,
-                apkUrl = "$baseUrl/files/apk/$fileName"
+                apkUrl = "$baseUrl/files/apk/$apkFileName",
+                iconUrl = iconUrl
             )
         }
     }
