@@ -1,6 +1,7 @@
 package rus.setv.adminbackend.service
 
 import net.dongliu.apk.parser.ApkFile
+import net.dongliu.apk.parser.bean.IconFace
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -39,7 +40,6 @@ class ApkParserService(
             throw IllegalArgumentException("APK file is empty")
         }
 
-        // ===== Save APK =====
         val apkFileName = "${UUID.randomUUID()}.apk"
         val apkTargetPath = apkUploadDir.resolve(apkFileName)
 
@@ -50,19 +50,7 @@ class ApkParserService(
         ApkFile(apkTargetPath.toFile()).use { apk ->
             val meta = apk.apkMeta
 
-            // ===== Extract icon =====
-            var iconUrl: String? = null
-
-            val icon = apk.iconFile
-            if (icon != null) {
-                val iconFileName = "${UUID.randomUUID()}.png"
-                val iconTargetPath = iconUploadDir.resolve(iconFileName)
-
-                val iconBytes = apk.getFileData(icon.path)
-                Files.write(iconTargetPath, iconBytes)
-
-                iconUrl = "$baseUrl/files/icons/$iconFileName"
-            }
+            val iconUrl = extractBestIcon(apk)
 
             return ApkParseResultDto(
                 name = meta.label ?: "Unknown",
@@ -72,5 +60,31 @@ class ApkParserService(
                 iconUrl = iconUrl
             )
         }
+    }
+
+    private fun extractBestIcon(apk: ApkFile): String? {
+        val icons: List<IconFace> = apk.allIcons ?: return null
+        if (icons.isEmpty()) return null
+
+        var bestIcon: IconFace? = null
+        var maxSize = 0
+
+        for (icon in icons) {
+            val bytes = apk.getFileData(icon.path)
+            if (bytes.size > maxSize) {
+                maxSize = bytes.size
+                bestIcon = icon
+            }
+        }
+
+        if (bestIcon == null) return null
+
+        val iconFileName = "${UUID.randomUUID()}.png"
+        val iconTargetPath = iconUploadDir.resolve(iconFileName)
+
+        val iconBytes = apk.getFileData(bestIcon.path)
+        Files.write(iconTargetPath, iconBytes)
+
+        return "$baseUrl/files/icons/$iconFileName"
     }
 }
