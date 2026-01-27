@@ -21,7 +21,7 @@ class BannerCarousel @JvmOverloads constructor(
     private var banners: List<BannerItem> = emptyList()
     private var index = 0
 
-    private val switchDelay = 5000L
+    private val switchDelay = 30000L
     private val animDuration = 300L
 
     var onBannerClick: ((BannerItem) -> Unit)? = null

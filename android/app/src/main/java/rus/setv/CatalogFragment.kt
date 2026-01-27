@@ -1,11 +1,12 @@
 package rus.setv
 
 import android.content.Intent
-import android.net.Uri
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.leanback.widget.ArrayObjectAdapter
@@ -14,6 +15,7 @@ import androidx.leanback.widget.VerticalGridView
 import kotlinx.coroutines.launch
 import rus.setv.data.repository.AppsRepository
 import rus.setv.model.AppItem
+import rus.setv.model.AppStatus
 import rus.setv.model.BannerItem
 import rus.setv.ui.AppCardPresenter
 import rus.setv.ui.BannerCarousel
@@ -25,31 +27,30 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     companion object {
         private const val ARG_CATEGORY = "category"
 
-        fun newInstance(category: String): CatalogFragment {
-            return CatalogFragment().apply {
+        fun newInstance(category: String) =
+            CatalogFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_CATEGORY, category)
                 }
             }
-        }
     }
 
     private lateinit var grid: VerticalGridView
     private lateinit var adapter: ArrayObjectAdapter
-    private lateinit var bannerCarousel: BannerCarousel
 
     private lateinit var recommendedGrid: VerticalGridView
     private lateinit var recommendedAdapter: ArrayObjectAdapter
 
+    private lateinit var bannerCarousel: BannerCarousel
+
     private val repository = AppsRepository()
 
-    private var category: String = "ALL"
+    private var category = "ALL"
 
-    private var banners: List<BannerItem> = emptyList()
     private var recommendedApps: List<AppItem> = emptyList()
     private var recIndex = 0
 
-    private val bannerDelay = 30_000L
+    private val bannerDelay = 30000L
     private val RECOMMENDED_COUNT = 5
 
     // ───────────────────────
@@ -58,7 +59,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        category = arguments?.getString(ARG_CATEGORY, "ALL") ?: "ALL"
+        category = arguments?.getString(ARG_CATEGORY) ?: "ALL"
 
         setupTopRow(view)
         setupRecommendedRow(view)
@@ -66,6 +67,11 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         setupSidebarKey(view)
 
         loadAppsFromServer()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateAllStatuses()
     }
 
     override fun onDestroyView() {
@@ -79,12 +85,13 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private fun setupTopRow(root: View) {
         bannerCarousel = root.findViewById(R.id.bannerCarousel)
 
-        banners = listOf(
-            BannerItem("VLC", R.drawable.ic_vlc, "https://www.videolan.org"),
-            BannerItem("YouTube", R.drawable.banner_youtube, "https://youtube.com")
+        bannerCarousel.setBanners(
+            listOf(
+                BannerItem("VLC", R.drawable.ic_vlc, "https://www.videolan.org"),
+                BannerItem("YouTube", R.drawable.banner_youtube, "https://youtube.com")
+            )
         )
 
-        bannerCarousel.setBanners(banners)
         bannerCarousel.onBannerClick = { openBannerLink(it.url) }
     }
 
@@ -124,57 +131,100 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     }
 
     // ───────────────────────
-    // LOAD + FILTER APPS
+    // LOAD APPS
     // ───────────────────────
     private fun loadAppsFromServer() {
         viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val allApps = repository.loadApps()
+            val allApps = repository.loadApps()
 
-                val filteredApps = when (category) {
-                    "ALL" -> allApps
-                    else -> allApps.filter {
-                        it.category.equals(category, ignoreCase = true)
-                    }
-                }
+            allApps.forEach { updateStatus(it) }
 
-                adapter.clear()
-                adapter.addAll(0, filteredApps)
-
-                recommendedApps = filteredApps
-                    .filter { it.featured }
-                    .ifEmpty { filteredApps }
-                    .shuffled()
-
-                if (recommendedApps.isNotEmpty()) {
-                    recIndex = 0
-                    view?.post(rotationRunnable)
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
+            val filteredApps = if (category == "ALL") {
+                allApps
+            } else {
+                allApps.filter { it.category.equals(category, true) }
             }
+
+            adapter.clear()
+            adapter.addAll(0, filteredApps)
+
+            recommendedApps = filteredApps
+                .filter { it.featured }
+                .ifEmpty { filteredApps }
+                .shuffled()
+
+            recIndex = 0
+            view?.removeCallbacks(rotationRunnable)
+            view?.post(rotationRunnable)
         }
     }
 
     // ───────────────────────
-    // APPS GRID
+    // STATUS
+    // ───────────────────────
+    private fun updateAllStatuses() {
+        for (i in 0 until adapter.size()) {
+            updateStatus(adapter[i] as AppItem)
+        }
+        for (i in 0 until recommendedAdapter.size()) {
+            updateStatus(recommendedAdapter[i] as AppItem)
+        }
+
+        adapter.notifyArrayItemRangeChanged(0, adapter.size())
+        recommendedAdapter.notifyArrayItemRangeChanged(0, recommendedAdapter.size())
+    }
+
+    private fun updateStatus(app: AppItem) {
+        val installedVersion = getInstalledVersion(app.packageName)
+
+        app.status = when {
+            installedVersion == null -> AppStatus.NOT_INSTALLED
+            isUpdateAvailable(app, installedVersion) -> AppStatus.UPDATE_AVAILABLE
+            else -> AppStatus.INSTALLED
+        }
+    }
+
+    private fun getInstalledVersion(pkg: String): String? =
+        try {
+            requireContext().packageManager
+                .getPackageInfo(pkg, 0).versionName
+        } catch (_: PackageManager.NameNotFoundException) {
+            null
+        }
+
+    private fun isUpdateAvailable(app: AppItem, installed: String): Boolean {
+        val server = app.version ?: return false
+
+        val s = server.split(".").map { it.toIntOrNull() ?: 0 }
+        val i = installed.split(".").map { it.toIntOrNull() ?: 0 }
+
+        for (idx in 0 until maxOf(s.size, i.size)) {
+            val sv = s.getOrElse(idx) { 0 }
+            val iv = i.getOrElse(idx) { 0 }
+            if (sv > iv) return true
+            if (sv < iv) return false
+        }
+        return false
+    }
+
+    // ───────────────────────
+    // GRID
     // ───────────────────────
     private fun setupAppsGrid(root: View) {
         grid = root.findViewById(R.id.appsGrid)
 
+        adapter = ArrayObjectAdapter(
+            AppCardPresenter { openAppDetails(it) }
+        )
+
         grid.apply {
+            adapter = ItemBridgeAdapter(this@CatalogFragment.adapter)
             verticalSpacing = 12
             horizontalSpacing = 12
             isFocusable = true
             descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
         }
 
-        adapter = ArrayObjectAdapter(
-            AppCardPresenter { openAppDetails(it) }
-        )
-
-        grid.adapter = ItemBridgeAdapter(adapter)
         updateGridColumns()
     }
 
@@ -190,8 +240,8 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     }
 
     private fun updateGridColumns() {
-        val columns = if ((activity as? MainActivity)?.isSidebarOpen == true) 4 else 5
-        grid.setNumColumns(columns)
+        val cols = if ((activity as? MainActivity)?.isSidebarOpen == true) 4 else 5
+        grid.setNumColumns(cols)
     }
 
     override fun onSidebarOpened() = updateGridColumns()
@@ -202,7 +252,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // ───────────────────────
     private fun openBannerLink(url: String) {
         startActivity(
-            Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            Intent(Intent.ACTION_VIEW, url.toUri())
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }

@@ -5,5 +5,6 @@ enum class AppStatus {
     DOWNLOADING,
     INSTALLING,
     INSTALLED,
-    ERROR
+    ERROR,
+    UPDATE_AVAILABLE
 }

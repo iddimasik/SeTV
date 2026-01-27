@@ -9,6 +9,8 @@ import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import rus.setv.R
 import rus.setv.model.AppItem
+import rus.setv.model.AppStatus
+import androidx.core.graphics.toColorInt
 
 class AppCardPresenter(
     private val onClick: (AppItem) -> Unit
@@ -33,12 +35,56 @@ class AppCardPresenter(
         val category = root.findViewById<TextView>(R.id.category_text)
         val desc = root.findViewById<TextView>(R.id.content_text)
         val content = root.findViewById<View>(R.id.cardContent)
+        val badge = root.findViewById<TextView>(R.id.status_badge)
 
         title.text = app.name
         category.text = app.category
         desc.text = app.description
 
-        // 🔥 ЗАГРУЗКА ИКОНКИ С СЕРВЕРА
+        badge.visibility = View.GONE
+
+        when (app.status) {
+
+            AppStatus.INSTALLED -> {
+                badge.visibility = View.VISIBLE
+                badge.text = "Установлено"
+                badge.setBackgroundColor("#2E7D32".toColorInt())
+            }
+
+            AppStatus.NOT_INSTALLED -> {
+                badge.visibility = View.VISIBLE
+                badge.text = "Не установлено"
+                badge.setBackgroundColor("#616161".toColorInt())
+            }
+
+            AppStatus.UPDATE_AVAILABLE -> {
+                badge.visibility = View.VISIBLE
+                badge.text = "Обновить"
+                badge.setBackgroundColor("#005DFF".toColorInt())
+            }
+
+            AppStatus.DOWNLOADING -> {
+                badge.visibility = View.VISIBLE
+                badge.text = "Загрузка…"
+                badge.setBackgroundColor("#0277BD".toColorInt())
+            }
+
+            AppStatus.INSTALLING -> {
+                badge.visibility = View.VISIBLE
+                badge.text = "Установка…"
+                badge.setBackgroundColor("#512DA8".toColorInt())
+            }
+
+            AppStatus.ERROR -> {
+                badge.visibility = View.VISIBLE
+                badge.text = "Ошибка"
+                badge.setBackgroundColor("#C62828".toColorInt())
+            }
+        }
+
+        // ───────────────────────
+        // ICON
+        // ───────────────────────
         Glide.with(root)
             .load(app.iconUrl)
             .placeholder(R.drawable.ic_app_placeholder)
@@ -46,7 +92,7 @@ class AppCardPresenter(
             .into(image)
 
         // ───────────────────────
-        // TV-ФОКУС
+        // TV FOCUS
         // ───────────────────────
         root.setOnFocusChangeListener { _, hasFocus ->
             val scale = if (hasFocus) 1.08f else 1.0f
