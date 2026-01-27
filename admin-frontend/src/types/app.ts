@@ -5,7 +5,6 @@ export interface App {
     version?: string;
     description?: string;
     iconUrl?: string;
-    bannerUrl?: string;
     apkUrl?: string;
     category?: string;
     status: string;
