@@ -1,49 +1,64 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+    AxiosInstance,
+    AxiosResponse,
+    AxiosHeaders,
+} from "axios";
 import { App } from "../types/app";
 import { getToken, logout } from "../store/auth";
 
-const BASE_URL = `${import.meta.env.VITE_API_URL}/apps`;
+const api: AxiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_API_URL,
+});
 
-const axiosWithAuth = async <T = any>(
-    config: AxiosRequestConfig = {}
-): Promise<AxiosResponse<T>> => {
+api.interceptors.request.use(
+    (config) => {
+        const token = getToken();
 
-    const token = getToken();
+        if (!token) {
+            logout();
+            window.location.href = "/login";
+            return Promise.reject(new Error("Не авторизован"));
+        }
 
-    if (!token) {
-        logout();
-        window.location.href = "/login";
-        return Promise.reject(new Error("Не авторизован"));
-    }
+        if (!config.headers) {
+            config.headers = new AxiosHeaders();
+        }
 
-    try {
-        return await axios({
-            ...config,
-            headers: {
-                ...config.headers,
-                Authorization: `Bearer ${token}`,
-            },
-        });
-    } catch (err: any) {
-        if (err.response?.status === 401) {
+        config.headers.set(
+            "Authorization",
+            `Bearer ${token}`
+        );
+
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+    (response: AxiosResponse) => response,
+    (error) => {
+        const status = error.response?.status;
+
+        if (status === 401 || status === 403) {
             logout();
             window.location.href = "/login";
         }
-        throw err;
+
+        return Promise.reject(error);
     }
-};
+);
 
 export const getApps = () =>
-    axiosWithAuth<App[]>({ method: "GET", url: BASE_URL });
+    api.get<App[]>("/apps");
 
 export const getApp = (id: string) =>
-    axiosWithAuth<App>({ method: "GET", url: `${BASE_URL}/${id}` });
+    api.get<App>(`/apps/${id}`);
 
 export const createApp = (data: App) =>
-    axiosWithAuth<App>({ method: "POST", url: BASE_URL, data });
+    api.post<App>("/apps", data);
 
 export const updateApp = (id: string, data: App) =>
-    axiosWithAuth<App>({ method: "PUT", url: `${BASE_URL}/${id}`, data });
+    api.put<App>(`/apps/${id}`, data);
 
 export const deleteApp = (id: string) =>
-    axiosWithAuth<void>({ method: "DELETE", url: `${BASE_URL}/${id}` });
+    api.delete<void>(`/apps/${id}`);

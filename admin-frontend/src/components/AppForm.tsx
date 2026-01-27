@@ -102,6 +102,7 @@ const AppForm: React.FC = () => {
                 packageName: data.packageName,
                 version: data.versionName,
                 apkUrl: data.apkUrl,
+                iconUrl: data.iconUrl ?? "",
             }));
         } catch (err) {
             console.error("APK parse error:", err);
@@ -119,6 +120,37 @@ const AppForm: React.FC = () => {
                         ? "Редактировать приложение"
                         : "Добавить новое приложение"}
                 </h2>
+
+                <div className="file-upload">
+                    <span className="file-title">APK файл</span>
+
+                    <label
+                        htmlFor="apk-input"
+                        className="file-upload-label"
+                    >
+                        Загрузить APK
+                    </label>
+
+                    <input
+                        id="apk-input"
+                        type="file"
+                        accept=".apk"
+                        onChange={handleApkSelect}
+                        hidden
+                    />
+
+                    {apkFile && (
+                        <div className="file-name">
+                            {apkFile.name}
+                        </div>
+                    )}
+
+                    {loadingApk && (
+                        <div className="file-loading">
+                            Парсинг APK...
+                        </div>
+                    )}
+                </div>
 
                 <form onSubmit={handleSubmit} className="form">
                     <label>
@@ -154,13 +186,41 @@ const AppForm: React.FC = () => {
                     </label>
 
                     <label>
-                        Категория
+                        URL иконки
                         <input
                             type="text"
+                            name="iconUrl"
+                            value={formData.iconUrl}
+                            onChange={handleChange}
+                        />
+                    </label>
+
+                    {formData.iconUrl && (
+                        <div className="icon-preview">
+                            <span className="icon-preview-title">
+                                Иконка приложения
+                            </span>
+                            <img
+                                src={formData.iconUrl}
+                                alt="App icon"
+                                className="icon-preview-image"
+                            />
+                        </div>
+                    )}
+
+                    <label>
+                        Категория
+                        <select
                             name="category"
                             value={formData.category}
                             onChange={handleChange}
-                        />
+                            required
+                        >
+                            <option value="">Выберите категорию</option>
+                            <option value="Фильмы и ТВ">Фильмы и ТВ</option>
+                            <option value="Программы">Программы</option>
+                            <option value="Прочее">Прочее</option>
+                        </select>
                     </label>
 
                     <label>
@@ -171,57 +231,6 @@ const AppForm: React.FC = () => {
                             onChange={handleChange}
                         />
                     </label>
-
-                    <label>
-                        URL иконки
-                        <input
-                            type="text"
-                            name="iconUrl"
-                            value={formData.iconUrl}
-                            onChange={handleChange}
-                        />
-                    </label>
-
-                    <label>
-                        URL баннера
-                        <input
-                            type="text"
-                            name="bannerUrl"
-                            value={formData.bannerUrl}
-                            onChange={handleChange}
-                        />
-                    </label>
-
-                    <div className="file-upload">
-                        <span className="file-title">APK файл</span>
-
-                        <label
-                            htmlFor="apk-input"
-                            className="file-upload-label"
-                        >
-                            Загрузить APK
-                        </label>
-
-                        <input
-                            id="apk-input"
-                            type="file"
-                            accept=".apk"
-                            onChange={handleApkSelect}
-                            hidden
-                        />
-
-                        {apkFile && (
-                            <div className="file-name">
-                                {apkFile.name}
-                            </div>
-                        )}
-
-                        {loadingApk && (
-                            <div className="file-loading">
-                                Парсинг APK...
-                            </div>
-                        )}
-                    </div>
 
                     <label className="checkbox-label">
                         Рекомендуемое приложение
