@@ -21,7 +21,6 @@
         android:background="@drawable/sidebar_item_bg">
 
         <ImageView
-            android:id="@+id/icon_search"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_search"
@@ -33,27 +32,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:hint="Поиск"
             android:textColor="@drawable/text_color_focus"
+            android:duplicateParentState="true"
             android:textColorHint="#888888"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="8dp"
             android:singleLine="true"
             android:imeOptions="actionSearch"
-            android:inputType="text"
             android:background="@android:color/transparent"
             android:focusable="true"
             android:focusableInTouchMode="true"/>
     </LinearLayout>
 
-    <!-- СПЕЙСЕР -->
+    <!-- SPACER -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="16dp"/>
 
-    <!-- APPS -->
+    <!-- ALL APPS -->
     <LinearLayout
         android:id="@+id/menu_apps"
         android:layout_width="match_parent"
@@ -65,7 +61,6 @@
         android:background="@drawable/sidebar_item_bg">
 
         <ImageView
-            android:id="@+id/icon_apps"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_apps"
@@ -74,19 +69,19 @@
 
         <TextView
             android:id="@+id/text_apps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Приложения"
+            android:text="Все приложения"
+            android:textSize="16sp"
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
-            android:textSize="16sp"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
     </LinearLayout>
 
-    <!-- GAMES -->
+    <!-- MOVIES -->
     <LinearLayout
-        android:id="@+id/menu_games"
+        android:id="@+id/menu_movies"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
@@ -96,26 +91,85 @@
         android:background="@drawable/sidebar_item_bg">
 
         <ImageView
-            android:id="@+id/icon_games"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_games"
+            android:src="@drawable/ic_movies"
             app:tint="@drawable/text_color_focus"
             android:duplicateParentState="true"/>
 
         <TextView
-            android:id="@+id/text_games"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/text_movies"
             android:layout_marginStart="16dp"
-            android:text="Игры"
+            android:text="Фильмы и ТВ"
+            android:textSize="16sp"
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
+    </LinearLayout>
+
+    <!-- PROGRAMS -->
+    <LinearLayout
+        android:id="@+id/menu_programs"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:focusable="true"
+        android:background="@drawable/sidebar_item_bg">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_programs"
+            app:tint="@drawable/text_color_focus"
+            android:duplicateParentState="true"/>
+
+        <TextView
+            android:id="@+id/text_programs"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Программы"
             android:textSize="16sp"
+            android:textColor="@drawable/text_color_focus"
+            android:duplicateParentState="true"
             android:visibility="gone"/>
     </LinearLayout>
 
-    <!-- СПЕЙСЕР -->
+    <!-- OTHER -->
+    <LinearLayout
+        android:id="@+id/menu_other"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:focusable="true"
+        android:background="@drawable/sidebar_item_bg">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_other"
+            app:tint="@drawable/text_color_focus"
+            android:duplicateParentState="true"/>
+
+        <TextView
+            android:id="@+id/text_other"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Прочее"
+            android:textSize="16sp"
+            android:textColor="@drawable/text_color_focus"
+            android:duplicateParentState="true"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- SPACER -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -133,7 +187,6 @@
         android:background="@drawable/sidebar_item_bg">
 
         <ImageView
-            android:id="@+id/icon_update"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_update"
@@ -142,13 +195,13 @@
 
         <TextView
             android:id="@+id/text_update"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Обновить приложение"
+            android:textSize="16sp"
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
-            android:textSize="16sp"
             android:visibility="gone"/>
     </LinearLayout>
 
@@ -164,7 +217,6 @@
         android:background="@drawable/sidebar_item_bg">
 
         <ImageView
-            android:id="@+id/icon_settings"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_settings"
@@ -173,13 +225,13 @@
 
         <TextView
             android:id="@+id/text_settings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
             android:text="Настройки"
+            android:textSize="16sp"
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
-            android:textSize="16sp"
             android:visibility="gone"/>
     </LinearLayout>
 

@@ -17,9 +17,6 @@ class MainActivity : AppCompatActivity() {
     private val SIDEBAR_OPEN_DP = 240
     private val SIDEBAR_CLOSED_DP = 60
 
-    // ───────────────────────
-    // WARNING PREFS
-    // ───────────────────────
     private val PREFS_NAME = "app_prefs"
     private val KEY_WARNING_ACCEPTED = "warning_accepted"
 
@@ -49,10 +46,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
-    // ───────────────────────
-    // WARNING DIALOG
-    // ───────────────────────
 
     private fun showWarningIfNeeded() {
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
@@ -89,10 +82,6 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    // ───────────────────────
-    // SIDEBAR CONTROL
-    // ───────────────────────
-
     fun openSidebar(force: Boolean = false) {
         if (isSidebarOpen && !force) return
         isSidebarOpen = true
@@ -113,10 +102,6 @@ class MainActivity : AppCompatActivity() {
         notifySidebarClosed()
     }
 
-    // ───────────────────────
-    // NOTIFY LISTENERS
-    // ───────────────────────
-
     private fun notifySidebarOpened() {
         supportFragmentManager.fragments.forEach { fragment ->
             if (fragment is SidebarListener) {
@@ -132,10 +117,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    // ───────────────────────
-    // ANIMATION
-    // ───────────────────────
 
     private fun animateSidebarDp(targetDp: Int) {
         val targetPx = dpToPx(targetDp)
@@ -153,18 +134,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ───────────────────────
-    // INTERFACE
-    // ───────────────────────
-
     interface SidebarListener {
         fun onSidebarOpened()
         fun onSidebarClosed()
     }
-
-    // ───────────────────────
-    // UTILS
-    // ───────────────────────
 
     private fun dpToPx(dp: Int): Int =
         (dp * resources.displayMetrics.density).toInt()

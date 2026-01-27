@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.leanback.widget.ArrayObjectAdapter
-import androidx.leanback.widget.HorizontalGridView
 import androidx.leanback.widget.ItemBridgeAdapter
 import androidx.leanback.widget.VerticalGridView
 import kotlinx.coroutines.launch
@@ -23,6 +22,18 @@ import rus.setv.ui.RecommendedAppPresenter
 class CatalogFragment : Fragment(R.layout.fragment_catalog),
     MainActivity.SidebarListener {
 
+    companion object {
+        private const val ARG_CATEGORY = "category"
+
+        fun newInstance(category: String): CatalogFragment {
+            return CatalogFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_CATEGORY, category)
+                }
+            }
+        }
+    }
+
     private lateinit var grid: VerticalGridView
     private lateinit var adapter: ArrayObjectAdapter
     private lateinit var bannerCarousel: BannerCarousel
@@ -32,15 +43,22 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
 
     private val repository = AppsRepository()
 
+    private var category: String = "ALL"
+
     private var banners: List<BannerItem> = emptyList()
     private var recommendedApps: List<AppItem> = emptyList()
     private var recIndex = 0
 
-    private val bannerDelay = 30000L
+    private val bannerDelay = 30_000L
     private val RECOMMENDED_COUNT = 5
 
+    // ───────────────────────
+    // LIFECYCLE
+    // ───────────────────────
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        category = arguments?.getString(ARG_CATEGORY, "ALL") ?: "ALL"
 
         setupTopRow(view)
         setupRecommendedRow(view)
@@ -55,11 +73,14 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         view?.removeCallbacks(rotationRunnable)
     }
 
+    // ───────────────────────
+    // TOP BANNERS
+    // ───────────────────────
     private fun setupTopRow(root: View) {
         bannerCarousel = root.findViewById(R.id.bannerCarousel)
 
         banners = listOf(
-            BannerItem("VLC", R.drawable.ic_vlc, "https://ya.ru"),
+            BannerItem("VLC", R.drawable.ic_vlc, "https://www.videolan.org"),
             BannerItem("YouTube", R.drawable.banner_youtube, "https://youtube.com")
         )
 
@@ -67,6 +88,9 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         bannerCarousel.onBannerClick = { openBannerLink(it.url) }
     }
 
+    // ───────────────────────
+    // RECOMMENDED
+    // ───────────────────────
     private fun setupRecommendedRow(root: View) {
         recommendedGrid = root.findViewById(R.id.recommendedGrid)
 
@@ -99,17 +123,27 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         }
     }
 
+    // ───────────────────────
+    // LOAD + FILTER APPS
+    // ───────────────────────
     private fun loadAppsFromServer() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val apps = repository.loadApps()
+                val allApps = repository.loadApps()
+
+                val filteredApps = when (category) {
+                    "ALL" -> allApps
+                    else -> allApps.filter {
+                        it.category.equals(category, ignoreCase = true)
+                    }
+                }
 
                 adapter.clear()
-                adapter.addAll(0, apps)
+                adapter.addAll(0, filteredApps)
 
-                recommendedApps = apps
+                recommendedApps = filteredApps
                     .filter { it.featured }
-                    .ifEmpty { apps }
+                    .ifEmpty { filteredApps }
                     .shuffled()
 
                 if (recommendedApps.isNotEmpty()) {
@@ -123,6 +157,9 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         }
     }
 
+    // ───────────────────────
+    // APPS GRID
+    // ───────────────────────
     private fun setupAppsGrid(root: View) {
         grid = root.findViewById(R.id.appsGrid)
 
@@ -141,6 +178,9 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         updateGridColumns()
     }
 
+    // ───────────────────────
+    // SIDEBAR
+    // ───────────────────────
     private fun setupSidebarKey(root: View) {
         root.setOnKeyListener { _, keyCode, event ->
             keyCode == KeyEvent.KEYCODE_DPAD_LEFT &&
@@ -157,6 +197,9 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     override fun onSidebarOpened() = updateGridColumns()
     override fun onSidebarClosed() = updateGridColumns()
 
+    // ───────────────────────
+    // NAVIGATION
+    // ───────────────────────
     private fun openBannerLink(url: String) {
         startActivity(
             Intent(Intent.ACTION_VIEW, Uri.parse(url))

@@ -13,13 +13,17 @@ import rus.setv.model.AppItem
 
 class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
 
-    private lateinit var appsItem: LinearLayout
-    private lateinit var gamesItem: LinearLayout
+    private lateinit var allAppsItem: LinearLayout
+    private lateinit var moviesItem: LinearLayout
+    private lateinit var programsItem: LinearLayout
+    private lateinit var otherItem: LinearLayout
     private lateinit var updateItem: LinearLayout
     private lateinit var settingsItem: LinearLayout
 
-    private lateinit var appsText: TextView
-    private lateinit var gamesText: TextView
+    private lateinit var allAppsText: TextView
+    private lateinit var moviesText: TextView
+    private lateinit var programsText: TextView
+    private lateinit var otherText: TextView
     private lateinit var updateText: TextView
     private lateinit var settingsText: TextView
 
@@ -30,22 +34,40 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        appsItem = view.findViewById(R.id.menu_apps)
-        gamesItem = view.findViewById(R.id.menu_games)
+        allAppsItem = view.findViewById(R.id.menu_apps)
+        moviesItem = view.findViewById(R.id.menu_movies)
+        programsItem = view.findViewById(R.id.menu_programs)
+        otherItem = view.findViewById(R.id.menu_other)
         updateItem = view.findViewById(R.id.menu_update)
         settingsItem = view.findViewById(R.id.menu_settings)
 
-        appsText = view.findViewById(R.id.text_apps)
-        gamesText = view.findViewById(R.id.text_games)
+        allAppsText = view.findViewById(R.id.text_apps)
+        moviesText = view.findViewById(R.id.text_movies)
+        programsText = view.findViewById(R.id.text_programs)
+        otherText = view.findViewById(R.id.text_other)
         updateText = view.findViewById(R.id.text_update)
         settingsText = view.findViewById(R.id.text_settings)
 
-        setupItem(appsItem, appsText) {
-            openContent(CatalogFragment())
+        // ===== Переименование пунктов =====
+        allAppsText.text = "Все приложения"
+        moviesText.text = "Фильмы и ТВ"
+        programsText.text = "Программы"
+        otherText.text = "Прочее"
+
+        setupItem(allAppsItem, allAppsText) {
+            openContent(CatalogFragment.newInstance("ALL"))
         }
 
-        setupItem(gamesItem, gamesText) {
-            /* TODO GamesFragment */
+        setupItem(moviesItem, moviesText) {
+            openContent(CatalogFragment.newInstance("Фильмы и ТВ"))
+        }
+
+        setupItem(programsItem, programsText) {
+            openContent(CatalogFragment.newInstance("Программы"))
+        }
+
+        setupItem(otherItem, otherText) {
+            openContent(CatalogFragment.newInstance("Прочее"))
         }
 
         setupItem(updateItem, updateText) {
@@ -60,7 +82,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
             if (main.isSidebarOpen) onSidebarOpened()
         }
 
-        appsItem.requestFocus()
+        allAppsItem.requestFocus()
     }
 
     // ───────────────────────
@@ -115,15 +137,19 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     // SIDEBAR STATE
     // ───────────────────────
     fun onSidebarOpened() {
-        appsText.visibility = View.VISIBLE
-        gamesText.visibility = View.VISIBLE
+        allAppsText.visibility = View.VISIBLE
+        moviesText.visibility = View.VISIBLE
+        programsText.visibility = View.VISIBLE
+        otherText.visibility = View.VISIBLE
         updateText.visibility = View.VISIBLE
         settingsText.visibility = View.VISIBLE
     }
 
     fun onSidebarClosed() {
-        appsText.visibility = View.GONE
-        gamesText.visibility = View.GONE
+        allAppsText.visibility = View.GONE
+        moviesText.visibility = View.GONE
+        programsText.visibility = View.GONE
+        otherText.visibility = View.GONE
         updateText.visibility = View.GONE
         settingsText.visibility = View.GONE
     }
