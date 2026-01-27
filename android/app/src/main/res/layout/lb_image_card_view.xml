@@ -15,21 +15,15 @@
 
     android:padding="8dp">
 
-    <!-- ===== STATUS BADGE ===== -->
-    <TextView
+    <!-- ===== STATUS ICON BADGE ===== -->
+    <ImageView
         android:id="@+id/status_badge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_gravity="top|end"
-        android:layout_margin="8dp"
-        android:paddingHorizontal="6dp"
-        android:paddingVertical="2dp"
-
-        android:text="Установлено"
-        android:textSize="9sp"
-        android:textColor="@android:color/white"
-
-        android:background="@drawable/status_badge_bg"
+        android:layout_margin="1dp"
+        android:visibility="gone"
+        android:contentDescription="Status Icon"
         android:elevation="8dp"/>
 
     <!-- ===== CARD ===== -->

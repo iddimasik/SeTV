@@ -10,7 +10,6 @@ import com.bumptech.glide.Glide
 import rus.setv.R
 import rus.setv.model.AppItem
 import rus.setv.model.AppStatus
-import androidx.core.graphics.toColorInt
 
 class AppCardPresenter(
     private val onClick: (AppItem) -> Unit
@@ -35,52 +34,26 @@ class AppCardPresenter(
         val category = root.findViewById<TextView>(R.id.category_text)
         val desc = root.findViewById<TextView>(R.id.content_text)
         val content = root.findViewById<View>(R.id.cardContent)
-        val badge = root.findViewById<TextView>(R.id.status_badge)
+        val badge = root.findViewById<ImageView>(R.id.status_badge)
 
         title.text = app.name
         category.text = app.category
         desc.text = app.description
 
+        // ───────────────────────
+        // STATUS ICON
+        // ───────────────────────
         badge.visibility = View.GONE
-
-        when (app.status) {
-
-            AppStatus.INSTALLED -> {
-                badge.visibility = View.VISIBLE
-                badge.text = "Установлено"
-                badge.setBackgroundColor("#2E7D32".toColorInt())
-            }
-
-            AppStatus.NOT_INSTALLED -> {
-                badge.visibility = View.VISIBLE
-                badge.text = "Не установлено"
-                badge.setBackgroundColor("#616161".toColorInt())
-            }
-
-            AppStatus.UPDATE_AVAILABLE -> {
-                badge.visibility = View.VISIBLE
-                badge.text = "Обновить"
-                badge.setBackgroundColor("#005DFF".toColorInt())
-            }
-
-            AppStatus.DOWNLOADING -> {
-                badge.visibility = View.VISIBLE
-                badge.text = "Загрузка…"
-                badge.setBackgroundColor("#0277BD".toColorInt())
-            }
-
-            AppStatus.INSTALLING -> {
-                badge.visibility = View.VISIBLE
-                badge.text = "Установка…"
-                badge.setBackgroundColor("#512DA8".toColorInt())
-            }
-
-            AppStatus.ERROR -> {
-                badge.visibility = View.VISIBLE
-                badge.text = "Ошибка"
-                badge.setBackgroundColor("#C62828".toColorInt())
-            }
+        val badgeRes = when (app.status) {
+            AppStatus.INSTALLED -> R.drawable.ic_installed
+            AppStatus.NOT_INSTALLED -> R.drawable.ic_uninstalled
+            AppStatus.UPDATE_AVAILABLE -> R.drawable.ic_upgrade
+            AppStatus.DOWNLOADING -> R.drawable.ic_programs
+            AppStatus.INSTALLING -> R.drawable.ic_programs
+            AppStatus.ERROR -> R.drawable.ic_programs
         }
+        badge.setImageResource(badgeRes)
+        badge.visibility = View.VISIBLE
 
         // ───────────────────────
         // ICON
