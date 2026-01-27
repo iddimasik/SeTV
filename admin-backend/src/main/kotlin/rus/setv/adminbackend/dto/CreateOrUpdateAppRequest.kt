@@ -8,7 +8,6 @@ data class AppRequest(
     val version: String?,
     val description: String?,
     val iconUrl: String?,
-    val bannerUrl: String?,
     val apkUrl: String?,
     val category: String?,
     val status: AppStatus,

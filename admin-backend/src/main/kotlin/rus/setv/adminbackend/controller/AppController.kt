@@ -50,7 +50,6 @@ class AppController(
             version = dto.version,
             description = dto.description,
             iconUrl = dto.iconUrl,
-            bannerUrl = dto.bannerUrl,
             apkUrl = dto.apkUrl,
             category = dto.category,
             status = dto.status,
@@ -87,7 +86,6 @@ class AppController(
         app.version = dto.version
         app.description = dto.description
         app.iconUrl = dto.iconUrl
-        app.bannerUrl = dto.bannerUrl
         app.apkUrl = dto.apkUrl
         app.category = dto.category
         app.status = dto.status

@@ -24,7 +24,6 @@ class AppEntity(
     var description: String? = null,
 
     var iconUrl: String? = null,
-    var bannerUrl: String? = null,
     var apkUrl: String? = null,
 
     var category: String? = null,
