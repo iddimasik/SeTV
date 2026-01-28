@@ -14,7 +14,10 @@ const AppList: React.FC = () => {
 
     const fetchApps = async () => {
         const res = await getApps();
-        setApps(res.data);
+        const sortedApps = res.data.sort((a, b) =>
+            a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+        );
+        setApps(sortedApps);
     };
 
     const handleDelete = async (id: string, e: React.MouseEvent) => {
