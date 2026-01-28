@@ -1,10 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bannerRoot"
     android:layout_width="match_parent"
-    android:layout_height="310dp">
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:padding="10dp"
 
-    <ImageView
-        android:id="@+id/bannerImage"
+
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="@drawable/card_focus_background">
+
+
+    <!-- Контейнер для фокуса и подсветки -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:clickable="true"
+        android:background="@drawable/card_focus_background"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:cardCornerRadius="12dp"
+        app:cardUseCompatPadding="false"
+        app:cardPreventCornerOverlap="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp">
+
+        <ImageView
+            android:id="@+id/bannerImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:duplicateParentState="true"/>
+    </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

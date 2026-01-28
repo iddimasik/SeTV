@@ -17,7 +17,7 @@ class AppCardPresenter(
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.lb_image_card_view, parent, false)
+            .inflate(R.layout.view_app, parent, false)
 
         view.isFocusable = true
         view.isFocusableInTouchMode = true
@@ -40,9 +40,7 @@ class AppCardPresenter(
         category.text = app.category
         desc.text = app.description
 
-        // ───────────────────────
-        // STATUS ICON
-        // ───────────────────────
+
         badge.visibility = View.GONE
         val badgeRes = when (app.status) {
             AppStatus.INSTALLED -> R.drawable.ic_installed
@@ -55,18 +53,13 @@ class AppCardPresenter(
         badge.setImageResource(badgeRes)
         badge.visibility = View.VISIBLE
 
-        // ───────────────────────
-        // ICON
-        // ───────────────────────
         Glide.with(root)
             .load(app.iconUrl)
             .placeholder(R.drawable.ic_app_placeholder)
             .error(R.drawable.ic_app_placeholder)
             .into(image)
 
-        // ───────────────────────
-        // TV FOCUS
-        // ───────────────────────
+
         root.setOnFocusChangeListener { _, hasFocus ->
             val scale = if (hasFocus) 1.08f else 1.0f
             val elevation = if (hasFocus) 24f else 0f
@@ -81,9 +74,6 @@ class AppCardPresenter(
             root.elevation = elevation
         }
 
-        // ───────────────────────
-        // CLICK
-        // ───────────────────────
         root.setOnClickListener {
             onClick(app)
         }

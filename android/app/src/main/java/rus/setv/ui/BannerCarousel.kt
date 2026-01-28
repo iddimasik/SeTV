@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.ImageView
+import com.google.android.material.card.MaterialCardView
 import rus.setv.R
 import rus.setv.model.BannerItem
 
@@ -16,6 +17,7 @@ class BannerCarousel @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
+    private val cardContainer: MaterialCardView
     private val imageView: ImageView
 
     private var banners: List<BannerItem> = emptyList()
@@ -29,49 +31,46 @@ class BannerCarousel @JvmOverloads constructor(
     private val runnable = object : Runnable {
         override fun run() {
             if (banners.size < 2) return
-
             val next = (index + 1) % banners.size
 
             val fadeOut = ObjectAnimator.ofFloat(imageView, "alpha", 1f, 0f)
             fadeOut.duration = animDuration
-
             fadeOut.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     imageView.setImageResource(banners[next].imageRes)
-
                     ObjectAnimator.ofFloat(imageView, "alpha", 0f, 1f)
                         .setDuration(animDuration)
                         .start()
-
                     index = next
                 }
             })
-
             fadeOut.start()
             postDelayed(this, switchDelay)
         }
     }
 
     init {
-        isFocusable = true
-        isFocusableInTouchMode = true
+        LayoutInflater.from(context).inflate(R.layout.view_banner_carousel, this, true)
 
-        LayoutInflater.from(context)
-            .inflate(R.layout.view_banner_carousel, this, true)
-
+        val root = findViewById<FrameLayout>(R.id.bannerRoot)
+        cardContainer = findViewById(R.id.cardContainer)
         imageView = findViewById(R.id.bannerImage)
 
-        // ───────── FOCUS EFFECT ─────────
-        setOnFocusChangeListener { _, hasFocus ->
-            animate()
-                .scaleX(if (hasFocus) 1.05f else 1f)
-                .scaleY(if (hasFocus) 1.05f else 1f)
+        root.setOnFocusChangeListener { _, hasFocus ->
+            val scale = if (hasFocus) 1.06f else 1.0f
+            val elevation = if (hasFocus) 24f else 0f
+
+            cardContainer.animate()
+                .scaleX(scale)
+                .scaleY(scale)
                 .setDuration(150)
+                .setInterpolator(android.view.animation.DecelerateInterpolator())
                 .start()
+
+            root.elevation = elevation
         }
 
-        // ───────── CLICK ─────────
-        setOnClickListener {
+        root.setOnClickListener {
             banners.getOrNull(index)?.let { banner ->
                 onBannerClick?.invoke(banner)
             }
@@ -80,10 +79,8 @@ class BannerCarousel @JvmOverloads constructor(
 
     fun setBanners(list: List<BannerItem>) {
         removeCallbacks(runnable)
-
         banners = list
         index = 0
-
         if (banners.isNotEmpty()) {
             imageView.setImageResource(banners[0].imageRes)
             imageView.alpha = 1f
@@ -94,5 +91,12 @@ class BannerCarousel @JvmOverloads constructor(
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         removeCallbacks(runnable)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val width = MeasureSpec.getSize(widthMeasureSpec)
+        val height = (width * 9) / 16
+        val newHeightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+        super.onMeasure(widthMeasureSpec, newHeightSpec)
     }
 }

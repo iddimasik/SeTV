@@ -7,8 +7,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="32dp"
 
-    android:focusable="true"
-    android:focusableInTouchMode="true"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
 
     app:cardCornerRadius="20dp"
     app:cardElevation="8dp"
@@ -49,6 +49,67 @@
                     android:textColor="@android:color/white"
                     android:maxLines="1"
                     android:textStyle="bold" />
+
+                <!-- VERSION AND SIZE -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="32dp">
+
+                        <TextView
+                            android:id="@+id/appVersion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="@android:color/white"
+                            android:text="1.0.0" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="#B0B0B0"
+                            android:text="Version" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/appSize"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="@android:color/white"
+                            android:text="0MB" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:textColor="#B0B0B0"
+                            android:text="Size" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- CATEGORY -->
+                <TextView
+                    android:id="@+id/appCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#B0B0B0"
+                    android:paddingTop="8dp" />
 
                 <TextView
                     android:id="@+id/appDescription"

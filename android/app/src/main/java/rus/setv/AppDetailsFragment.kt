@@ -18,6 +18,7 @@ import rus.setv.apk.ApkDownloader
 import rus.setv.apk.ApkInstaller
 import rus.setv.model.AppItem
 import rus.setv.model.AppStatus
+import java.text.DecimalFormat
 
 class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
 
@@ -25,6 +26,9 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
 
     private lateinit var image: ImageView
     private lateinit var title: TextView
+    private lateinit var version: TextView
+    private lateinit var size: TextView
+    private lateinit var category: TextView
     private lateinit var desc: TextView
     private lateinit var status: TextView
     private lateinit var progress: LinearProgressIndicator
@@ -59,6 +63,9 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
 
         image = view.findViewById(R.id.appImage)
         title = view.findViewById(R.id.appTitle)
+        version = view.findViewById(R.id.appVersion)
+        size = view.findViewById(R.id.appSize)
+        category = view.findViewById(R.id.appCategory)
         desc = view.findViewById(R.id.appDescription)
         status = view.findViewById(R.id.statusText)
         progress = view.findViewById(R.id.progress)
@@ -67,6 +74,11 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
 
         bindApp()
         setupButtons()
+
+        // Устанавливаем фокус на кнопку "Установить" для Android TV
+        installButton.post {
+            installButton.requestFocus()
+        }
     }
 
     override fun onStart() {
@@ -88,6 +100,9 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
     // ───────────────────────
     private fun bindApp() {
         title.text = app.name
+        version.text = app.version ?: "N/A"
+        size.text = "13 mb"//formatSize(app.size)
+        category.text = app.category
         desc.text = app.description
 
         Glide.with(this)
@@ -97,6 +112,19 @@ class AppDetailsFragment : Fragment(R.layout.lb_app_details) {
             .into(image)
 
         updateUi()
+    }
+
+    private fun formatSize(sizeInBytes: Long?): String {
+        if (sizeInBytes == null || sizeInBytes <= 0) return "N/A"
+
+        val df = DecimalFormat("#.##")
+        val sizeInMB = sizeInBytes / (1024.0 * 1024.0)
+
+        return if (sizeInMB < 1024) {
+            "${df.format(sizeInMB)}MB"
+        } else {
+            "${df.format(sizeInMB / 1024.0)}GB"
+        }
     }
 
     private fun setupButtons() {
