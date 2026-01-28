@@ -18,5 +18,7 @@ data class AppItem(
     val category: String? = null,
 
     var status: AppStatus = AppStatus.NOT_INSTALLED,
-    var progress: Int = 0
+    var progress: Int = 0,
+
+    var apkSizeBytes: Long = 0L
 ) : Parcelable

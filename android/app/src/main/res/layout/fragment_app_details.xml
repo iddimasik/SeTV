@@ -102,15 +102,6 @@
 
                 </LinearLayout>
 
-                <!-- CATEGORY -->
-                <TextView
-                    android:id="@+id/appCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="#B0B0B0"
-                    android:paddingTop="8dp" />
-
                 <TextView
                     android:id="@+id/appDescription"
                     android:layout_width="match_parent"
@@ -142,9 +133,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="end"
             android:paddingTop="24dp">
 
+            <!-- Кнопка "Назад" слева -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/backButton"
                 android:layout_width="wrap_content"
@@ -154,6 +145,26 @@
                 android:text="Назад"
                 app:cornerRadius="16dp"
                 style="@style/Widget.MaterialComponents.Button" />
+
+            <!-- Spacer -->
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Кнопка "Удалить" (только для установленных) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/uninstallButton"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="Удалить"
+                android:visibility="gone"
+                app:cornerRadius="16dp"
+                style="@style/Widget.MaterialComponents.Button"
+                android:backgroundTint="#E53935"
+                android:textColor="@drawable/text_color_focus"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/installButton"
@@ -165,8 +176,8 @@
                 android:text="Установить"
                 app:cornerRadius="16dp"
                 style="@style/Widget.MaterialComponents.Button"
-                android:backgroundTint="#09E490"
-                android:textColor="@android:color/black"/>
+                android:backgroundTint="@drawable/button_color_focus"
+                android:textColor="@drawable/text_color_focus"/>
 
         </LinearLayout>
 

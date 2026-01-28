@@ -49,9 +49,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private var recommendedApps: List<AppItem> = emptyList()
     private var recIndex = 0
 
-    private val bannerDelay = 30000L
-    private val RECOMMENDED_COUNT = 4
-
+    private val bannerDelay = 30_000L
 
     // ───────────────────────
     // LIFECYCLE
@@ -62,7 +60,6 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         category = arguments?.getString(ARG_CATEGORY) ?: "ALL"
 
         setupTopRow(view)
-
         setupRecommendedRow(view)
         setupAppsGrid(view)
         setupSidebarKey(view)
@@ -102,6 +99,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         recommendedAdapter = ArrayObjectAdapter(
             RecommendedAppPresenter { openAppDetails(it) }
         )
+
         recommendedGrid.apply {
             adapter = ItemBridgeAdapter(recommendedAdapter)
             setNumColumns(1)
@@ -114,17 +112,29 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         override fun run() {
             if (recommendedApps.isEmpty()) return
 
+            val count = getRecommendedCount()
             val items = mutableListOf<AppItem>()
-            repeat(RECOMMENDED_COUNT) {
+
+            repeat(count) {
                 items += recommendedApps[(recIndex + it) % recommendedApps.size]
             }
 
             recommendedAdapter.clear()
             recommendedAdapter.addAll(0, items)
 
-            recIndex = (recIndex + RECOMMENDED_COUNT) % recommendedApps.size
+            recIndex = (recIndex + count) % recommendedApps.size
             view?.postDelayed(this, bannerDelay)
         }
+    }
+
+    private fun restartRecommendedRotation() {
+        recIndex = 0
+        view?.removeCallbacks(rotationRunnable)
+        view?.post(rotationRunnable)
+    }
+
+    private fun getRecommendedCount(): Int {
+        return if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
     }
 
     // ───────────────────────
@@ -135,15 +145,17 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             val apps = repository.loadApps()
             apps.forEach { updateStatus(it) }
 
-            allAppsList = if (category == "ALL") apps else apps.filter { it.category.equals(category, true) }
+            allAppsList =
+                if (category == "ALL") apps
+                else apps.filter { it.category.equals(category, true) }
 
             adapter.clear()
             adapter.addAll(0, allAppsList)
 
-            recommendedApps = allAppsList.filter { it.featured }.ifEmpty { allAppsList }.shuffled()
-            recIndex = 0
-            view?.removeCallbacks(rotationRunnable)
-            view?.post(rotationRunnable)
+            recommendedApps =
+                allAppsList.filter { it.featured }.ifEmpty { allAppsList }.shuffled()
+
+            restartRecommendedRotation()
         }
     }
 
@@ -174,17 +186,30 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         }
 
     private fun isUpdateAvailable(app: AppItem, installed: String): Boolean {
-        val server = app.version ?: return false
-        val s = server.split(".").map { it.toIntOrNull() ?: 0 }
-        val i = installed.split(".").map { it.toIntOrNull() ?: 0 }
-        for (idx in 0 until maxOf(s.size, i.size)) {
-            val sv = s.getOrElse(idx) { 0 }
-            val iv = i.getOrElse(idx) { 0 }
-            if (sv > iv) return true
-            if (sv < iv) return false
+        val serverVersion = normalizeVersion(app.version ?: return false)
+        val installedVersion = normalizeVersion(installed)
+
+        val max = maxOf(serverVersion.size, installedVersion.size)
+
+        for (i in 0 until max) {
+            val s = serverVersion.getOrElse(i) { 0 }
+            val iV = installedVersion.getOrElse(i) { 0 }
+
+            if (s > iV) return true
+            if (s < iV) return false
         }
         return false
     }
+
+    private fun normalizeVersion(version: String): List<Int> {
+        return version
+            .replace(Regex("[^0-9.]"), "")
+            .split(".")
+            .filter { it.isNotBlank() }
+            .take(5)
+            .map { it.toIntOrNull() ?: 0 }
+    }
+
 
     // ───────────────────────
     // GRID
@@ -220,14 +245,24 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         grid.setNumColumns(cols)
     }
 
-    override fun onSidebarOpened() = updateGridColumns()
-    override fun onSidebarClosed() = updateGridColumns()
+    override fun onSidebarOpened() {
+        updateGridColumns()
+        restartRecommendedRotation()
+    }
+
+    override fun onSidebarClosed() {
+        updateGridColumns()
+        restartRecommendedRotation()
+    }
 
     // ───────────────────────
     // NAVIGATION
     // ───────────────────────
     private fun openBannerLink(url: String) {
-        startActivity(Intent(Intent.ACTION_VIEW, url.toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        startActivity(
+            Intent(Intent.ACTION_VIEW, url.toUri())
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     private fun openAppDetails(app: AppItem) {
