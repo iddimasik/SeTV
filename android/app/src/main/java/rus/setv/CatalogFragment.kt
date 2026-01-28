@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -35,20 +37,27 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             }
     }
 
+    // UI
     private lateinit var grid: VerticalGridView
     private lateinit var adapter: ArrayObjectAdapter
     private lateinit var recommendedGrid: VerticalGridView
     private lateinit var recommendedAdapter: ArrayObjectAdapter
     private lateinit var bannerCarousel: BannerCarousel
 
+    // DATA
     private val repository = AppsRepository()
-
     private var category = "ALL"
-
     private var allAppsList: List<AppItem> = emptyList()
     private var recommendedApps: List<AppItem> = emptyList()
-    private var recIndex = 0
 
+    // STATUS FILTER
+    private enum class StatusFilter {
+        ALL, INSTALLED, NOT_INSTALLED, UPDATE_AVAILABLE
+    }
+
+    private var currentStatusFilter = StatusFilter.ALL
+
+    private var recIndex = 0
     private val bannerDelay = 30_000L
 
     // ───────────────────────
@@ -61,6 +70,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
 
         setupTopRow(view)
         setupRecommendedRow(view)
+        setupStatusFilters(view)
         setupAppsGrid(view)
         setupSidebarKey(view)
 
@@ -70,6 +80,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     override fun onResume() {
         super.onResume()
         updateAllStatuses()
+        applyStatusFilter()
     }
 
     override fun onDestroyView() {
@@ -112,7 +123,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         override fun run() {
             if (recommendedApps.isEmpty()) return
 
-            val count = getRecommendedCount()
+            val count = if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
             val items = mutableListOf<AppItem>()
 
             repeat(count) {
@@ -133,12 +144,8 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         view?.post(rotationRunnable)
     }
 
-    private fun getRecommendedCount(): Int {
-        return if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
-    }
-
     // ───────────────────────
-    // LOAD APPS
+    // LOAD APPS (CATEGORY — КАК БЫЛО)
     // ───────────────────────
     private fun loadAppsFromServer() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -149,22 +156,64 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
                 if (category == "ALL") apps
                 else apps.filter { it.category.equals(category, true) }
 
-            adapter.clear()
-            adapter.addAll(0, allAppsList)
-
             recommendedApps =
                 allAppsList.filter { it.featured }.ifEmpty { allAppsList }.shuffled()
 
+            applyStatusFilter()
             restartRecommendedRotation()
         }
+    }
+
+    // ───────────────────────
+    // STATUS FILTER UI
+    // ───────────────────────
+    private fun setupStatusFilters(root: View) {
+        bindStatusFilter(root, R.id.filterStatusAll, "Все",R.drawable.ic_apps,StatusFilter.ALL)
+        bindStatusFilter(root, R.id.filterStatusInstalled, "Установлено",R.drawable.ic_installed, StatusFilter.INSTALLED)
+        bindStatusFilter(root, R.id.filterStatusNotInstalled, "Не установлено",R.drawable.ic_uninstalled, StatusFilter.NOT_INSTALLED)
+        bindStatusFilter(root, R.id.filterStatusUpdates, "Обновления",R.drawable.ic_upgrade, StatusFilter.UPDATE_AVAILABLE)
+    }
+
+    private fun bindStatusFilter(
+        root: View,
+        id: Int,
+        title: String,
+        iconRes: Int,
+        filter: StatusFilter
+    ) {
+        val btn = root.findViewById<View>(id)
+
+        btn.findViewById<TextView>(R.id.filterText).text = title
+        btn.findViewById<ImageView>(R.id.filterIcon)
+            .setImageResource(iconRes)
+
+        btn.setOnClickListener {
+            currentStatusFilter = filter
+            applyStatusFilter()
+        }
+    }
+
+
+    private fun applyStatusFilter() {
+        val filtered = when (currentStatusFilter) {
+            StatusFilter.ALL -> allAppsList
+            StatusFilter.INSTALLED ->
+                allAppsList.filter { it.status == AppStatus.INSTALLED }
+            StatusFilter.NOT_INSTALLED ->
+                allAppsList.filter { it.status == AppStatus.NOT_INSTALLED }
+            StatusFilter.UPDATE_AVAILABLE ->
+                allAppsList.filter { it.status == AppStatus.UPDATE_AVAILABLE }
+        }
+
+        adapter.clear()
+        adapter.addAll(0, filtered)
     }
 
     // ───────────────────────
     // STATUS
     // ───────────────────────
     private fun updateAllStatuses() {
-        for (i in 0 until adapter.size()) updateStatus(adapter[i] as AppItem)
-        for (i in 0 until recommendedAdapter.size()) updateStatus(recommendedAdapter[i] as AppItem)
+        allAppsList.forEach { updateStatus(it) }
         adapter.notifyArrayItemRangeChanged(0, adapter.size())
         recommendedAdapter.notifyArrayItemRangeChanged(0, recommendedAdapter.size())
     }
@@ -190,26 +239,21 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         val installedVersion = normalizeVersion(installed)
 
         val max = maxOf(serverVersion.size, installedVersion.size)
-
         for (i in 0 until max) {
             val s = serverVersion.getOrElse(i) { 0 }
             val iV = installedVersion.getOrElse(i) { 0 }
-
             if (s > iV) return true
             if (s < iV) return false
         }
         return false
     }
 
-    private fun normalizeVersion(version: String): List<Int> {
-        return version
-            .replace(Regex("[^0-9.]"), "")
+    private fun normalizeVersion(version: String): List<Int> =
+        version.replace(Regex("[^0-9.]"), "")
             .split(".")
             .filter { it.isNotBlank() }
             .take(5)
             .map { it.toIntOrNull() ?: 0 }
-    }
-
 
     // ───────────────────────
     // GRID

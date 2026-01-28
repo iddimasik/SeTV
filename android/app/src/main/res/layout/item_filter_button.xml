@@ -1,4 +1,7 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="30dp"
     android:orientation="horizontal"
@@ -7,18 +10,24 @@
     android:paddingVertical="6dp"
     android:background="?attr/selectableItemBackground"
     android:focusable="true"
+    android:focusableInTouchMode="true"
     android:clickable="true">
 
     <ImageView
         android:id="@+id/filterIcon"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_marginEnd="6dp" />
+        android:layout_marginEnd="6dp"
+        android:src="@drawable/ic_apps"
+        app:tint="@android:color/white" />
 
     <TextView
         android:id="@+id/filterText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="ALL"
         android:textColor="@android:color/white"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
 </LinearLayout>

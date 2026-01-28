@@ -33,7 +33,45 @@
             android:verticalSpacing="8dp" />
     </LinearLayout>
 
-    <!-- ───────── GRID ───────── -->
+    <!-- ───────── STATUS FILTERS ───────── -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginBottom="12dp"
+        android:focusable="false">
+
+        <LinearLayout
+            android:id="@+id/statusFiltersContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp">
+
+            <!-- ALL -->
+            <include
+                android:id="@+id/filterStatusAll"
+                layout="@layout/item_filter_button" />
+
+            <!-- INSTALLED -->
+            <include
+                android:id="@+id/filterStatusInstalled"
+                layout="@layout/item_filter_button" />
+
+            <!-- NOT INSTALLED -->
+            <include
+                android:id="@+id/filterStatusNotInstalled"
+                layout="@layout/item_filter_button" />
+
+            <!-- UPDATES -->
+            <include
+                android:id="@+id/filterStatusUpdates"
+                layout="@layout/item_filter_button" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- ───────── APPS GRID ───────── -->
     <androidx.leanback.widget.VerticalGridView
         android:id="@+id/appsGrid"
         android:layout_width="match_parent"
@@ -41,4 +79,5 @@
         android:layout_weight="1"
         android:focusable="true"
         android:focusableInTouchMode="true" />
+
 </LinearLayout>
