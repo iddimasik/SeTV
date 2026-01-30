@@ -98,8 +98,8 @@
             android:textAllCaps="false"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:backgroundTint="#09E490"
-            android:textColor="@android:color/black"/>
+            android:backgroundTint="@drawable/button_color_focus"
+            android:textColor="@drawable/text_color_focus"/>
     </LinearLayout>
 
 </LinearLayout>

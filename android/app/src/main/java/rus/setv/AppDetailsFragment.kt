@@ -250,21 +250,35 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         ApkDownloader.download(
             context = requireContext(),
             app = app,
-            onProgress = {
-                app.status = AppStatus.DOWNLOADING
-                app.progress = it
-                updateUi()
+
+            onProgress = { progressValue ->
+                runOnUi {
+                    app.status = AppStatus.DOWNLOADING
+                    app.progress = progressValue
+                    updateUi()
+                }
             },
+
             onDone = { file ->
-                app.status = AppStatus.INSTALLING
-                updateUi()
+                runOnUi {
+                    app.status = AppStatus.INSTALLING
+                    updateUi()
+                }
                 ApkInstaller.install(requireContext(), file)
             },
+
             onError = {
-                app.status = AppStatus.ERROR
-                updateUi()
+                runOnUi {
+                    app.status = AppStatus.ERROR
+                    updateUi()
+                }
             }
         )
+    }
+
+    private fun runOnUi(block: () -> Unit) {
+        if (!isAdded) return
+        requireActivity().runOnUiThread(block)
     }
 
     private fun uninstallApp(pkg: String) {

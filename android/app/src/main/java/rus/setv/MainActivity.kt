@@ -56,6 +56,9 @@ class MainActivity : AppCompatActivity() {
         val dialogView = LayoutInflater.from(this)
             .inflate(R.layout.dialog_warning, null)
 
+        val btnAccept = dialogView.findViewById<View>(R.id.btn_accept)
+        val btnCancel = dialogView.findViewById<View>(R.id.btn_cancel)
+
         val dialog = AlertDialog.Builder(
             this,
             android.R.style.Theme_DeviceDefault_Dialog_NoActionBar
@@ -64,23 +67,25 @@ class MainActivity : AppCompatActivity() {
             .setCancelable(false)
             .create()
 
-        dialogView.findViewById<View>(R.id.btn_accept).setOnClickListener {
+        btnAccept.setOnClickListener {
             prefs.edit()
                 .putBoolean(KEY_WARNING_ACCEPTED, true)
                 .apply()
             dialog.dismiss()
         }
 
-        dialogView.findViewById<View>(R.id.btn_cancel).apply {
-            setOnClickListener {
-                dialog.dismiss()
-                finishAffinity()
-            }
-            requestFocus()
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+            finishAffinity()
+        }
+
+        dialog.setOnShowListener {
+            btnCancel.requestFocus()
         }
 
         dialog.show()
     }
+
 
     fun openSidebar(force: Boolean = false) {
         if (isSidebarOpen && !force) return

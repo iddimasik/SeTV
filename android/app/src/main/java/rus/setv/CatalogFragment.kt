@@ -123,7 +123,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         override fun run() {
             if (recommendedApps.isEmpty()) return
 
-            val count = if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
+            val count = 4
             val items = mutableListOf<AppItem>()
 
             repeat(count) {
