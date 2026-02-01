@@ -145,7 +145,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     }
 
     // ───────────────────────
-    // LOAD APPS (CATEGORY — КАК БЫЛО)
+    // LOAD APPS
     // ───────────────────────
     private fun loadAppsFromServer() {
         viewLifecycleOwner.lifecycleScope.launch {

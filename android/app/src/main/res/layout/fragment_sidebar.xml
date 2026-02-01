@@ -27,21 +27,16 @@
             app:tint="@drawable/text_color_focus"
             android:duplicateParentState="true"/>
 
-        <EditText
-            android:id="@+id/search_input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:hint="Поиск"
+        <TextView
+            android:id="@+id/text_search"
+            android:layout_marginStart="16dp"
+            android:text="Поиск"
+            android:textSize="16sp"
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
-            android:textColorHint="#888888"
-            android:singleLine="true"
-            android:imeOptions="actionSearch"
-            android:background="@android:color/transparent"
-            android:focusable="true"
-            android:focusableInTouchMode="true"/>
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <!-- SPACER -->
@@ -75,8 +70,8 @@
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <!-- MOVIES -->
@@ -105,8 +100,8 @@
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <!-- PROGRAMS -->
@@ -129,14 +124,14 @@
 
         <TextView
             android:id="@+id/text_programs"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Программы"
             android:textSize="16sp"
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <!-- OTHER -->
@@ -159,17 +154,17 @@
 
         <TextView
             android:id="@+id/text_other"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Прочее"
             android:textSize="16sp"
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
-    <!-- SPACER -->
+    <!-- FILL -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -195,14 +190,14 @@
 
         <TextView
             android:id="@+id/text_update"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Обновить приложение"
             android:textSize="16sp"
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <!-- SETTINGS -->
@@ -226,13 +221,13 @@
         <TextView
             android:id="@+id/text_settings"
             android:layout_marginStart="16dp"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
             android:text="Настройки"
             android:textSize="16sp"
             android:textColor="@drawable/text_color_focus"
             android:duplicateParentState="true"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
 </LinearLayout>

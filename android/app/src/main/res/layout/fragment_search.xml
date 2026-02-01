@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#181818"
+    android:padding="24dp">
+
+    <!-- ───────── TOP ROW ───────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- SEARCH FIELD -->
+        <TextView
+            android:id="@+id/searchQuery"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:padding="12dp"
+            android:background="#252525"
+            android:focusable="false" />
+
+        <!-- KEYBOARD -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/keyboardGrid"
+            android:layout_width="450dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:overScrollMode="never"/>
+    </LinearLayout>
+
+    <!-- ───────── RESULTS GRID ───────── -->
+    <androidx.leanback.widget.VerticalGridView
+        android:id="@+id/appsGrid"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_weight="1"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+</LinearLayout>

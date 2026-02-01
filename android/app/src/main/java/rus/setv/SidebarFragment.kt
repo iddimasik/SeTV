@@ -13,6 +13,7 @@ import rus.setv.model.AppItem
 
 class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
 
+    private lateinit var searchItem: LinearLayout
     private lateinit var allAppsItem: LinearLayout
     private lateinit var moviesItem: LinearLayout
     private lateinit var programsItem: LinearLayout
@@ -20,6 +21,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     private lateinit var updateItem: LinearLayout
     private lateinit var settingsItem: LinearLayout
 
+    private lateinit var searchText: TextView
     private lateinit var allAppsText: TextView
     private lateinit var moviesText: TextView
     private lateinit var programsText: TextView
@@ -28,12 +30,13 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     private lateinit var settingsText: TextView
 
     private val repository = AppsRepository()
-
     private val UPDATE_APP_PACKAGE = "rus.setv"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // ───── ITEMS
+        searchItem = view.findViewById(R.id.menu_search)
         allAppsItem = view.findViewById(R.id.menu_apps)
         moviesItem = view.findViewById(R.id.menu_movies)
         programsItem = view.findViewById(R.id.menu_programs)
@@ -41,6 +44,8 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
         updateItem = view.findViewById(R.id.menu_update)
         settingsItem = view.findViewById(R.id.menu_settings)
 
+        // ───── TEXTS
+        searchText = view.findViewById(R.id.text_search)
         allAppsText = view.findViewById(R.id.text_apps)
         moviesText = view.findViewById(R.id.text_movies)
         programsText = view.findViewById(R.id.text_programs)
@@ -48,41 +53,29 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
         updateText = view.findViewById(R.id.text_update)
         settingsText = view.findViewById(R.id.text_settings)
 
-        // ===== Переименование пунктов =====
+        // ───── LABELS
+        searchText.text = "Поиск"
         allAppsText.text = "Все приложения"
         moviesText.text = "Фильмы и ТВ"
         programsText.text = "Программы"
         otherText.text = "Прочее"
+        updateText.text = "Обновить приложение"
+        settingsText.text = "Настройки"
 
-        setupItem(allAppsItem, allAppsText) {
-            openContent(CatalogFragment.newInstance("ALL"))
+        // ───── SETUP
+        setupItem(searchItem, searchText) { openSearch() }
+        setupItem(allAppsItem, allAppsText) { openContent(CatalogFragment.newInstance("ALL")) }
+        setupItem(moviesItem, moviesText) { openContent(CatalogFragment.newInstance("Фильмы и ТВ")) }
+        setupItem(programsItem, programsText) { openContent(CatalogFragment.newInstance("Программы")) }
+        setupItem(otherItem, otherText) { openContent(CatalogFragment.newInstance("Прочее")) }
+        setupItem(updateItem, updateText) { openUpdateApp() }
+        setupItem(settingsItem, settingsText) { /* TODO SettingsFragment */ }
+
+        if ((activity as? MainActivity)?.isSidebarOpen == true) {
+            onSidebarOpened()
         }
 
-        setupItem(moviesItem, moviesText) {
-            openContent(CatalogFragment.newInstance("Фильмы и ТВ"))
-        }
-
-        setupItem(programsItem, programsText) {
-            openContent(CatalogFragment.newInstance("Программы"))
-        }
-
-        setupItem(otherItem, otherText) {
-            openContent(CatalogFragment.newInstance("Прочее"))
-        }
-
-        setupItem(updateItem, updateText) {
-            openUpdateApp()
-        }
-
-        setupItem(settingsItem, settingsText) {
-            /* TODO SettingsFragment */
-        }
-
-        (activity as? MainActivity)?.let { main ->
-            if (main.isSidebarOpen) onSidebarOpened()
-        }
-
-        allAppsItem.requestFocus()
+        searchItem.requestFocus()
     }
 
     // ───────────────────────
@@ -96,13 +89,13 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
         }
 
         item.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                openSidebar()
-            }
+            if (hasFocus) openSidebar()
         }
 
         item.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && event.action == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
+                event.action == KeyEvent.ACTION_DOWN
+            ) {
                 closeSidebar()
                 false
             } else {
@@ -112,21 +105,30 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     }
 
     // ───────────────────────
+    // SEARCH
+    // ───────────────────────
+    private fun openSearch() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.main_container, SearchFragment())
+            .addToBackStack(null)
+            .commit()
+
+        closeSidebar()
+    }
+
+    // ───────────────────────
     // UPDATE APP
     // ───────────────────────
     private fun openUpdateApp() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val apps = repository.loadApps()
-
                 val updateApp = apps.firstOrNull {
                     it.packageName == UPDATE_APP_PACKAGE
                 }
-
                 if (updateApp != null) {
                     openAppDetails(updateApp)
                 }
-
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -137,21 +139,13 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     // SIDEBAR STATE
     // ───────────────────────
     fun onSidebarOpened() {
+        searchText.visibility = View.VISIBLE
         allAppsText.visibility = View.VISIBLE
         moviesText.visibility = View.VISIBLE
         programsText.visibility = View.VISIBLE
         otherText.visibility = View.VISIBLE
         updateText.visibility = View.VISIBLE
         settingsText.visibility = View.VISIBLE
-    }
-
-    fun onSidebarClosed() {
-        allAppsText.visibility = View.GONE
-        moviesText.visibility = View.GONE
-        programsText.visibility = View.GONE
-        otherText.visibility = View.GONE
-        updateText.visibility = View.GONE
-        settingsText.visibility = View.GONE
     }
 
     // ───────────────────────
