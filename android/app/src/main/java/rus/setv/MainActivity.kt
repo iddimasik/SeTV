@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     var isSidebarOpen = true
         private set
 
-    private val SIDEBAR_OPEN_DP = 240
+    private val SIDEBAR_OPEN_DP = 200
     private val SIDEBAR_CLOSED_DP = 60
 
     private val PREFS_NAME = "app_prefs"

@@ -76,7 +76,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
                             android:textColor="#B0B0B0"
-                            android:text="Version" />
+                            android:text="Версия" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -97,7 +97,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
                             android:textColor="#B0B0B0"
-                            android:text="Size" />
+                            android:text="Размер" />
                     </LinearLayout>
 
                 </LinearLayout>

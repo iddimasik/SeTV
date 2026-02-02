@@ -9,7 +9,7 @@
     <!-- SIDEBAR -->
     <FrameLayout
         android:id="@+id/sidebar_container"
-        android:layout_width="240dp"
+        android:layout_width="200dp"
         android:layout_height="match_parent" />
 
     <!-- CONTENT -->

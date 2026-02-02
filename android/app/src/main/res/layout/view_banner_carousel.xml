@@ -8,13 +8,10 @@
     android:clipToPadding="false"
     android:padding="10dp"
 
-
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:background="@drawable/card_focus_background">
 
-
-    <!-- Контейнер для фокуса и подсветки -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContainer"
         android:layout_width="match_parent"

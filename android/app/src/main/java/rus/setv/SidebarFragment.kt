@@ -60,7 +60,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
         programsText.text = "Программы"
         otherText.text = "Прочее"
         updateText.text = "Обновить приложение"
-        settingsText.text = "Настройки"
+        settingsText.text = "О приложении"
 
         // ───── SETUP
         setupItem(searchItem, searchText) { openSearch() }
