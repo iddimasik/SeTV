@@ -109,6 +109,14 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         requireContext().unregisterReceiver(packageReceiver)
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        backButton.post {
+            backButton.requestFocus()
+        }
+    }
+
     // ───────────────────────
     // BIND
     // ───────────────────────
@@ -131,10 +139,6 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         }
 
         updateUi()
-
-        installButton.post {
-            installButton.requestFocus()
-        }
     }
 
     // ───────────────────────

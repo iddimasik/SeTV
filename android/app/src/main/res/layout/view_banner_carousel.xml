@@ -25,8 +25,8 @@
         app:cardCornerRadius="12dp"
         app:cardUseCompatPadding="false"
         app:cardPreventCornerOverlap="true"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp">
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp">
 
         <ImageView
             android:id="@+id/bannerImage"

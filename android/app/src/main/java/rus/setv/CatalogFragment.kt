@@ -81,6 +81,10 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         super.onResume()
         updateAllStatuses()
         applyStatusFilter()
+
+        bannerCarousel.post {
+            bannerCarousel.requestFocus()
+        }
     }
 
     override fun onDestroyView() {
@@ -132,6 +136,12 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
 
             recommendedAdapter.clear()
             recommendedAdapter.addAll(0, items)
+
+            recommendedGrid.post {
+                if (recommendedAdapter.size() > 0) {
+                    recommendedGrid.setSelectedPosition(0)
+                }
+            }
 
             recIndex = (recIndex + count) % recommendedApps.size
             view?.postDelayed(this, bannerDelay)
@@ -207,6 +217,14 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
 
         adapter.clear()
         adapter.addAll(0, filtered)
+
+        grid.post {
+            if (adapter.size() > 0) {
+                grid.setSelectedPosition(0)
+            } else {
+                grid.clearFocus()
+            }
+        }
     }
 
     // ───────────────────────

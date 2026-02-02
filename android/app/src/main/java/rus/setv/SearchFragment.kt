@@ -43,6 +43,12 @@ class SearchFragment : Fragment(R.layout.fragment_search),
     enum class KeyboardLang { RU, EN }
     enum class KeyboardMode { LETTERS, NUMBERS }
 
+    companion object {
+        private const val STATE_QUERY = "state_query"
+        private const val STATE_LANG = "state_lang"
+        private const val STATE_MODE = "state_mode"
+    }
+
     // ─────────────────────────────
     // VIEW
     // ─────────────────────────────
@@ -53,9 +59,13 @@ class SearchFragment : Fragment(R.layout.fragment_search),
         appsGrid = view.findViewById(R.id.appsGrid)
         keyboardGrid = view.findViewById(R.id.keyboardGrid)
 
+        restoreState(savedInstanceState)
+
         setupAppsGrid()
         setupKeyboard()
         loadApps()
+
+        queryView.text = query.toString()
 
         view.isFocusableInTouchMode = true
         view.requestFocus()
@@ -66,8 +76,46 @@ class SearchFragment : Fragment(R.layout.fragment_search),
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        keyboardGrid.post {
+            keyboardGrid.findViewHolderForAdapterPosition(0)
+                ?.itemView
+                ?.requestFocus()
+        }
+    }
+
     // ─────────────────────────────
-    // APPS GRID (КАК В CATALOG)
+    // SAVE / RESTORE STATE
+    // ─────────────────────────────
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putString(STATE_QUERY, query.toString())
+        outState.putString(STATE_LANG, currentLang.name)
+        outState.putString(STATE_MODE, keyboardMode.name)
+    }
+
+    private fun restoreState(savedInstanceState: Bundle?) {
+        savedInstanceState ?: return
+
+        savedInstanceState.getString(STATE_QUERY)?.let {
+            query.clear()
+            query.append(it)
+        }
+
+        savedInstanceState.getString(STATE_LANG)?.let {
+            currentLang = KeyboardLang.valueOf(it)
+        }
+
+        savedInstanceState.getString(STATE_MODE)?.let {
+            keyboardMode = KeyboardMode.valueOf(it)
+        }
+    }
+
+    // ─────────────────────────────
+    // APPS GRID
     // ─────────────────────────────
     private fun setupAppsGrid() {
         appsAdapter = ArrayObjectAdapter(
@@ -130,8 +178,7 @@ class SearchFragment : Fragment(R.layout.fragment_search),
                 override fun getSpanSize(position: Int): Int {
                     val key = keyboardAdapter.getKey(position)
                     return when (key) {
-                        "␣" -> 2
-                        "⌫", "🌐", "123", "ABC" -> 2
+                        "␣", "⌫", "🌐", "123", "ABC" -> 2
                         "Z" -> 7
                         else -> 1
                     }
@@ -192,7 +239,6 @@ class SearchFragment : Fragment(R.layout.fragment_search),
     // ─────────────────────────────
     private fun buildKeyboard(): List<String> =
         when (keyboardMode) {
-
             KeyboardMode.LETTERS ->
                 when (currentLang) {
                     KeyboardLang.RU -> listOf(

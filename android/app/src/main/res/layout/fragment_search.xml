@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#181818"
-    android:padding="24dp">
+    android:padding="28dp">
 
     <!-- ───────── TOP ROW ───────── -->
     <LinearLayout
@@ -14,16 +14,23 @@
         android:orientation="horizontal">
 
         <!-- SEARCH FIELD -->
-        <TextView
-            android:id="@+id/searchQuery"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="22sp"
-            android:textColor="#FFFFFF"
-            android:padding="12dp"
-            android:background="#252525"
-            android:focusable="false" />
+            android:layout_marginTop="6dp"
+            android:hint="Введите для поиска"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchQuery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textColor="#FFFFFF"
+                android:focusable="false"
+                android:inputType="text"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- KEYBOARD -->
         <androidx.recyclerview.widget.RecyclerView
@@ -34,12 +41,26 @@
             android:overScrollMode="never"/>
     </LinearLayout>
 
+    <!-- ───────── TITLE ───────── -->
+    <TextView
+        android:id="@+id/searchResultsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Найденные приложения"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:focusable="false"
+        android:importantForAccessibility="no"
+        android:layout_marginStart="12dp"/>
+
     <!-- ───────── RESULTS GRID ───────── -->
     <androidx.leanback.widget.VerticalGridView
         android:id="@+id/appsGrid"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="4dp"
         android:layout_weight="1"
         android:focusable="true"
         android:focusableInTouchMode="true"/>
