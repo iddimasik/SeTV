@@ -133,7 +133,6 @@ class SearchFragment : Fragment(R.layout.fragment_search),
                         "␣" -> 2
                         "⌫", "🌐", "123", "ABC" -> 2
                         "Z" -> 7
-                        "'" -> 8
                         else -> 1
                     }
                 }
@@ -216,7 +215,7 @@ class SearchFragment : Fragment(R.layout.fragment_search),
             KeyboardMode.NUMBERS -> listOf(
                 "1","2","3","4","5","6","7","8",
                 "9","0","-","_","+",
-                ".",",",":","'",
+                ".",",",":",
                 "ABC","␣","⌫"
             )
         }
