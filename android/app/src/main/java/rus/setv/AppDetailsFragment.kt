@@ -40,6 +40,10 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     private lateinit var backButton: MaterialButton
 
     private val httpClient = OkHttpClient()
+
+    private val isSelfApp: Boolean
+        get() = app.packageName == requireContext().packageName
+
     // ───────────────────────
     // RECEIVER
     // ───────────────────────
@@ -61,6 +65,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
             updateUi()
         }
     }
+
     // ───────────────────────
     // LIFECYCLE
     // ───────────────────────
@@ -131,6 +136,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
             installButton.requestFocus()
         }
     }
+
     // ───────────────────────
     // APK SIZE
     // ───────────────────────
@@ -176,6 +182,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         val mb = bytes / (1024.0 * 1024.0)
         return if (mb < 1024) "${df.format(mb)} MB" else "${df.format(mb / 1024)} GB"
     }
+
     // ───────────────────────
     // UI
     // ───────────────────────
@@ -186,6 +193,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         status.text = ""
 
         val installed = isAppInstalled(app.packageName)
+        val hasUpdate = isUpdateAvailable()
 
         when (app.status) {
             AppStatus.DOWNLOADING -> {
@@ -208,27 +216,46 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
             AppStatus.ERROR -> {
                 status.text = "Ошибка загрузки"
                 installButton.isEnabled = true
-                uninstallButton.visibility = if (installed) View.VISIBLE else View.GONE
+                uninstallButton.visibility =
+                    if (installed && !isSelfApp) View.VISIBLE else View.GONE
             }
 
             else -> {
                 installButton.isEnabled = true
-                uninstallButton.visibility = if (installed) View.VISIBLE else View.GONE
+                uninstallButton.visibility =
+                    if (installed && !isSelfApp) View.VISIBLE else View.GONE
             }
         }
 
+        // ───── SPECIAL CASE: rus.setv ─────
+        if (isSelfApp) {
+            uninstallButton.visibility = View.GONE
+
+            if (hasUpdate) {
+                installButton.visibility = View.VISIBLE
+                installButton.text = "Обновить"
+            } else {
+                installButton.visibility = View.GONE
+            }
+            return
+        }
+
+        // ───── NORMAL APPS ─────
+        installButton.visibility = View.VISIBLE
         installButton.text = when {
             !installed -> "Установить"
-            isUpdateAvailable() -> "Обновить"
+            hasUpdate -> "Обновить"
             else -> "Открыть"
         }
     }
+
     // ───────────────────────
     // BUTTONS
     // ───────────────────────
     private fun setupButtons() {
         installButton.setOnClickListener {
             when {
+                isSelfApp && isUpdateAvailable() -> startDownloadAndInstall()
                 !isAppInstalled(app.packageName) -> startDownloadAndInstall()
                 isUpdateAvailable() -> startDownloadAndInstall()
                 else -> openApp(app.packageName)
@@ -243,6 +270,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
             parentFragmentManager.popBackStack()
         }
     }
+
     // ───────────────────────
     // INSTALL
     // ───────────────────────
