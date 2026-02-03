@@ -69,7 +69,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
         setupItem(programsItem, programsText) { openContent(CatalogFragment.newInstance("Программы")) }
         setupItem(otherItem, otherText) { openContent(CatalogFragment.newInstance("Прочее")) }
         setupItem(updateItem, updateText) { openUpdateApp() }
-        setupItem(settingsItem, settingsText) { /* TODO SettingsFragment */ }
+        setupItem(settingsItem, settingsText) { openSettings() }
 
         if ((activity as? MainActivity)?.isSidebarOpen == true) {
             onSidebarOpened()
@@ -114,6 +114,16 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
             .commit()
 
         closeSidebar()
+    }
+
+    // ───────────────────────
+    // SETTINGS
+    // ───────────────────────
+    private fun openSettings() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.main_container, SettingsFragment())
+            .addToBackStack(null)
+            .commit()
     }
 
     // ───────────────────────
