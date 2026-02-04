@@ -45,7 +45,7 @@
         android:layout_marginEnd="3dp">
 
         <LinearLayout
-            android:layout_width="186dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="6dp">
@@ -63,9 +63,10 @@
                     android:scaleType="centerCrop" />
 
                 <LinearLayout
-                    android:layout_width="117dp"
-                    android:layout_height="48dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
@@ -93,14 +94,14 @@
             <!-- DESCRIPTION -->
             <TextView
                 android:id="@+id/content_text"
-                android:layout_width="175dp"
-                android:layout_height="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:ellipsize="start"
-                android:includeFontPadding="false"
                 android:maxLines="3"
+                android:ellipsize="end"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
+
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
