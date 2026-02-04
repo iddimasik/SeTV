@@ -18,10 +18,10 @@
     <!-- ===== STATUS ICON BADGE ===== -->
     <ImageView
         android:id="@+id/status_badge"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_gravity="top|end"
-        android:layout_margin="1dp"
+        android:layout_margin="3dp"
         android:visibility="gone"
         android:contentDescription="Status Icon"
         android:elevation="8dp"/>
@@ -70,13 +70,13 @@
 
                     <TextView
                         android:id="@+id/title_text"
-                        android:layout_width="116dp"
+                        android:layout_width="97dp"
                         android:layout_height="24dp"
-                        android:maxLines="1"
                         android:ellipsize="end"
                         android:includeFontPadding="false"
+                        android:maxLines="1"
                         android:textColor="@android:color/white"
-                        android:textSize="14sp" />
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/category_text"
@@ -86,7 +86,7 @@
                         android:ellipsize="end"
                         android:includeFontPadding="false"
                         android:textColor="#AAAAAA"
-                        android:textSize="12sp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -95,12 +95,12 @@
                 android:id="@+id/content_text"
                 android:layout_width="175dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="4dp"
                 android:ellipsize="start"
                 android:includeFontPadding="false"
                 android:maxLines="3"
                 android:textColor="#FFFFFF"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

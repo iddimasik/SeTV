@@ -159,19 +159,47 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // ───────────────────────
     private fun loadAppsFromServer() {
         viewLifecycleOwner.lifecycleScope.launch {
-            val apps = repository.loadApps()
-            apps.forEach { updateStatus(it) }
 
-            allAppsList =
-                if (category == "ALL") apps
-                else apps.filter { it.category.equals(category, true) }
+            repository.loadApps()
+                .onSuccess { apps ->
 
-            recommendedApps =
-                allAppsList.filter { it.featured }.ifEmpty { allAppsList }.shuffled()
+                    apps.forEach { updateStatus(it) }
 
-            applyStatusFilter()
-            restartRecommendedRotation()
+                    allAppsList =
+                        if (category == "ALL") apps
+                        else apps.filter { it.category.equals(category, true) }
+
+                    recommendedApps =
+                        allAppsList.filter { it.featured }
+                            .ifEmpty { allAppsList }
+                            .shuffled()
+
+                    applyStatusFilter()
+                    restartRecommendedRotation()
+                }
+                .onFailure { e ->
+                    handleLoadError(e)
+                }
         }
+    }
+
+    private fun handleLoadError(e: Throwable) {
+        when (e) {
+            is java.net.SocketTimeoutException ->
+                showError("Сервер не отвечает")
+
+            is java.io.IOException ->
+                showError("Нет подключения к интернету")
+
+            else ->
+                showError("Ошибка загрузки приложений")
+        }
+    }
+
+    private fun showError(message: String) {
+        android.widget.Toast
+            .makeText(requireContext(), message, android.widget.Toast.LENGTH_LONG)
+            .show()
     }
 
     // ───────────────────────

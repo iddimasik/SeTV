@@ -147,9 +147,35 @@ class SearchFragment : Fragment(R.layout.fragment_search),
     // ─────────────────────────────
     private fun loadApps() {
         viewLifecycleOwner.lifecycleScope.launch {
-            allApps = repository.loadApps()
-            updateResults()
+
+            repository.loadApps()
+                .onSuccess { apps ->
+                    allApps = apps
+                    updateResults()
+                }
+                .onFailure { e ->
+                    handleLoadError(e)
+                }
         }
+    }
+
+    private fun handleLoadError(e: Throwable) {
+        when (e) {
+            is java.net.SocketTimeoutException ->
+                showError("Сервер не отвечает")
+
+            is java.io.IOException ->
+                showError("Нет подключения к интернету")
+
+            else ->
+                showError("Ошибка загрузки приложений")
+        }
+    }
+
+    private fun showError(message: String) {
+        android.widget.Toast
+            .makeText(requireContext(), message, android.widget.Toast.LENGTH_LONG)
+            .show()
     }
 
     private fun updateResults() {

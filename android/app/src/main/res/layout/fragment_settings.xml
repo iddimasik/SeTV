@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:text="SETV"
             android:textColor="@android:color/white"
-            android:textSize="26sp"
+            android:textSize="28sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
 
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:text="Версия 1.0.0"
             android:textColor="@android:color/darker_gray"
-            android:textSize="16sp" />
+            android:textSize="18sp" />
 
     </LinearLayout>
 

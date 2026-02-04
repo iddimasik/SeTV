@@ -131,18 +131,42 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     // ───────────────────────
     private fun openUpdateApp() {
         viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val apps = repository.loadApps()
-                val updateApp = apps.firstOrNull {
-                    it.packageName == UPDATE_APP_PACKAGE
+
+            repository.loadApps()
+                .onSuccess { apps ->
+                    val updateApp = apps.firstOrNull {
+                        it.packageName == UPDATE_APP_PACKAGE
+                    }
+
+                    if (updateApp != null) {
+                        openAppDetails(updateApp)
+                    } else {
+                        showError("Обновление не найдено")
+                    }
                 }
-                if (updateApp != null) {
-                    openAppDetails(updateApp)
+                .onFailure { e ->
+                    handleLoadError(e)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
         }
+    }
+
+    private fun handleLoadError(e: Throwable) {
+        when (e) {
+            is java.net.SocketTimeoutException ->
+                showError("Сервер не отвечает")
+
+            is java.io.IOException ->
+                showError("Нет подключения к интернету")
+
+            else ->
+                showError("Ошибка загрузки данных")
+        }
+    }
+
+    private fun showError(message: String) {
+        android.widget.Toast
+            .makeText(requireContext(), message, android.widget.Toast.LENGTH_LONG)
+            .show()
     }
 
     // ───────────────────────
