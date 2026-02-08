@@ -3,12 +3,14 @@ import axios, {
     AxiosResponse,
     AxiosHeaders,
 } from "axios";
-import { App } from "../types/app";
+import { App, AppRequest } from "../types/app";
 import { getToken, logout } from "../store/auth";
 
 const api: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
 });
+
+/* ================= INTERCEPTORS ================= */
 
 api.interceptors.request.use(
     (config) => {
@@ -24,10 +26,8 @@ api.interceptors.request.use(
             config.headers = new AxiosHeaders();
         }
 
-        config.headers.set(
-            "Authorization",
-            `Bearer ${token}`
-        );
+        config.headers.set("Authorization", `Bearer ${token}`);
+        config.headers.set("Content-Type", "application/json");
 
         return config;
     },
@@ -48,17 +48,31 @@ api.interceptors.response.use(
     }
 );
 
+/* ================= API ================= */
+
 export const getApps = () =>
     api.get<App[]>("/apps");
 
 export const getApp = (id: string) =>
     api.get<App>(`/apps/${id}`);
 
-export const createApp = (data: App) =>
-    api.post<App>("/apps", data);
+/* ================= CREATE ================= */
 
-export const updateApp = (id: string, data: App) =>
-    api.put<App>(`/apps/${id}`, data);
+export const createApp = (data: AppRequest) =>
+    api.post<App>("/apps", {
+        ...data,
+        images: data.images ?? [],
+    });
+
+/* ================= UPDATE ================= */
+
+export const updateApp = (id: string, data: AppRequest) =>
+    api.put<App>(`/apps/${id}`, {
+        ...data,
+        images: data.images ?? [],
+    });
+
+/* ================= DELETE ================= */
 
 export const deleteApp = (id: string) =>
     api.delete<void>(`/apps/${id}`);

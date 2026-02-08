@@ -1,7 +1,6 @@
 import React, {JSX} from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
-import AppDetails from "./pages/AppDetails";
 import AppForm from "./components/AppForm";
 import LoginPage from "./pages/LoginPage";
 import { isAuthenticated } from "./store/auth";
@@ -39,15 +38,6 @@ const App: React.FC = () => {
                     element={
                         <PrivateRoute>
                             <AppForm />
-                        </PrivateRoute>
-                    }
-                />
-
-                <Route
-                    path="/details/:id"
-                    element={
-                        <PrivateRoute>
-                            <AppDetails />
                         </PrivateRoute>
                     }
                 />

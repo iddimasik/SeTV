@@ -1,34 +1,83 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getApp, createApp, updateApp } from "../api/appApi";
-import { App } from "../types/app";
+import { AppRequest, AppImage } from "../types/app";
+import {
+    generateLocalId,
+    parseApk,
+    uploadImages,
+    buildAppPayload,
+} from "../utils/appFormHelpers";
+
+import {
+    DndContext,
+    closestCenter,
+    DragEndEvent,
+} from "@dnd-kit/core";
+
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+    arrayMove,
+} from "@dnd-kit/sortable";
+
+import SortableImageItem from "../components/SortableImageItem";
+
 import "./AppForm.css";
 
 const AppForm: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState<App>({
+    const [formData, setFormData] = useState<AppRequest>({
         name: "",
         packageName: "",
         version: "",
         description: "",
         iconUrl: "",
-        bannerUrl: "",
         apkUrl: "",
         category: "",
         status: "ACTIVE",
         featured: false,
+        images: [],
     });
 
+    const [images, setImages] = useState<(AppImage & { localId: string })[]>([]);
     const [apkFile, setApkFile] = useState<File | null>(null);
     const [loadingApk, setLoadingApk] = useState(false);
+    const [loadingImages, setLoadingImages] = useState(false);
+
+    /* ================= load app ================= */
 
     useEffect(() => {
-        if (id) {
-            getApp(id).then((res) => setFormData(res.data));
-        }
+        if (!id) return;
+
+        getApp(id).then((res) => {
+            const app = res.data;
+
+            setFormData({
+                name: app.name,
+                packageName: app.packageName,
+                version: app.version ?? "",
+                description: app.description ?? "",
+                iconUrl: app.iconUrl ?? "",
+                apkUrl: app.apkUrl ?? "",
+                category: app.category ?? "",
+                status: app.status,
+                featured: app.featured,
+                images: [],
+            });
+
+            setImages(
+                (app.images ?? []).map((img: AppImage) => ({
+                    ...img,
+                    localId: generateLocalId(),
+                }))
+            );
+        });
     }, [id]);
+
+    /* ================= form ================= */
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -49,10 +98,12 @@ const AppForm: React.FC = () => {
         e.preventDefault();
 
         try {
+            const payload = buildAppPayload(formData, images);
+
             if (id) {
-                await updateApp(id, formData);
+                await updateApp(id, payload);
             } else {
-                await createApp(formData);
+                await createApp(payload);
             }
 
             navigate("/");
@@ -62,39 +113,20 @@ const AppForm: React.FC = () => {
         }
     };
 
+    /* ================= APK ================= */
+
     const handleApkSelect = async (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
-        if (!e.target.files || e.target.files.length === 0) return;
+        if (!e.target.files?.length) return;
 
         const file = e.target.files[0];
         setApkFile(file);
 
-        const formDataUpload = new FormData();
-        formDataUpload.append("file", file);
-
-        const token = localStorage.getItem("token");
-
         try {
             setLoadingApk(true);
 
-            const res = await fetch(
-                `${import.meta.env.VITE_API_URL}/apps/parse-apk`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: formDataUpload,
-                }
-            );
-
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || "Ошибка парсинга APK");
-            }
-
-            const data = await res.json();
+            const data = await parseApk(file);
 
             setFormData((prev) => ({
                 ...prev,
@@ -104,33 +136,67 @@ const AppForm: React.FC = () => {
                 apkUrl: data.apkUrl,
                 iconUrl: data.iconUrl ?? "",
             }));
-        } catch (err) {
-            console.error("APK parse error:", err);
+        } catch {
             alert("Не удалось распарсить APK");
         } finally {
             setLoadingApk(false);
         }
     };
 
+    /* ================= images ================= */
+
+    const handleImageSelect = async (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        if (!e.target.files) return;
+
+        setLoadingImages(true);
+
+        try {
+            const uploaded = await uploadImages(Array.from(e.target.files));
+            setImages((prev) => [...prev, ...uploaded]);
+        } catch {
+            alert("Ошибка загрузки изображений");
+        } finally {
+            setLoadingImages(false);
+        }
+    };
+
+    const handleRemoveImage = (localId: string) => {
+        setImages((prev) => prev.filter((i) => i.localId !== localId));
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (!over || active.id === over.id) return;
+
+        setImages((prev) => {
+            const oldIndex = prev.findIndex(
+                (i) => i.localId === active.id
+            );
+            const newIndex = prev.findIndex(
+                (i) => i.localId === over.id
+            );
+
+            return arrayMove(prev, oldIndex, newIndex);
+        });
+    };
+
+    /* ================= render ================= */
+
     return (
         <div className="form-container">
             <div className="form-box">
                 <h2 className="form-title">
-                    {id
-                        ? "Редактировать приложение"
-                        : "Добавить новое приложение"}
+                    {id ? "Редактировать приложение" : "Добавить приложение"}
                 </h2>
 
                 <div className="file-upload">
                     <span className="file-title">APK файл</span>
-
-                    <label
-                        htmlFor="apk-input"
-                        className="file-upload-label"
-                    >
+                    <label htmlFor="apk-input" className="file-upload-label">
                         Загрузить APK
                     </label>
-
                     <input
                         id="apk-input"
                         type="file"
@@ -138,23 +204,15 @@ const AppForm: React.FC = () => {
                         onChange={handleApkSelect}
                         hidden
                     />
-
-                    {apkFile && (
-                        <div className="file-name">
-                            {apkFile.name}
-                        </div>
-                    )}
-
+                    {apkFile && <div className="file-name">{apkFile.name}</div>}
                     {loadingApk && (
-                        <div className="file-loading">
-                            Парсинг APK...
-                        </div>
+                        <div className="file-loading">Парсинг APK...</div>
                     )}
                 </div>
 
                 <form onSubmit={handleSubmit} className="form">
                     <label>
-                        Название приложения
+                        Название
                         <input
                             type="text"
                             name="name"
@@ -165,7 +223,7 @@ const AppForm: React.FC = () => {
                     </label>
 
                     <label>
-                        Пакет (Package Name)
+                        Package
                         <input
                             type="text"
                             name="packageName"
@@ -196,17 +254,52 @@ const AppForm: React.FC = () => {
                     </label>
 
                     {formData.iconUrl && (
-                        <div className="icon-preview">
-                            <span className="icon-preview-title">
-                                Иконка приложения
-                            </span>
-                            <img
-                                src={formData.iconUrl}
-                                alt="App icon"
-                                className="icon-preview-image"
-                            />
-                        </div>
+                        <img
+                            src={formData.iconUrl}
+                            className="icon-preview-image"
+                        />
                     )}
+
+                    {/* screenshots */}
+                    <div className="file-upload">
+                        <span className="file-title">Изображения</span>
+                        <label
+                            htmlFor="images-input"
+                            className="file-upload-label"
+                        >
+                            Загрузить изображение
+                        </label>
+                        <input
+                            id="images-input"
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImageSelect}
+                            hidden
+                        />
+
+                        {loadingImages && <div>Загрузка...</div>}
+
+                        <DndContext
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={images.map((i) => i.localId)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                <div className="images-preview-container">
+                                    {images.map((img) => (
+                                        <SortableImageItem
+                                            key={img.localId}
+                                            image={img}
+                                            onRemove={handleRemoveImage}
+                                        />
+                                    ))}
+                                </div>
+                            </SortableContext>
+                        </DndContext>
+                    </div>
 
                     <label>
                         Категория
@@ -214,9 +307,8 @@ const AppForm: React.FC = () => {
                             name="category"
                             value={formData.category}
                             onChange={handleChange}
-                            required
                         >
-                            <option value="">Выберите категорию</option>
+                            <option value="">Выбрать</option>
                             <option value="Фильмы и ТВ">Фильмы и ТВ</option>
                             <option value="Программы">Программы</option>
                             <option value="Прочее">Прочее</option>
@@ -250,12 +342,12 @@ const AppForm: React.FC = () => {
                             onChange={handleChange}
                         >
                             <option value="ACTIVE">Активно</option>
-                            <option value="HIDDEN">Неактивно</option>
+                            <option value="HIDDEN">Скрыто</option>
                         </select>
                     </label>
 
                     <button type="submit" className="submit-button">
-                        {id ? "Обновить приложение" : "Добавить приложение"}
+                        {id ? "Обновить" : "Создать"}
                     </button>
                 </form>
             </div>

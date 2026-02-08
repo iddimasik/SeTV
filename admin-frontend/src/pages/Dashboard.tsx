@@ -9,10 +9,17 @@ const Dashboard: React.FC = () => {
             <div className="dashboard-box">
                 <div className="dashboard-header">
                     <h1 className="dashboard-title">Панель управления</h1>
+                    <p className="dashboard-subtitle">
+                        Управление приложениями Android TV
+                    </p>
                 </div>
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <Link to="/create" className="add-button">Добавить приложение</Link>
+
+                <div className="dashboard-actions">
+                    <Link to="/create" className="add-button">
+                        + Добавить приложение
+                    </Link>
                 </div>
+
                 <AppList />
             </div>
         </div>

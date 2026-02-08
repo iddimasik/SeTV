@@ -24,14 +24,15 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/market
       SPRING_DATASOURCE_USERNAME: market_user
       SPRING_DATASOURCE_PASSWORD: market_pass
+
       JWT_SECRET: K3r9vP0sLxA7mQ8N2B6R5ZCwYH1FJdEe
 
+      APP_BASE_URL: http://109.69.21.17:8080
       APP_APK_STORAGE_PATH: storage/apk
       APP_ICON_STORAGE_PATH: storage/icons
-
+      APP_IMAGES_STORAGE_PATH: storage/images
     volumes:
       - ./storage:/app/storage
-
     expose:
       - "8080"
 
@@ -50,9 +51,7 @@ services:
       - "8080:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-
       - ./storage:/storage:ro
-
     depends_on:
       - backend
       - frontend
