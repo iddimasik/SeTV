@@ -97,7 +97,8 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
                 event.action == KeyEvent.ACTION_DOWN
             ) {
                 closeSidebar()
-                false
+                transferFocusToBanner()
+                true
             } else {
                 false
             }
@@ -205,5 +206,13 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
 
     private fun closeSidebar() {
         (activity as? MainActivity)?.closeSidebar()
+    }
+
+    private fun transferFocusToBanner() {
+        val mainContainer = requireActivity().findViewById<View>(R.id.main_container)
+        val banner = mainContainer?.findViewById<View>(R.id.bannerCarousel)
+        banner?.post {
+            banner.requestFocus()
+        }
     }
 }
