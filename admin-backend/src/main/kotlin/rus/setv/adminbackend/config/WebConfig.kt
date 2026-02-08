@@ -9,7 +9,14 @@ import java.nio.file.Paths
 class WebConfig : WebMvcConfigurer {
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
+
         val apkDir = Paths.get("storage/apk")
+            .toAbsolutePath()
+            .normalize()
+            .toUri()
+            .toString()
+
+        val imagesDir = Paths.get("storage/images")
             .toAbsolutePath()
             .normalize()
             .toUri()
@@ -17,5 +24,8 @@ class WebConfig : WebMvcConfigurer {
 
         registry.addResourceHandler("/files/apk/**")
             .addResourceLocations(apkDir)
+
+        registry.addResourceHandler("/files/images/**")
+            .addResourceLocations(imagesDir)
     }
 }

@@ -16,19 +16,24 @@ data class AppDto(
     val category: String?,
     val status: AppStatus,
     val featured: Boolean,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
+    val images: List<AppImageDto>
 )
 
-fun AppEntity.toDto() = AppDto(
-    id,
-    name,
-    packageName,
-    version,
-    description,
-    iconUrl,
-    apkUrl,
-    category,
-    status,
-    featured,
-    updatedAt
-)
+fun AppEntity.toDto(
+    images: List<AppImageDto> = emptyList()
+): AppDto =
+    AppDto(
+        id = id,
+        name = name,
+        packageName = packageName,
+        version = version,
+        description = description,
+        iconUrl = iconUrl,
+        apkUrl = apkUrl,
+        category = category,
+        status = status,
+        featured = featured,
+        updatedAt = updatedAt,
+        images = images
+    )

@@ -11,5 +11,6 @@ data class AppRequest(
     val apkUrl: String?,
     val category: String?,
     val status: AppStatus,
-    val featured: Boolean
+    val featured: Boolean,
+    val images: List<AppImageDto> = emptyList()
 )

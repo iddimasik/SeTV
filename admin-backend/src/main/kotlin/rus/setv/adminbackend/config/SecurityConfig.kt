@@ -30,6 +30,8 @@ class SecurityConfig(
 
             .authorizeHttpRequests {
 
+                it.requestMatchers("/files/**").permitAll()
+
                 it.requestMatchers("/api/public/**").permitAll()
 
                 it.requestMatchers("/api/auth/**").permitAll()

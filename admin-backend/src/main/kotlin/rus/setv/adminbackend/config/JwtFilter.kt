@@ -23,7 +23,8 @@ class JwtFilter(
 
         if (
             path.startsWith("/api/public") ||
-            path.startsWith("/api/auth")
+            path.startsWith("/api/auth") ||
+            path.startsWith("/files/")
         ) {
             filterChain.doFilter(request, response)
             return

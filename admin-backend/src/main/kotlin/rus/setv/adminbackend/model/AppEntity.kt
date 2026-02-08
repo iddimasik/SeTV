@@ -33,5 +33,22 @@ class AppEntity(
 
     var featured: Boolean = false,
 
-    var updatedAt: LocalDateTime = LocalDateTime.now()
-)
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
+
+    @OneToMany(
+        mappedBy = "app",
+        fetch = FetchType.LAZY
+    )
+    @OrderBy("sortOrder ASC")
+    val images: MutableList<AppImageEntity> = mutableListOf()
+) {
+
+    fun clearImages() {
+        images.clear()
+    }
+
+    fun addImage(image: AppImageEntity) {
+        images.add(image)
+        image.app = this
+    }
+}
