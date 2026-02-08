@@ -44,6 +44,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private lateinit var recommendedAdapter: ArrayObjectAdapter
     private lateinit var bannerCarousel: BannerCarousel
     private lateinit var topRow: View
+    private lateinit var filtersScrollView: View
 
     private lateinit var filterAll: View
     private lateinit var filterInstalled: View
@@ -76,6 +77,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         category = arguments?.getString(ARG_CATEGORY) ?: "ALL"
 
         topRow = view.findViewById(R.id.topRow)
+        filtersScrollView = view.findViewById(R.id.filtersScrollView)
 
         setupTopRow(view)
         setupRecommendedRow(view)
@@ -398,8 +400,8 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         if (topRow.visibility == View.VISIBLE) {
             topRow.animate()
                 .alpha(0f)
-                .translationY(-topRow.height.toFloat())
-                .setDuration(300)
+                .scaleY(0f)
+                .setDuration(150)
                 .withEndAction {
                     topRow.visibility = View.GONE
                 }
@@ -410,10 +412,13 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private fun showTopRow() {
         if (topRow.visibility != View.VISIBLE) {
             topRow.visibility = View.VISIBLE
+            topRow.scaleY = 0f
+            topRow.alpha = 0f
+
             topRow.animate()
                 .alpha(1f)
-                .translationY(0f)
-                .setDuration(300)
+                .scaleY(1f)
+                .setDuration(150)
                 .start()
         }
     }

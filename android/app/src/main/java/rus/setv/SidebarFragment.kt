@@ -64,7 +64,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
 
         // ───── SETUP
         setupItem(searchItem, searchText) { openSearch() }
-        setupItem(allAppsItem, allAppsText) { openContent(CatalogFragment.newInstance("ALL")) }
+        setupItemKeepSidebarOpen(allAppsItem, allAppsText) { openContent(CatalogFragment.newInstance("ALL")) }
         setupItem(moviesItem, moviesText) { openContent(CatalogFragment.newInstance("Фильмы и ТВ")) }
         setupItem(programsItem, programsText) { openContent(CatalogFragment.newInstance("Программы")) }
         setupItem(otherItem, otherText) { openContent(CatalogFragment.newInstance("Прочее")) }
@@ -86,6 +86,32 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
         item.setOnClickListener {
             onClick()
             closeSidebar()
+        }
+
+        item.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) openSidebar()
+        }
+
+        item.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
+                event.action == KeyEvent.ACTION_DOWN
+            ) {
+                closeSidebar()
+                transferFocusToBanner()
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    private fun setupItemKeepSidebarOpen(item: LinearLayout, text: TextView, onClick: () -> Unit) {
+
+        item.setOnClickListener {
+            onClick()
+            item.post {
+                item.requestFocus()
+            }
         }
 
         item.setOnFocusChangeListener { _, hasFocus ->
