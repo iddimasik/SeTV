@@ -43,6 +43,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private lateinit var recommendedGrid: VerticalGridView
     private lateinit var recommendedAdapter: ArrayObjectAdapter
     private lateinit var bannerCarousel: BannerCarousel
+    private lateinit var topRow: View
 
     private lateinit var filterAll: View
     private lateinit var filterInstalled: View
@@ -73,6 +74,8 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         super.onViewCreated(view, savedInstanceState)
 
         category = arguments?.getString(ARG_CATEGORY) ?: "ALL"
+
+        topRow = view.findViewById(R.id.topRow)
 
         setupTopRow(view)
         setupRecommendedRow(view)
@@ -371,9 +374,48 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             horizontalSpacing = 12
             isFocusable = true
             descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+
+            setOnChildViewHolderSelectedListener(object : androidx.leanback.widget.OnChildViewHolderSelectedListener() {
+                override fun onChildViewHolderSelected(
+                    parent: androidx.recyclerview.widget.RecyclerView,
+                    child: androidx.recyclerview.widget.RecyclerView.ViewHolder?,
+                    position: Int,
+                    subposition: Int
+                ) {
+                    if (position >= currentGridColumns) {
+                        hideTopRow()
+                    } else {
+                        showTopRow()
+                    }
+                }
+            })
         }
 
         updateGridColumns()
+    }
+
+    private fun hideTopRow() {
+        if (topRow.visibility == View.VISIBLE) {
+            topRow.animate()
+                .alpha(0f)
+                .translationY(-topRow.height.toFloat())
+                .setDuration(300)
+                .withEndAction {
+                    topRow.visibility = View.GONE
+                }
+                .start()
+        }
+    }
+
+    private fun showTopRow() {
+        if (topRow.visibility != View.VISIBLE) {
+            topRow.visibility = View.VISIBLE
+            topRow.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(300)
+                .start()
+        }
     }
 
     // ───────────────────────

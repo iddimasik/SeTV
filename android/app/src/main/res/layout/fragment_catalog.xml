@@ -9,6 +9,7 @@
 
     <!-- ───────── TOP ROW ───────── -->
     <LinearLayout
+        android:id="@+id/topRow"
         android:layout_width="match_parent"
         android:layout_height="240dp"
         android:orientation="horizontal"
