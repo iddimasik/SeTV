@@ -1,5 +1,6 @@
 package rus.setv.ui
 
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,9 @@ import rus.setv.model.AppStatus
 class AppCardPresenter(
     private val onClick: (AppItem) -> Unit
 ) : Presenter() {
+
+    var onFirstRowNavigateUp: (() -> Unit)? = null
+    var isFirstRowProvider: (() -> Boolean)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -76,6 +80,17 @@ class AppCardPresenter(
 
         root.setOnClickListener {
             onClick(app)
+        }
+
+        root.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP &&
+                event.action == KeyEvent.ACTION_DOWN &&
+                isFirstRowProvider?.invoke() == true) {
+                onFirstRowNavigateUp?.invoke()
+                true
+            } else {
+                false
+            }
         }
     }
 

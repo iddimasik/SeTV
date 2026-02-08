@@ -44,11 +44,17 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private lateinit var recommendedAdapter: ArrayObjectAdapter
     private lateinit var bannerCarousel: BannerCarousel
 
+    private lateinit var filterAll: View
+    private lateinit var filterInstalled: View
+    private lateinit var filterNotInstalled: View
+    private lateinit var filterUpdates: View
+
     // DATA
     private val repository = AppsRepository()
     private var category = "ALL"
     private var allAppsList: List<AppItem> = emptyList()
     private var recommendedApps: List<AppItem> = emptyList()
+    private var currentGridColumns = 4
 
     // STATUS FILTER
     private enum class StatusFilter {
@@ -111,9 +117,16 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // ───────────────────────
     private fun setupRecommendedRow(root: View) {
         recommendedGrid = root.findViewById(R.id.recommendedGrid)
-        recommendedAdapter = ArrayObjectAdapter(
-            RecommendedAppPresenter { openAppDetails(it) }
-        )
+
+        val presenter = RecommendedAppPresenter { openAppDetails(it) }
+        presenter.onLastItemNavigateDown = {
+            filterUpdates.requestFocus()
+        }
+        presenter.isLastItemProvider = {
+            recommendedGrid.selectedPosition == recommendedAdapter.size() - 1
+        }
+
+        recommendedAdapter = ArrayObjectAdapter(presenter)
 
         recommendedGrid.apply {
             adapter = ItemBridgeAdapter(recommendedAdapter)
@@ -206,28 +219,63 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // STATUS FILTER UI
     // ───────────────────────
     private fun setupStatusFilters(root: View) {
-        bindStatusFilter(root, R.id.filterStatusAll, "Все",R.drawable.ic_apps,StatusFilter.ALL)
-        bindStatusFilter(root, R.id.filterStatusInstalled, "Установлено",R.drawable.ic_installed, StatusFilter.INSTALLED)
-        bindStatusFilter(root, R.id.filterStatusNotInstalled, "Не установлено",R.drawable.ic_uninstalled, StatusFilter.NOT_INSTALLED)
-        bindStatusFilter(root, R.id.filterStatusUpdates, "Обновления",R.drawable.ic_upgrade, StatusFilter.UPDATE_AVAILABLE)
+        filterAll = root.findViewById(R.id.filterStatusAll)
+        filterInstalled = root.findViewById(R.id.filterStatusInstalled)
+        filterNotInstalled = root.findViewById(R.id.filterStatusNotInstalled)
+        filterUpdates = root.findViewById(R.id.filterStatusUpdates)
+
+        bindStatusFilter(filterAll, "Все", R.drawable.ic_apps, StatusFilter.ALL)
+        bindStatusFilter(filterInstalled, "Установлено", R.drawable.ic_installed, StatusFilter.INSTALLED)
+        bindStatusFilter(filterNotInstalled, "Не установлено", R.drawable.ic_uninstalled, StatusFilter.NOT_INSTALLED)
+        bindStatusFilter(filterUpdates, "Обновления", R.drawable.ic_upgrade, StatusFilter.UPDATE_AVAILABLE)
+
+        updateFilterSelection()
     }
 
     private fun bindStatusFilter(
-        root: View,
-        id: Int,
+        btn: View,
         title: String,
         iconRes: Int,
         filter: StatusFilter
     ) {
-        val btn = root.findViewById<View>(id)
-
         btn.findViewById<TextView>(R.id.filterText).text = title
-        btn.findViewById<ImageView>(R.id.filterIcon)
-            .setImageResource(iconRes)
+        btn.findViewById<ImageView>(R.id.filterIcon).setImageResource(iconRes)
 
         btn.setOnClickListener {
             currentStatusFilter = filter
             applyStatusFilter()
+            updateFilterSelection()
+        }
+
+        btn.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                btn.setBackgroundResource(R.drawable.filter_focus_background)
+            } else {
+                btn.setBackgroundColor(0x00000000)
+            }
+        }
+    }
+
+    private fun updateFilterSelection() {
+        val allFilters = listOf(filterAll, filterInstalled, filterNotInstalled, filterUpdates)
+        val selectedFilter = when (currentStatusFilter) {
+            StatusFilter.ALL -> filterAll
+            StatusFilter.INSTALLED -> filterInstalled
+            StatusFilter.NOT_INSTALLED -> filterNotInstalled
+            StatusFilter.UPDATE_AVAILABLE -> filterUpdates
+        }
+
+        allFilters.forEach { filter ->
+            val textView = filter.findViewById<TextView>(R.id.filterText)
+            val iconView = filter.findViewById<ImageView>(R.id.filterIcon)
+
+            if (filter == selectedFilter) {
+                textView.setTextColor(0xFF2196F3.toInt())
+                iconView.setColorFilter(0xFF2196F3.toInt())
+            } else {
+                textView.setTextColor(0xFFFFFFFF.toInt())
+                iconView.setColorFilter(0xFFFFFFFF.toInt())
+            }
         }
     }
 
@@ -306,7 +354,16 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // ───────────────────────
     private fun setupAppsGrid(root: View) {
         grid = root.findViewById(R.id.appsGrid)
-        adapter = ArrayObjectAdapter(AppCardPresenter { openAppDetails(it) })
+
+        val presenter = AppCardPresenter { openAppDetails(it) }
+        presenter.onFirstRowNavigateUp = {
+            filterAll.requestFocus()
+        }
+        presenter.isFirstRowProvider = {
+            grid.selectedPosition < currentGridColumns
+        }
+
+        adapter = ArrayObjectAdapter(presenter)
 
         grid.apply {
             adapter = ItemBridgeAdapter(this@CatalogFragment.adapter)
@@ -331,8 +388,8 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     }
 
     private fun updateGridColumns() {
-        val cols = if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
-        grid.setNumColumns(cols)
+        currentGridColumns = if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
+        grid.setNumColumns(currentGridColumns)
     }
 
     override fun onSidebarOpened() {
