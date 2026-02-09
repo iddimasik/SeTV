@@ -176,10 +176,10 @@
     width: 96px;
     height: 96px;
     object-fit: contain;
-    border-radius: 20px;
+    border-radius: 16px;
     background: linear-gradient(to bottom right, #1e1e1e, #000000);
-    padding: 10px;
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.25);
+    margin-bottom: 20px;
 }
 
 /* ========================= */
@@ -218,8 +218,8 @@
     flex-direction: column;
     align-items: center;
 
-    width: 160px;
-    max-width: 160px;
+    width: 188px;
+    max-width: 188px;
 
     gap: 6px;
 }
