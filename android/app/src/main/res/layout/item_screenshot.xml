@@ -6,7 +6,6 @@
     android:id="@+id/root"
     android:layout_width="280dp"
     android:layout_height="160dp"
-    android:layout_marginEnd="12dp"
 
     android:focusable="true"
     android:focusableInTouchMode="true"
@@ -23,7 +22,6 @@
 
     app:strokeWidth="4dp"
     app:strokeColor="@drawable/screenshot_stroke_selector">
-
 
     <ImageView
         android:id="@+id/screenshotImage"
