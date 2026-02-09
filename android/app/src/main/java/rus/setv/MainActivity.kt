@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sidebar: View
     var isSidebarOpen = true
         private set
+    private var blockSidebarReopening = false
 
     private val SIDEBAR_OPEN_DP = 200
     private val SIDEBAR_CLOSED_DP = 60
@@ -88,23 +89,39 @@ class MainActivity : AppCompatActivity() {
 
 
     fun openSidebar(force: Boolean = false) {
-        if (isSidebarOpen && !force) return
+        android.util.Log.d("MainActivity", "openSidebar() called, isSidebarOpen=$isSidebarOpen, force=$force, blocked=$blockSidebarReopening")
+        if (isSidebarOpen && !force) {
+            android.util.Log.d("MainActivity", "Already open, returning")
+            return
+        }
+        if (!force && blockSidebarReopening) {
+            android.util.Log.d("MainActivity", "Temporarily blocked, not reopening")
+            return
+        }
         isSidebarOpen = true
 
         animateSidebarDp(SIDEBAR_OPEN_DP)
         sidebar.post { sidebar.requestFocus() }
 
         notifySidebarOpened()
+        android.util.Log.d("MainActivity", "openSidebar() finished")
     }
 
     fun closeSidebar() {
+        android.util.Log.d("MainActivity", "closeSidebar() called, isSidebarOpen=$isSidebarOpen")
         if (!isSidebarOpen) return
         isSidebarOpen = false
-
+        blockSidebarReopening = true
+        android.util.Log.d("MainActivity", "Animating sidebar to CLOSED")
         animateSidebarDp(SIDEBAR_CLOSED_DP)
         findViewById<View>(R.id.main_container)?.requestFocus()
-
         notifySidebarClosed()
+        android.util.Log.d("MainActivity", "closeSidebar() finished")
+
+        sidebar.postDelayed({
+            blockSidebarReopening = false
+            android.util.Log.d("MainActivity", "Block removed, sidebar can reopen now")
+        }, 300)
     }
 
     private fun notifySidebarOpened() {

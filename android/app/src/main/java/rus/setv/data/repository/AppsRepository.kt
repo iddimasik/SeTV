@@ -1,9 +1,8 @@
 package rus.setv.data.repository
 
 import rus.setv.data.network.RetrofitClient
+import rus.setv.model.AppImage
 import rus.setv.model.AppItem
-import java.io.IOException
-import java.net.SocketTimeoutException
 
 class AppsRepository {
 
@@ -12,15 +11,26 @@ class AppsRepository {
             val apps = RetrofitClient.api.getPublicApps()
                 .filter { it.apkUrl != null }
                 .map { dto ->
+
                     AppItem(
                         name = dto.name,
-                        description = dto.description,
                         packageName = dto.packageName,
                         apkUrl = dto.apkUrl!!,
+
+                        description = dto.description,
                         iconUrl = dto.iconUrl,
                         version = dto.version,
                         featured = dto.featured,
-                        category = dto.category
+                        category = dto.category,
+
+                        images = dto.images
+                            .sortedBy { it.sortOrder }
+                            .map { img ->
+                                AppImage(
+                                    imageUrl = img.imageUrl,
+                                    sortOrder = img.sortOrder
+                                )
+                            }
                     )
                 }
 

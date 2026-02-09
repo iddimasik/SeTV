@@ -12,6 +12,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -21,6 +23,7 @@ import rus.setv.apk.ApkDownloader
 import rus.setv.apk.ApkInstaller
 import rus.setv.model.AppItem
 import rus.setv.model.AppStatus
+import rus.setv.adapter.ScreenshotsAdapter
 import java.text.DecimalFormat
 import kotlin.concurrent.thread
 
@@ -38,6 +41,10 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     private lateinit var installButton: MaterialButton
     private lateinit var uninstallButton: MaterialButton
     private lateinit var backButton: MaterialButton
+
+    // 🆕 screenshots
+    private lateinit var screenshotsList: RecyclerView
+    private lateinit var screenshotsAdapter: ScreenshotsAdapter
 
     private val httpClient = OkHttpClient()
 
@@ -85,6 +92,20 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         uninstallButton = view.findViewById(R.id.uninstallButton)
         backButton = view.findViewById(R.id.backButton)
 
+        // 🆕 screenshots
+        screenshotsList = view.findViewById(R.id.screenshotsList)
+        screenshotsAdapter = ScreenshotsAdapter()
+
+        screenshotsList.apply {
+            layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            adapter = screenshotsAdapter
+            setHasFixedSize(true)
+        }
+
         installButton.isFocusable = true
         installButton.isFocusableInTouchMode = true
 
@@ -111,10 +132,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
 
     override fun onResume() {
         super.onResume()
-
-        backButton.post {
-            backButton.requestFocus()
-        }
+        backButton.post { backButton.requestFocus() }
     }
 
     // ───────────────────────
@@ -131,6 +149,13 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
             .error(R.drawable.ic_app_placeholder)
             .into(image)
 
+        if (app.images.isNotEmpty()) {
+            screenshotsAdapter.submitList(app.images)
+            screenshotsList.visibility = View.VISIBLE
+        } else {
+            screenshotsList.visibility = View.GONE
+        }
+
         if (app.apkSizeBytes > 0) {
             size.text = formatSize(app.apkSizeBytes)
         } else {
@@ -145,7 +170,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     // APK SIZE
     // ───────────────────────
     private fun fetchApkSize() {
-        val url = app.apkUrl ?: return
+        val url = app.apkUrl
         thread {
             val bytes = getApkSize(url)
             if (bytes > 0 && isAdded) {
@@ -161,7 +186,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         try {
             val head = Request.Builder().url(url).head().build()
             httpClient.newCall(head).execute().use {
-                it.header("Content-Length")?.toLongOrNull()?.let { size -> return size }
+                it.header("Content-Length")?.toLongOrNull()?.let { return it }
             }
         } catch (_: Exception) {}
 
@@ -184,7 +209,8 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     private fun formatSize(bytes: Long): String {
         val df = DecimalFormat("#.#")
         val mb = bytes / (1024.0 * 1024.0)
-        return if (mb < 1024) "${df.format(mb)} MB" else "${df.format(mb / 1024)} GB"
+        return if (mb < 1024) "${df.format(mb)} MB"
+        else "${df.format(mb / 1024)} GB"
     }
 
     // ───────────────────────
@@ -231,20 +257,13 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
             }
         }
 
-        // ───── SPECIAL CASE: rus.setv ─────
         if (isSelfApp) {
             uninstallButton.visibility = View.GONE
-
-            if (hasUpdate) {
-                installButton.visibility = View.VISIBLE
-                installButton.text = "Обновить"
-            } else {
-                installButton.visibility = View.GONE
-            }
+            installButton.visibility = if (hasUpdate) View.VISIBLE else View.GONE
+            installButton.text = "Обновить"
             return
         }
 
-        // ───── NORMAL APPS ─────
         installButton.visibility = View.VISIBLE
         installButton.text = when {
             !installed -> "Установить"
@@ -259,7 +278,6 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     private fun setupButtons() {
         installButton.setOnClickListener {
             when {
-                isSelfApp && isUpdateAvailable() -> startDownloadAndInstall()
                 !isAppInstalled(app.packageName) -> startDownloadAndInstall()
                 isUpdateAvailable() -> startDownloadAndInstall()
                 else -> openApp(app.packageName)
@@ -282,15 +300,13 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         ApkDownloader.download(
             context = requireContext(),
             app = app,
-
-            onProgress = { progressValue ->
+            onProgress = {
                 runOnUi {
                     app.status = AppStatus.DOWNLOADING
-                    app.progress = progressValue
+                    app.progress = it
                     updateUi()
                 }
             },
-
             onDone = { file ->
                 runOnUi {
                     app.status = AppStatus.INSTALLING
@@ -298,7 +314,6 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
                 }
                 ApkInstaller.install(requireContext(), file)
             },
-
             onError = {
                 runOnUi {
                     app.status = AppStatus.ERROR
@@ -314,12 +329,13 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     }
 
     private fun uninstallApp(pkg: String) {
-        val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
-            data = Uri.parse("package:$pkg")
-            putExtra(Intent.EXTRA_RETURN_RESULT, true)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        startActivity(intent)
+        startActivity(
+            Intent(Intent.ACTION_UNINSTALL_PACKAGE).apply {
+                data = Uri.parse("package:$pkg")
+                putExtra(Intent.EXTRA_RETURN_RESULT, true)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+        )
     }
 
     // ───────────────────────
@@ -341,12 +357,9 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         if (server.isNullOrBlank() || installed.isNullOrBlank()) return false
         val s = normalizeVersion(server)
         val i = normalizeVersion(installed)
-
         for (idx in 0 until maxOf(s.size, i.size)) {
-            val sv = s.getOrElse(idx) { 0 }
-            val iv = i.getOrElse(idx) { 0 }
-            if (sv > iv) return true
-            if (sv < iv) return false
+            if (s.getOrElse(idx) { 0 } > i.getOrElse(idx) { 0 }) return true
+            if (s.getOrElse(idx) { 0 } < i.getOrElse(idx) { 0 }) return false
         }
         return false
     }
@@ -355,10 +368,9 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         v.replace(Regex("[^0-9.]"), "")
             .split(".")
             .filter { it.isNotBlank() }
-            .take(5)
             .map { it.toIntOrNull() ?: 0 }
 
-    private fun isAppInstalled(pkg: String): Boolean =
+    private fun isAppInstalled(pkg: String) =
         getInstalledVersionName(pkg) != null
 
     private fun openApp(pkg: String) {

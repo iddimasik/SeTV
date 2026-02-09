@@ -17,6 +17,8 @@ data class AppItem(
 
     val category: String? = null,
 
+    val images: List<AppImage> = emptyList(),
+
     var status: AppStatus = AppStatus.NOT_INSTALLED,
     var progress: Int = 0,
 

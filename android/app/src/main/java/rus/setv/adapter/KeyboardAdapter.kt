@@ -1,10 +1,11 @@
-package rus.setv
+package rus.setv.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import rus.setv.R
 
 class KeyboardAdapter(
     private var keys: List<String>,

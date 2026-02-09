@@ -13,6 +13,7 @@ import androidx.leanback.widget.VerticalGridView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
+import rus.setv.adapter.KeyboardAdapter
 import rus.setv.data.repository.AppsRepository
 import rus.setv.model.AppItem
 import rus.setv.ui.AppCardPresenter
@@ -70,9 +71,21 @@ class SearchFragment : Fragment(R.layout.fragment_search),
         view.isFocusableInTouchMode = true
         view.requestFocus()
         view.setOnKeyListener { _, keyCode, event ->
-            keyCode == KeyEvent.KEYCODE_BACK &&
-                    event.action == KeyEvent.ACTION_DOWN &&
-                    parentFragmentManager.popBackStack().let { true }
+            when {
+                keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN -> {
+                    parentFragmentManager.popBackStack()
+                    true
+                }
+                keyCode == KeyEvent.KEYCODE_DPAD_LEFT && event.action == KeyEvent.ACTION_DOWN -> {
+                    (activity as? MainActivity)?.openSidebar()
+                    true
+                }
+                keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && event.action == KeyEvent.ACTION_DOWN -> {
+                    keyboardGrid.findViewHolderForAdapterPosition(0)?.itemView?.requestFocus()
+                    true
+                }
+                else -> false
+            }
         }
     }
 

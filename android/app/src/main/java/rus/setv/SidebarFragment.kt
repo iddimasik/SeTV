@@ -64,7 +64,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
 
         // ───── SETUP
         setupItem(searchItem, searchText) { openSearch() }
-        setupItemKeepSidebarOpen(allAppsItem, allAppsText) { openContent(CatalogFragment.newInstance("ALL")) }
+        setupItem(allAppsItem, allAppsText) { openContent(CatalogFragment.newInstance("ALL")) }
         setupItem(moviesItem, moviesText) { openContent(CatalogFragment.newInstance("Фильмы и ТВ")) }
         setupItem(programsItem, programsText) { openContent(CatalogFragment.newInstance("Программы")) }
         setupItem(otherItem, otherText) { openContent(CatalogFragment.newInstance("Прочее")) }
@@ -83,50 +83,29 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     // ───────────────────────
     private fun setupItem(item: LinearLayout, text: TextView, onClick: () -> Unit) {
 
-        item.setOnClickListener {
-            onClick()
-            closeSidebar()
-        }
+        var focusListenerEnabled = true
 
         item.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) openSidebar()
+            if (hasFocus && focusListenerEnabled) openSidebar()
         }
 
         item.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
-                event.action == KeyEvent.ACTION_DOWN
-            ) {
-                closeSidebar()
-                transferFocusToBanner()
-                true
-            } else {
-                false
-            }
-        }
-    }
-
-    private fun setupItemKeepSidebarOpen(item: LinearLayout, text: TextView, onClick: () -> Unit) {
-
-        item.setOnClickListener {
-            onClick()
-            item.post {
-                item.requestFocus()
-            }
-        }
-
-        item.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) openSidebar()
-        }
-
-        item.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
-                event.action == KeyEvent.ACTION_DOWN
-            ) {
-                closeSidebar()
-                transferFocusToBanner()
-                true
-            } else {
-                false
+            when {
+                (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) &&
+                        event.action == KeyEvent.ACTION_DOWN -> {
+                    focusListenerEnabled = false
+                    closeSidebar()
+                    onClick()
+                    item.postDelayed({ focusListenerEnabled = true }, 500)
+                    true
+                }
+                keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
+                        event.action == KeyEvent.ACTION_DOWN -> {
+                    closeSidebar()
+                    transferFocusToBanner()
+                    true
+                }
+                else -> false
             }
         }
     }
@@ -231,6 +210,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     }
 
     private fun closeSidebar() {
+        android.util.Log.d("SidebarFragment", "closeSidebar() called, isSidebarOpen=${(activity as? MainActivity)?.isSidebarOpen}")
         (activity as? MainActivity)?.closeSidebar()
     }
 

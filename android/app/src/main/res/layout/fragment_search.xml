@@ -20,6 +20,8 @@
             android:layout_weight="1"
             android:layout_marginTop="6dp"
             android:hint="Введите для поиска"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -29,6 +31,7 @@
                 android:textSize="24sp"
                 android:textColor="#FFFFFF"
                 android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:inputType="text"/>
         </com.google.android.material.textfield.TextInputLayout>
 
