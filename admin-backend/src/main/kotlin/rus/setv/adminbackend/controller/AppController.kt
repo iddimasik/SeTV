@@ -29,7 +29,6 @@ class AppController(
 ) {
 
     /* ================= helpers ================= */
-
     private fun buildAppDto(app: AppEntity): AppDto {
         val images = appImageRepository
             .findAllByAppIdOrderBySortOrder(app.id!!)
@@ -221,5 +220,14 @@ class AppController(
             imageUrl = url,
             sortOrder = 0
         )
+    }
+
+    @PostMapping("/apps/delete-image")
+    fun deleteImage(@RequestBody request: Map<String, String>): ResponseEntity<Void> {
+        val imageUrl = request["imageUrl"]
+        if (imageUrl.isNullOrBlank()) return ResponseEntity.badRequest().build()
+
+        fileStorageService.deleteImage(imageUrl)
+        return ResponseEntity.noContent().build()
     }
 }
