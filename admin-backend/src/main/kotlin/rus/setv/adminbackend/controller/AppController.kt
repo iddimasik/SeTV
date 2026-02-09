@@ -1,5 +1,6 @@
 package rus.setv.adminbackend.controller
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -21,7 +22,10 @@ class AppController(
     private val appRepository: AppRepository,
     private val appImageRepository: AppImageRepository,
     private val apkParserService: ApkParserService,
-    private val fileStorageService: FileStorageService
+    private val fileStorageService: FileStorageService,
+
+    @Value("\${app.base-url}")
+    private val baseUrl: String
 ) {
 
     /* ================= helpers ================= */
@@ -209,7 +213,8 @@ class AppController(
             throw RuntimeException("Файл пустой")
         }
 
-        val url = fileStorageService.storeImage(file)
+        val relativePath = fileStorageService.storeImage(file)
+        val url = "$baseUrl$relativePath"
 
         return AppImageDto(
             id = null,

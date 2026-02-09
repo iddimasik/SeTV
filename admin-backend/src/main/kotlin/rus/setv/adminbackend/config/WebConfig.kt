@@ -10,22 +10,24 @@ class WebConfig : WebMvcConfigurer {
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
 
+        // Папка с APK файлами
         val apkDir = Paths.get("storage/apk")
             .toAbsolutePath()
             .normalize()
-            .toUri()
             .toString()
 
+        // Папка с изображениями
         val imagesDir = Paths.get("storage/images")
             .toAbsolutePath()
             .normalize()
-            .toUri()
             .toString()
 
+        // Настройка отдачи APK файлов
         registry.addResourceHandler("/files/apk/**")
-            .addResourceLocations(apkDir)
+            .addResourceLocations("file:$apkDir/")   // обязательно file:
 
+        // Настройка отдачи изображений
         registry.addResourceHandler("/files/images/**")
-            .addResourceLocations(imagesDir)
+            .addResourceLocations("file:$imagesDir/") // обязательно file:
     }
 }
