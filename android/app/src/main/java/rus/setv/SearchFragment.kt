@@ -68,23 +68,12 @@ class SearchFragment : Fragment(R.layout.fragment_search),
 
         queryView.text = query.toString()
 
-        view.isFocusableInTouchMode = true
-        view.requestFocus()
         view.setOnKeyListener { _, keyCode, event ->
-            when {
-                keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN -> {
-                    parentFragmentManager.popBackStack()
-                    true
-                }
-                keyCode == KeyEvent.KEYCODE_DPAD_LEFT && event.action == KeyEvent.ACTION_DOWN -> {
-                    (activity as? MainActivity)?.openSidebar()
-                    true
-                }
-                keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && event.action == KeyEvent.ACTION_DOWN -> {
-                    keyboardGrid.findViewHolderForAdapterPosition(0)?.itemView?.requestFocus()
-                    true
-                }
-                else -> false
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN) {
+                parentFragmentManager.popBackStack()
+                true
+            } else {
+                false
             }
         }
     }
@@ -131,9 +120,23 @@ class SearchFragment : Fragment(R.layout.fragment_search),
     // APPS GRID
     // ─────────────────────────────
     private fun setupAppsGrid() {
-        appsAdapter = ArrayObjectAdapter(
-            AppCardPresenter { openAppDetails(it) }
-        )
+        val presenter = AppCardPresenter { openAppDetails(it) }
+        presenter.onFirstRowNavigateUp = {
+            val targetPosition = when (keyboardMode) {
+                KeyboardMode.LETTERS -> when (currentLang) {
+                    KeyboardLang.RU -> 32  // "123" button for Russian
+                    KeyboardLang.EN -> 26  // "123" button for English
+                }
+                KeyboardMode.NUMBERS -> 17  // "ABC" button for numbers
+            }
+            keyboardGrid.findViewHolderForAdapterPosition(targetPosition)?.itemView?.requestFocus()
+        }
+        presenter.isFirstRowProvider = {
+            val cols = if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
+            appsGrid.selectedPosition < cols
+        }
+
+        appsAdapter = ArrayObjectAdapter(presenter)
 
         appsGrid.apply {
             adapter = ItemBridgeAdapter(appsAdapter)
