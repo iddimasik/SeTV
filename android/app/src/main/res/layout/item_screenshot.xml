@@ -3,16 +3,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
+    android:id="@+id/root"
     android:layout_width="280dp"
     android:layout_height="160dp"
-    android:layout_marginEnd="24dp"
+    android:layout_marginEnd="12dp"
 
     android:focusable="true"
     android:focusableInTouchMode="true"
+    android:clickable="true"
 
     app:cardCornerRadius="20dp"
     app:cardElevation="8dp"
-    app:cardBackgroundColor="#1E1E1E">
+    app:cardUseCompatPadding="true"
+
+    app:cardBackgroundColor="#1E1E1E"
+    app:cardForegroundColor="@android:color/transparent"
+    app:rippleColor="@android:color/transparent"
+    app:checkedIconTint="@android:color/transparent"
+
+    app:strokeWidth="4dp"
+    app:strokeColor="@drawable/screenshot_stroke_selector">
+
 
     <ImageView
         android:id="@+id/screenshotImage"

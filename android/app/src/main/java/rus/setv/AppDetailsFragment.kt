@@ -132,7 +132,10 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
 
     override fun onResume() {
         super.onResume()
-        backButton.post { backButton.requestFocus() }
+        (activity as? MainActivity)?.closeSidebar()
+        backButton.postDelayed({
+            backButton.requestFocus()
+        }, 100)
     }
 
     // ───────────────────────
