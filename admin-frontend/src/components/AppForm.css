@@ -207,10 +207,9 @@
 /* ========================= */
 .images-preview-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column; /* вертикально */
     gap: 16px;
-
-    align-items: flex-start;
+    align-items: center;
 }
 
 .image-preview-wrapper-container {
