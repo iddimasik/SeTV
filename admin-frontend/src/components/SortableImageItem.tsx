@@ -27,6 +27,7 @@ const SortableImageItem: React.FC<Props> = ({ image, onRemove }) => {
             style={style}
             className="image-preview-wrapper-container"
         >
+            {/* ⬇️ drag ТОЛЬКО за этот блок */}
             <div
                 className="image-preview-wrapper"
                 {...attributes}
@@ -38,14 +39,15 @@ const SortableImageItem: React.FC<Props> = ({ image, onRemove }) => {
                     className="image-preview"
                     draggable={false}
                 />
-                <button
-                    type="button"
-                    className="remove-image-button"
-                    onClick={() => onRemove(image.localId)}
-                >
-                    ×
-                </button>
             </div>
+
+            <button
+                type="button"
+                className="remove-image-button"
+                onClick={() => onRemove(image.localId)}
+            >
+                ×
+            </button>
 
             <a href={image.imageUrl} target="_blank" rel="noreferrer">
                 {image.imageUrl}

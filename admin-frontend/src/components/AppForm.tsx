@@ -162,8 +162,26 @@ const AppForm: React.FC = () => {
         }
     };
 
-    const handleRemoveImage = (localId: string) => {
-        setImages((prev) => prev.filter((i) => i.localId !== localId));
+    const handleRemoveImage = async (localId: string, imageUrl: string) => {
+        try {
+            const token = localStorage.getItem("token");
+
+            // Отправляем запрос на удаление изображения на сервере
+            await fetch(`${import.meta.env.VITE_API_URL}/apps/delete-image`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ imageUrl }),
+            });
+
+            // Удаляем изображение с фронта
+            setImages((prev) => prev.filter((i) => i.localId !== localId));
+        } catch (err) {
+            console.error("Failed to delete image:", err);
+            alert("Ошибка при удалении изображения");
+        }
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
@@ -293,7 +311,7 @@ const AppForm: React.FC = () => {
                                         <SortableImageItem
                                             key={img.localId}
                                             image={img}
-                                            onRemove={handleRemoveImage}
+                                            onRemove={(localId) => handleRemoveImage(localId, img.imageUrl)}
                                         />
                                     ))}
                                 </div>
