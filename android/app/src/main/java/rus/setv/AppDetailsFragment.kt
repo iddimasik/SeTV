@@ -94,7 +94,10 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
 
         // 🆕 screenshots
         screenshotsList = view.findViewById(R.id.screenshotsList)
-        screenshotsAdapter = ScreenshotsAdapter()
+
+        screenshotsAdapter = ScreenshotsAdapter { position ->
+            openScreenshotViewer(position)
+        }
 
         screenshotsList.apply {
             layoutManager = LinearLayoutManager(
@@ -381,6 +384,19 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
             .getLaunchIntentForPackage(pkg)
             ?.let { startActivity(it) }
             ?: Toast.makeText(requireContext(), "Не удалось открыть приложение", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun openScreenshotViewer(startPosition: Int) {
+        parentFragmentManager.beginTransaction()
+            .replace(
+                R.id.main_container,
+                ScreenshotViewerFragment.newInstance(
+                    images = app.images.map { it.imageUrl },
+                    startPosition = startPosition
+                )
+            )
+            .addToBackStack(null)
+            .commit()
     }
 
     companion object {
