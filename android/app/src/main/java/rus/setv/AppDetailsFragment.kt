@@ -45,6 +45,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     // 🆕 screenshots
     private lateinit var screenshotsList: RecyclerView
     private lateinit var screenshotsAdapter: ScreenshotsAdapter
+    private var lastOpenedScreenshotPosition: Int = -1
 
     private val httpClient = OkHttpClient()
 
@@ -94,7 +95,6 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
 
         // 🆕 screenshots
         screenshotsList = view.findViewById(R.id.screenshotsList)
-
         screenshotsAdapter = ScreenshotsAdapter { position ->
             openScreenshotViewer(position)
         }
@@ -135,10 +135,25 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
 
     override fun onResume() {
         super.onResume()
-        (activity as? MainActivity)?.closeSidebar()
-        backButton.postDelayed({
-            backButton.requestFocus()
-        }, 100)
+
+        // If returning from screenshot viewer, restore focus to that screenshot
+        if (lastOpenedScreenshotPosition >= 0) {
+            val position = lastOpenedScreenshotPosition
+            lastOpenedScreenshotPosition = -1
+
+            screenshotsList.post {
+                val viewHolder = screenshotsList.findViewHolderForAdapterPosition(position)
+                viewHolder?.itemView?.requestFocus() ?: run {
+                    screenshotsList.scrollToPosition(position)
+                    screenshotsList.postDelayed({
+                        screenshotsList.findViewHolderForAdapterPosition(position)?.itemView?.requestFocus()
+                    }, 100)
+                }
+            }
+        } else {
+            // Normal resume - focus back button
+            backButton.post { backButton.requestFocus() }
+        }
     }
 
     // ───────────────────────
@@ -282,6 +297,17 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     // BUTTONS
     // ───────────────────────
     private fun setupButtons() {
+        // Add LEFT key handler only to backButton (leftmost button)
+        backButton.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT &&
+                event.action == android.view.KeyEvent.ACTION_DOWN) {
+                openSidebarAndFocus()
+                true
+            } else {
+                false
+            }
+        }
+
         installButton.setOnClickListener {
             when {
                 !isAppInstalled(app.packageName) -> startDownloadAndInstall()
@@ -297,6 +323,17 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
         backButton.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
+    }
+
+    private fun openSidebarAndFocus() {
+        val mainActivity = activity as? MainActivity
+        mainActivity?.openSidebar()
+
+        view?.postDelayed({
+            val sidebar = requireActivity().findViewById<View>(R.id.sidebar_container)
+            val searchItem = sidebar?.findViewById<View>(R.id.menu_search)
+            searchItem?.requestFocus()
+        }, 50)
     }
 
     // ───────────────────────
@@ -387,6 +424,8 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     }
 
     private fun openScreenshotViewer(startPosition: Int) {
+        lastOpenedScreenshotPosition = startPosition
+
         parentFragmentManager.beginTransaction()
             .replace(
                 R.id.main_container,

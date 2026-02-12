@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import rus.setv.data.repository.AppsRepository
 import rus.setv.model.AppItem
 
-class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
+class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.SidebarListener {
 
     private lateinit var searchItem: LinearLayout
     private lateinit var allAppsItem: LinearLayout
@@ -71,11 +71,14 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
         setupItem(updateItem, updateText) { openUpdateApp() }
         setupItem(settingsItem, settingsText) { openSettings() }
 
-        if ((activity as? MainActivity)?.isSidebarOpen == true) {
-            onSidebarOpened()
-        }
-
-        searchItem.requestFocus()
+        // Sidebar starts closed, make items not focusable to prevent focus jumps
+        searchItem.isFocusable = false
+        allAppsItem.isFocusable = false
+        moviesItem.isFocusable = false
+        programsItem.isFocusable = false
+        otherItem.isFocusable = false
+        updateItem.isFocusable = false
+        settingsItem.isFocusable = false
     }
 
     // ───────────────────────
@@ -83,20 +86,12 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     // ───────────────────────
     private fun setupItem(item: LinearLayout, text: TextView, onClick: () -> Unit) {
 
-        var focusListenerEnabled = true
-
-        item.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && focusListenerEnabled) openSidebar()
-        }
-
         item.setOnKeyListener { _, keyCode, event ->
             when {
                 (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) &&
                         event.action == KeyEvent.ACTION_DOWN -> {
-                    focusListenerEnabled = false
                     closeSidebar()
                     onClick()
-                    item.postDelayed({ focusListenerEnabled = true }, 500)
                     true
                 }
                 keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
@@ -178,7 +173,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
     // ───────────────────────
     // SIDEBAR STATE
     // ───────────────────────
-    fun onSidebarOpened() {
+    override fun onSidebarOpened() {
         searchText.visibility = View.VISIBLE
         allAppsText.visibility = View.VISIBLE
         moviesText.visibility = View.VISIBLE
@@ -186,6 +181,34 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
         otherText.visibility = View.VISIBLE
         updateText.visibility = View.VISIBLE
         settingsText.visibility = View.VISIBLE
+
+        // Make items focusable when sidebar opens
+        searchItem.isFocusable = true
+        allAppsItem.isFocusable = true
+        moviesItem.isFocusable = true
+        programsItem.isFocusable = true
+        otherItem.isFocusable = true
+        updateItem.isFocusable = true
+        settingsItem.isFocusable = true
+    }
+
+    override fun onSidebarClosed() {
+        searchText.visibility = View.GONE
+        allAppsText.visibility = View.GONE
+        moviesText.visibility = View.GONE
+        programsText.visibility = View.GONE
+        otherText.visibility = View.GONE
+        updateText.visibility = View.GONE
+        settingsText.visibility = View.GONE
+
+        // Make items NOT focusable when sidebar closes - prevents focus jumps
+        searchItem.isFocusable = false
+        allAppsItem.isFocusable = false
+        moviesItem.isFocusable = false
+        programsItem.isFocusable = false
+        otherItem.isFocusable = false
+        updateItem.isFocusable = false
+        settingsItem.isFocusable = false
     }
 
     // ───────────────────────
@@ -216,9 +239,34 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar) {
 
     private fun transferFocusToBanner() {
         val mainContainer = requireActivity().findViewById<View>(R.id.main_container)
-        val banner = mainContainer?.findViewById<View>(R.id.bannerCarousel)
-        banner?.post {
-            banner.requestFocus()
+
+        // Check if current fragment is AppDetailsFragment
+        val currentFragment = requireActivity().supportFragmentManager
+            .findFragmentById(R.id.main_container)
+
+        if (currentFragment is AppDetailsFragment) {
+            // Focus back button in app details
+            mainContainer?.post {
+                val backButton = mainContainer.findViewById<View>(R.id.backButton)
+                backButton?.requestFocus()
+            }
+            return
+        }
+
+        // Otherwise check if top row is visible
+        val topRow = mainContainer?.findViewById<View>(R.id.topRow)
+        val banner = topRow?.findViewById<View>(R.id.bannerCarousel)
+        val grid = mainContainer?.findViewById<View>(R.id.appsGrid)
+
+        // If top row is hidden, focus grid instead
+        if (topRow?.visibility == View.GONE) {
+            grid?.post {
+                grid.requestFocus()
+            }
+        } else {
+            banner?.post {
+                banner.requestFocus()
+            }
         }
     }
 }

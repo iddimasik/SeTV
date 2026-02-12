@@ -27,6 +27,7 @@ class BannerCarousel @JvmOverloads constructor(
     private val animDuration = 300L
 
     var onBannerClick: ((BannerItem) -> Unit)? = null
+    var onLeftKey: (() -> Unit)? = null
 
     private val runnable = object : Runnable {
         override fun run() {
@@ -73,6 +74,16 @@ class BannerCarousel @JvmOverloads constructor(
         root.setOnClickListener {
             banners.getOrNull(index)?.let { banner ->
                 onBannerClick?.invoke(banner)
+            }
+        }
+
+        root.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT &&
+                event.action == android.view.KeyEvent.ACTION_DOWN) {
+                onLeftKey?.invoke()
+                true
+            } else {
+                false
             }
         }
     }

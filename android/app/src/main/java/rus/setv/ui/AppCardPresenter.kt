@@ -18,6 +18,8 @@ class AppCardPresenter(
 
     var onFirstRowNavigateUp: (() -> Unit)? = null
     var isFirstRowProvider: (() -> Boolean)? = null
+    var onNavigateLeft: (() -> Unit)? = null
+    var isFirstColumnProvider: (() -> Boolean)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -83,13 +85,20 @@ class AppCardPresenter(
         }
 
         root.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP &&
-                event.action == KeyEvent.ACTION_DOWN &&
-                isFirstRowProvider?.invoke() == true) {
-                onFirstRowNavigateUp?.invoke()
-                true
-            } else {
-                false
+            when {
+                keyCode == KeyEvent.KEYCODE_DPAD_UP &&
+                        event.action == KeyEvent.ACTION_DOWN &&
+                        isFirstRowProvider?.invoke() == true -> {
+                    onFirstRowNavigateUp?.invoke()
+                    true
+                }
+                keyCode == KeyEvent.KEYCODE_DPAD_LEFT &&
+                        event.action == KeyEvent.ACTION_DOWN &&
+                        isFirstColumnProvider?.invoke() == true -> {
+                    onNavigateLeft?.invoke()
+                    true
+                }
+                else -> false
             }
         }
     }

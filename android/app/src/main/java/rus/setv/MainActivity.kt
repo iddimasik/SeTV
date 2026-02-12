@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
 
     private lateinit var sidebar: View
-    var isSidebarOpen = true
+    var isSidebarOpen = false  // Closed by default
         private set
     private var blockSidebarReopening = false
 
@@ -26,6 +26,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         sidebar = findViewById(R.id.sidebar_container)
+
+        // Set sidebar to closed size initially
+        val params = sidebar.layoutParams
+        params.width = dpToPx(SIDEBAR_CLOSED_DP)
+        sidebar.layoutParams = params
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -101,9 +106,10 @@ class MainActivity : AppCompatActivity() {
         isSidebarOpen = true
 
         animateSidebarDp(SIDEBAR_OPEN_DP)
-        sidebar.post { sidebar.requestFocus() }
 
+        // Show text labels when sidebar opens
         notifySidebarOpened()
+
         android.util.Log.d("MainActivity", "openSidebar() finished")
     }
 
@@ -114,14 +120,14 @@ class MainActivity : AppCompatActivity() {
         blockSidebarReopening = true
         android.util.Log.d("MainActivity", "Animating sidebar to CLOSED")
         animateSidebarDp(SIDEBAR_CLOSED_DP)
-        findViewById<View>(R.id.main_container)?.requestFocus()
+        // DON'T request focus on main_container - it causes focus to jump to sidebar
         notifySidebarClosed()
         android.util.Log.d("MainActivity", "closeSidebar() finished")
 
         sidebar.postDelayed({
             blockSidebarReopening = false
             android.util.Log.d("MainActivity", "Block removed, sidebar can reopen now")
-        }, 300)
+        }, 500)
     }
 
     private fun notifySidebarOpened() {

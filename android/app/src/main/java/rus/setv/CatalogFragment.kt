@@ -57,6 +57,9 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private var allAppsList: List<AppItem> = emptyList()
     private var recommendedApps: List<AppItem> = emptyList()
     private var currentGridColumns = 4
+    private var selectedAppBeforeDetails: AppItem? = null
+    private var skipTopRowAnimation = false
+    private var topRowShouldBeHidden = false
 
     // STATUS FILTER
     private enum class StatusFilter {
@@ -79,22 +82,97 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         topRow = view.findViewById(R.id.topRow)
         filtersScrollView = view.findViewById(R.id.filtersScrollView)
 
+        // CRITICAL: Set height to 0 BEFORE any other setup if returning from details
+        if (topRowShouldBeHidden) {
+            val params = topRow.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+            params.height = 0
+            topRow.layoutParams = params
+            topRow.alpha = 0f
+            // Don't reset flag yet - we'll reset it in onResume after focus is restored
+        }
+
         setupTopRow(view)
         setupRecommendedRow(view)
         setupStatusFilters(view)
         setupAppsGrid(view)
-        setupSidebarKey(view)
 
-        loadAppsFromServer()
+        // Sidebar starts closed, set grid to 4 columns
+        updateGridColumns()
+
+        // Load apps only if not already loaded
+        if (allAppsList.isEmpty()) {
+            loadAppsFromServer()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        updateAllStatuses()
-        applyStatusFilter()
 
-        bannerCarousel.post {
-            bannerCarousel.requestFocus()
+        if (selectedAppBeforeDetails != null) {
+            // Returning from app details - restore adapter if empty
+            val appToFocus = selectedAppBeforeDetails
+            selectedAppBeforeDetails = null
+
+            // Skip topRow animation on this return
+            skipTopRowAnimation = true
+
+            // If adapter is empty, restore it WITHOUT reloading data
+            if (adapter.size() == 0 && allAppsList.isNotEmpty()) {
+                applyStatusFilter()
+            }
+
+            // Restart recommended rotation
+            restartRecommendedRotation()
+
+            // Find and focus the app
+            grid.post {
+                val position = (0 until adapter.size()).firstOrNull {
+                    (adapter.get(it) as? AppItem)?.packageName == appToFocus?.packageName
+                }
+
+                android.util.Log.d("CatalogFragment", "Restoring focus: appToFocus=${appToFocus?.packageName}, position=$position, adapter.size=${adapter.size()}")
+
+                if (position != null && position >= 0) {
+                    // Set topRow visibility using functions
+                    if (position >= currentGridColumns) {
+                        hideTopRow()
+                    } else {
+                        showTopRow()
+                        topRowShouldBeHidden = false  // Reset flag if showing
+                    }
+
+                    grid.post {
+                        val viewHolder = grid.findViewHolderForAdapterPosition(position)
+                        if (viewHolder != null) {
+                            viewHolder.itemView.requestFocus()
+                            android.util.Log.d("CatalogFragment", "Focus restored to position $position")
+                        } else {
+                            grid.scrollToPosition(position)
+                            grid.postDelayed({
+                                grid.findViewHolderForAdapterPosition(position)?.itemView?.requestFocus()
+                                android.util.Log.d("CatalogFragment", "Focus restored after scroll to position $position")
+                            }, 100)
+                        }
+
+                        // Re-enable animation after focus is set
+                        grid.postDelayed({
+                            skipTopRowAnimation = false
+                        }, 200)
+                    }
+                } else {
+                    android.util.Log.e("CatalogFragment", "Failed to find app position, focusing grid")
+                    grid.requestFocus()
+                    skipTopRowAnimation = false
+                }
+            }
+        } else {
+            // Normal resume
+            updateAllStatuses()
+            applyStatusFilter()
+
+            bannerCarousel.post {
+                bannerCarousel.requestFocus()
+            }
         }
     }
 
@@ -115,6 +193,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             )
         )
         bannerCarousel.onBannerClick = { openBannerLink(it.url) }
+        bannerCarousel.onLeftKey = { openSidebarAndFocus() }
     }
 
     // ───────────────────────
@@ -367,6 +446,12 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         presenter.isFirstRowProvider = {
             grid.selectedPosition < currentGridColumns
         }
+        presenter.onNavigateLeft = {
+            openSidebarAndFocus()
+        }
+        presenter.isFirstColumnProvider = {
+            grid.selectedPosition % currentGridColumns == 0
+        }
 
         adapter = ArrayObjectAdapter(presenter)
 
@@ -397,27 +482,52 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     }
 
     private fun hideTopRow() {
-        if (topRow.visibility == View.VISIBLE) {
+        if (skipTopRowAnimation) {
+            // Immediate hide - set height to 0
+            val params = topRow.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+            params.height = 0
+            topRow.layoutParams = params
+            topRow.alpha = 0f
+            return
+        }
+
+        // Animated hide
+        val currentHeight = topRow.height
+        if (currentHeight > 0) {
             topRow.animate()
                 .alpha(0f)
-                .scaleY(0f)
                 .setDuration(150)
                 .withEndAction {
-                    topRow.visibility = View.GONE
+                    val params = topRow.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+                    params.height = 0
+                    topRow.layoutParams = params
                 }
                 .start()
         }
     }
 
     private fun showTopRow() {
-        if (topRow.visibility != View.VISIBLE) {
-            topRow.visibility = View.VISIBLE
-            topRow.scaleY = 0f
-            topRow.alpha = 0f
+        val targetHeight = (240 * resources.displayMetrics.density).toInt()
 
+        if (skipTopRowAnimation) {
+            // Immediate show - set height to 240dp
+            val params = topRow.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+            params.height = targetHeight
+            topRow.layoutParams = params
+            topRow.alpha = 1f
+            return
+        }
+
+        // Animated show
+        val currentHeight = topRow.layoutParams.height
+        if (currentHeight == 0) {
+            val params = topRow.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+            params.height = targetHeight
+            topRow.layoutParams = params
+
+            topRow.alpha = 0f
             topRow.animate()
                 .alpha(1f)
-                .scaleY(1f)
                 .setDuration(150)
                 .start()
         }
@@ -426,12 +536,16 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // ───────────────────────
     // SIDEBAR
     // ───────────────────────
-    private fun setupSidebarKey(root: View) {
-        root.setOnKeyListener { _, keyCode, event ->
-            keyCode == KeyEvent.KEYCODE_DPAD_LEFT &&
-                    event.action == KeyEvent.ACTION_DOWN &&
-                    (activity as? MainActivity)?.openSidebar().let { true }
-        }
+    private fun openSidebarAndFocus() {
+        val mainActivity = activity as? MainActivity
+        mainActivity?.openSidebar()
+
+        // Small delay to let sidebar animation start before requesting focus
+        view?.postDelayed({
+            val sidebar = requireActivity().findViewById<View>(R.id.sidebar_container)
+            val searchItem = sidebar?.findViewById<View>(R.id.menu_search)
+            searchItem?.requestFocus()
+        }, 50)
     }
 
     private fun updateGridColumns() {
@@ -460,6 +574,15 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     }
 
     private fun openAppDetails(app: AppItem) {
+        selectedAppBeforeDetails = app
+
+        // Check current position to determine if we should hide topRow on return
+        val currentPosition = grid.selectedPosition
+        topRowShouldBeHidden = (currentPosition >= currentGridColumns)
+
+        // Close sidebar BEFORE fragment transaction to prevent focus jump
+        (activity as? MainActivity)?.closeSidebar()
+
         parentFragmentManager.beginTransaction()
             .replace(R.id.main_container, AppDetailsFragment.newInstance(app))
             .addToBackStack(null)
