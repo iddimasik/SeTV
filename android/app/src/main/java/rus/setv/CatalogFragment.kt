@@ -287,9 +287,9 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         filterInstalled.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_installed)
         filterNotInstalled.findViewById<ImageView>(R.id.filterIcon)
-            .setImageResource(R.drawable.ic_uninstalled)
+            .setImageResource(R.drawable.ic_installed)
         filterUpdates.findViewById<ImageView>(R.id.filterIcon)
-            .setImageResource(R.drawable.ic_update)
+            .setImageResource(R.drawable.ic_upgrade)
 
         filterAll.setOnClickListener {
             currentStatusFilter = StatusFilter.ALL

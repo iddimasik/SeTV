@@ -13,6 +13,8 @@ class KeyboardAdapter(
 ) : RecyclerView.Adapter<KeyboardAdapter.KeyViewHolder>() {
 
     private var recyclerView: RecyclerView? = null
+    var onLeftKeyFromFirstColumn: (() -> Unit)? = null
+    var hasResultsProvider: (() -> Boolean)? = null  // Check if search has results
 
     // ─────────────────────────────
     // VIEW HOLDER
@@ -56,12 +58,23 @@ class KeyboardAdapter(
         val key = keys[position]
         holder.text.text = key
 
+        // Hide empty keys
+        if (key.isEmpty()) {
+            holder.itemView.visibility = android.view.View.INVISIBLE
+            holder.itemView.isFocusable = false
+            return
+        } else {
+            holder.itemView.visibility = android.view.View.VISIBLE
+            holder.itemView.isFocusable = true
+        }
+
         // ───── WIDTH ─────
         val params = holder.itemView.layoutParams
         params.width = when (key) {
-            "␣" -> dpToPx(holder.itemView, 90)
-            "⌫", "🌐", "123", "ABC" -> dpToPx(holder.itemView, 60)
-            else -> dpToPx(holder.itemView, 40)
+            "␣" -> dpToPx(holder.itemView, 100)   // Space - 2 spans
+            "123", "ABC" -> dpToPx(holder.itemView, 50)  // Mode switches - 1 span (reduced!)
+            "←", "→", "⌫", "🌐", "🎤" -> dpToPx(holder.itemView, 50)  // Single span buttons
+            else -> dpToPx(holder.itemView, 50)   // Regular keys - 1 span
         }
         holder.itemView.layoutParams = params
 
@@ -72,10 +85,67 @@ class KeyboardAdapter(
             }
         }
 
+        // Disable pressed state to prevent trail effect
+        holder.itemView.isClickable = true
+        holder.itemView.isFocusable = true
+        holder.itemView.isFocusableInTouchMode = true
+
+        // ───── LEFT KEY (first column only) ─────
+        val isFirstColumn = position % 8 == 0
+
+        // ───── DOWN KEY (last row only) ─────
+        // Calculate last row based on total number of keys
+        // RU letters: 32 letters + 7 control = 39, last row starts at 32
+        // EN letters: 26 letters + 7 control = 33, last row starts at 26
+        // Numbers: 16 numbers + 6 control = 22, last row starts at 17
+        val totalKeys = itemCount
+        val isLastRow = when {
+            totalKeys == 39 -> position >= 32  // Russian letters
+            totalKeys == 33 -> position >= 26  // English letters
+            totalKeys == 22 -> position >= 17  // Numbers
+            else -> false
+        }
+
+        if (isFirstColumn || isLastRow) {
+            holder.itemView.setOnKeyListener { _, keyCode, event ->
+                when {
+                    keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT &&
+                            event.action == android.view.KeyEvent.ACTION_DOWN && isFirstColumn -> {
+                        onLeftKeyFromFirstColumn?.invoke()
+                        true
+                    }
+                    keyCode == android.view.KeyEvent.KEYCODE_DPAD_DOWN &&
+                            event.action == android.view.KeyEvent.ACTION_DOWN && isLastRow -> {
+                        // Block DOWN if no results
+                        val hasResults = hasResultsProvider?.invoke() ?: true
+                        !hasResults  // Return true to consume event (block), false to allow
+                    }
+                    else -> false
+                }
+            }
+        } else {
+            holder.itemView.setOnKeyListener(null)
+        }
+
         // ───── FOCUS ─────
         holder.itemView.setOnFocusChangeListener { v, hasFocus ->
-            v.alpha = if (hasFocus) 1f else 0.6f
             holder.text.isSelected = hasFocus
+
+            if (hasFocus) {
+                v.alpha = 1f
+            } else {
+                // RADICAL: Completely recreate background to remove ALL states
+                v.alpha = 1f
+                v.isPressed = false
+                v.isSelected = false
+                v.isActivated = false
+                v.clearAnimation()
+
+                // Force background recreation
+                v.background = null
+                v.setBackgroundResource(R.drawable.bg_keyboard_key)
+                v.refreshDrawableState()
+            }
         }
     }
 

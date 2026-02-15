@@ -69,7 +69,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         setupItem(programsItem, programsText) { openContent(CatalogFragment.newInstance("Программы")) }
         setupItem(otherItem, otherText) { openContent(CatalogFragment.newInstance("Прочее")) }
         setupItem(updateItem, updateText) { openUpdateApp() }
-        setupItem(settingsItem, settingsText) { openSettings() }
+        setupItem(settingsItem, settingsText, closeSidebarOnClick = false) { openSettings() }  // Keep sidebar open!
 
         // Sidebar starts closed, make items not focusable to prevent focus jumps
         searchItem.isFocusable = false
@@ -84,19 +84,23 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
     // ───────────────────────
     // ITEM SETUP
     // ───────────────────────
-    private fun setupItem(item: LinearLayout, text: TextView, onClick: () -> Unit) {
+    private fun setupItem(item: LinearLayout, text: TextView, closeSidebarOnClick: Boolean = true, onClick: () -> Unit) {
 
         item.setOnKeyListener { _, keyCode, event ->
             when {
                 (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) &&
                         event.action == KeyEvent.ACTION_DOWN -> {
-                    closeSidebar()
+                    if (closeSidebarOnClick) {
+                        closeSidebar()
+                    }
                     onClick()
                     true
                 }
                 keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
                         event.action == KeyEvent.ACTION_DOWN -> {
-                    closeSidebar()
+                    if (closeSidebarOnClick) {
+                        closeSidebar()
+                    }
                     transferFocusToBanner()
                     true
                 }
@@ -121,6 +125,8 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
     // SETTINGS
     // ───────────────────────
     private fun openSettings() {
+        // NOTE: Don't close sidebar - settings has no content to focus on
+        // Sidebar stays open with focus on settings item
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.main_container, SettingsFragment())
             .addToBackStack(null)

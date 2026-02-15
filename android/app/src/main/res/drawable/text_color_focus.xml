@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- В ФОКУСЕ -->
     <item android:state_focused="true"
         android:color="@android:color/black" />
 
-    <!-- Обычное состояние -->
     <item android:color="@android:color/white" />
 
 </selector>
