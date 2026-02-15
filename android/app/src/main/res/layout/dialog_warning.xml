@@ -85,7 +85,7 @@
             android:textAllCaps="false"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:backgroundTint="#FF0000"
+            android:backgroundTint="@drawable/red_button_color"
             android:textColor="@drawable/text_color_focus"/>
 
         <Button

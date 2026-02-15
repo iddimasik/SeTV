@@ -181,7 +181,7 @@
                 android:visibility="gone"
                 app:cornerRadius="16dp"
                 style="@style/Widget.MaterialComponents.Button"
-                android:backgroundTint="#E53935"
+                android:backgroundTint="@drawable/red_button_color"
                 android:textColor="@drawable/text_color_focus"/>
 
             <!-- INSTALL -->
