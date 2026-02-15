@@ -254,6 +254,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
                 status.text = "Загрузка… ${app.progress}%"
                 installButton.isEnabled = false
                 uninstallButton.visibility = View.GONE
+                return
             }
 
             AppStatus.INSTALLING -> {
@@ -262,6 +263,7 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
                 status.text = "Установка…"
                 installButton.isEnabled = false
                 uninstallButton.visibility = View.GONE
+                return
             }
 
             AppStatus.ERROR -> {
@@ -278,18 +280,45 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
             }
         }
 
+        // ───────────────────────
+        // SELF APP (rus.setv)
+        // ───────────────────────
         if (isSelfApp) {
             uninstallButton.visibility = View.GONE
-            installButton.visibility = if (hasUpdate) View.VISIBLE else View.GONE
-            installButton.text = "Обновить"
+
+            if (hasUpdate) {
+                installButton.visibility = View.VISIBLE
+                installButton.text = "Обновить"
+                installButton.isEnabled = true
+            } else {
+                installButton.visibility = View.VISIBLE
+                installButton.text = "Актуальная версия"
+                installButton.isEnabled = false
+            }
+
             return
         }
 
+        // ───────────────────────
+        // OTHER APPS
+        // ───────────────────────
         installButton.visibility = View.VISIBLE
-        installButton.text = when {
-            !installed -> "Установить"
-            hasUpdate -> "Обновить"
-            else -> "Открыть"
+
+        when {
+            !installed -> {
+                installButton.text = "Установить"
+                installButton.isEnabled = true
+            }
+
+            hasUpdate -> {
+                installButton.text = "Обновить"
+                installButton.isEnabled = true
+            }
+
+            else -> {
+                installButton.text = "Открыть"
+                installButton.isEnabled = true
+            }
         }
     }
 
