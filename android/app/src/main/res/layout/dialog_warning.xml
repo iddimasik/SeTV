@@ -11,13 +11,15 @@
 
     <!-- ЗАГОЛОВОК -->
     <TextView
-        android:layout_width="1200dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ВНИМАНИЕ"
+        android:text="ВНИМАНИЕ! ОБЯЗАТЕЛЬНО К ПРОЧТЕНИЮ!"
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:paddingBottom="16dp"/>
+        android:gravity="center"
+        android:textAlignment="center"
+        android:paddingBottom="32dp"/>
 
     <!-- ТЕКСТ С ПРОКРУТКОЙ -->
     <ScrollView
@@ -30,14 +32,16 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- 1 абзац -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#DDDDDD"
                 android:textSize="16sp"
                 android:lineSpacingExtra="6dp"
-                android:text="Это приложение представляет собой простой установщик для загрузки программ из встроенных файлов или файлов, предоставленных пользователем." />
+                android:text="A-Store представляет из себя приложение для загрузки и установки файлов." />
 
+            <!-- 2 абзац -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,8 +49,9 @@
                 android:textColor="#DDDDDD"
                 android:textSize="16sp"
                 android:lineSpacingExtra="6dp"
-                android:text="Если во время установки, использования, распространения или обмена этим приложением и связанными с ним материалами вы нарушаете применимые законы или права третьих лиц, вы несете полную ответственность за свои действия. Разработчик и издатель этого приложения не несут ответственности за любые подобные нарушения. Некоторые функции или контент этого приложения могут включать рекламу третьих лиц." />
+                android:text="Если во время установки, использования, распространения приложения или связанными с ним материалами вы нарушаете закон или права третьих лиц, вы несете полную ответственность за свои действия." />
 
+            <!-- 3 абзац -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,8 +59,9 @@
                 android:textColor="#DDDDDD"
                 android:textSize="16sp"
                 android:lineSpacingExtra="6dp"
-                android:text="Большинство приложений получены с форума 4PDA и из интернета и не содержат вирусов. Если у вас есть какие-либо опасения, пожалуйста, закройте приложение и удалите его." />
+                android:text="Приложения взяты из официальных источников или источников, находящихся в открытом доступе в интернете. Если у вас есть какие-либо опасения, закройте приложение и удалите его." />
 
+            <!-- 4 абзац -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,7 +69,7 @@
                 android:textColor="#DDDDDD"
                 android:textSize="16sp"
                 android:lineSpacingExtra="6dp"
-                android:text="Нажимая кнопку «Согласен» или продолжая использовать это приложение, вы подтверждаете, что полностью прочитали, поняли и приняли эти условия." />
+                android:text="Нажимая кнопку &quot;Согласен&quot;, вы подтверждаете, что полностью прочитали и приняли эти условия." />
 
         </LinearLayout>
     </ScrollView>
@@ -74,7 +80,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="24dp"
-       android:layout_marginStart="550dp">
+        android:layout_marginStart="550dp">
 
         <Button
             android:id="@+id/btn_cancel"
