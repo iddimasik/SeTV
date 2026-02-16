@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- FOCUSED -->
+    <item android:state_focused="true">
+        <layer-list>
+            <!-- Зеленая рамка -->
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#1E1E1E"/>
+                    <corners android:radius="10dp"/>
+                    <stroke
+                        android:width="2dp"
+                        android:color="#09E490"/> <!-- Зеленый -->
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+
+    <!-- DEFAULT -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#1E1E1E"/> <!-- Серый как у карточек -->
+            <corners android:radius="10dp"/>
+        </shape>
+    </item>
+
+</selector>

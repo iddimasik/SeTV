@@ -330,8 +330,8 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             val iconView = filter.findViewById<ImageView>(R.id.filterIcon)
 
             if (filter == selectedFilter) {
-                textView.setTextColor(0xFF2196F3.toInt())
-                iconView.setColorFilter(0xFF2196F3.toInt())
+                textView.setTextColor(0xFF09E490.toInt())
+                iconView.setColorFilter(0xFF09E490.toInt())
             } else {
                 textView.setTextColor(0xFFFFFFFF.toInt())
                 iconView.setColorFilter(0xFFFFFFFF.toInt())
