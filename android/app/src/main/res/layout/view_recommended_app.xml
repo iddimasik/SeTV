@@ -33,13 +33,24 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="8dp">
 
-                <ImageView
-                    android:id="@+id/recommendedImage"
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="42dp"
                     android:layout_height="42dp"
-                    android:scaleType="centerCrop"
-                    android:background="@drawable/ic_app_placeholder"
-                    android:clipToOutline="true" />
+                    app:cardCornerRadius="9dp"
+                    app:cardElevation="0dp"
+                    app:cardUseCompatPadding="false"
+                    app:cardPreventCornerOverlap="false"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:id="@+id/recommendedImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:scaleX="1.3"
+                        android:scaleY="1.3" />
+                </com.google.android.material.card.MaterialCardView>
+
 
                 <LinearLayout
                     android:layout_width="0dp"

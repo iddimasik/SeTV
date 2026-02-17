@@ -56,11 +56,24 @@
                 android:layout_height="48dp"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/main_image"
+                <!-- ICON CONTAINER -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:scaleType="centerCrop" />
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:cardUseCompatPadding="false"
+                    app:cardPreventCornerOverlap="true"
+                    android:clipToOutline="true">
+
+                    <ImageView
+                        android:id="@+id/main_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:scaleX="1.3"
+                        android:scaleY="1.3" />
+                </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -71,7 +84,7 @@
 
                     <TextView
                         android:id="@+id/title_text"
-                        android:layout_width="97dp"
+                        android:layout_width="match_parent"
                         android:layout_height="24dp"
                         android:ellipsize="end"
                         android:includeFontPadding="false"
@@ -81,7 +94,7 @@
 
                     <TextView
                         android:id="@+id/category_text"
-                        android:layout_width="116dp"
+                        android:layout_width="match_parent"
                         android:layout_height="24dp"
                         android:maxLines="1"
                         android:ellipsize="end"
