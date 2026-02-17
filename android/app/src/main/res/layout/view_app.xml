@@ -84,7 +84,7 @@
 
                     <TextView
                         android:id="@+id/title_text"
-                        android:layout_width="match_parent"
+                        android:layout_width="97dp"
                         android:layout_height="24dp"
                         android:ellipsize="end"
                         android:includeFontPadding="false"
