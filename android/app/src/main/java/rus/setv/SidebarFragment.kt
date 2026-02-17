@@ -17,6 +17,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
     private lateinit var allAppsItem: LinearLayout
     private lateinit var moviesItem: LinearLayout
     private lateinit var programsItem: LinearLayout
+    private lateinit var gamesItem: LinearLayout
     private lateinit var otherItem: LinearLayout
     private lateinit var updateItem: LinearLayout
     private lateinit var settingsItem: LinearLayout
@@ -25,6 +26,8 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
     private lateinit var allAppsText: TextView
     private lateinit var moviesText: TextView
     private lateinit var programsText: TextView
+
+    private lateinit var gamesText: TextView
     private lateinit var otherText: TextView
     private lateinit var updateText: TextView
     private lateinit var settingsText: TextView
@@ -40,6 +43,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         allAppsItem = view.findViewById(R.id.menu_apps)
         moviesItem = view.findViewById(R.id.menu_movies)
         programsItem = view.findViewById(R.id.menu_programs)
+        gamesItem = view.findViewById(R.id.menu_games)
         otherItem = view.findViewById(R.id.menu_other)
         updateItem = view.findViewById(R.id.menu_update)
         settingsItem = view.findViewById(R.id.menu_settings)
@@ -49,6 +53,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         allAppsText = view.findViewById(R.id.text_apps)
         moviesText = view.findViewById(R.id.text_movies)
         programsText = view.findViewById(R.id.text_programs)
+        gamesText = view.findViewById(R.id.text_games)
         otherText = view.findViewById(R.id.text_other)
         updateText = view.findViewById(R.id.text_update)
         settingsText = view.findViewById(R.id.text_settings)
@@ -58,6 +63,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         allAppsText.text = "Все приложения"
         moviesText.text = "Фильмы и ТВ"
         programsText.text = "Программы"
+        gamesText.text = "Игры"
         otherText.text = "Прочее"
         updateText.text = "Обновить приложение"
         settingsText.text = "О приложении"
@@ -67,6 +73,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         setupItem(allAppsItem, allAppsText) { openContent(CatalogFragment.newInstance("ALL")) }
         setupItem(moviesItem, moviesText) { openContent(CatalogFragment.newInstance("Фильмы и ТВ")) }
         setupItem(programsItem, programsText) { openContent(CatalogFragment.newInstance("Программы")) }
+        setupItem(gamesItem, gamesText) { openContent(CatalogFragment.newInstance("Игры")) }
         setupItem(otherItem, otherText) { openContent(CatalogFragment.newInstance("Прочее")) }
         setupItem(updateItem, updateText) { openUpdateApp() }
         setupItem(settingsItem, settingsText, closeSidebarOnClick = false) { openSettings() }  // Keep sidebar open!
@@ -76,6 +83,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         allAppsItem.isFocusable = false
         moviesItem.isFocusable = false
         programsItem.isFocusable = false
+        gamesItem.isFocusable = false
         otherItem.isFocusable = false
         updateItem.isFocusable = false
         settingsItem.isFocusable = false
@@ -184,6 +192,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         allAppsText.visibility = View.VISIBLE
         moviesText.visibility = View.VISIBLE
         programsText.visibility = View.VISIBLE
+        gamesText.visibility = View.VISIBLE
         otherText.visibility = View.VISIBLE
         updateText.visibility = View.VISIBLE
         settingsText.visibility = View.VISIBLE
@@ -193,6 +202,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         allAppsItem.isFocusable = true
         moviesItem.isFocusable = true
         programsItem.isFocusable = true
+        gamesItem.isFocusable = true
         otherItem.isFocusable = true
         updateItem.isFocusable = true
         settingsItem.isFocusable = true
@@ -203,6 +213,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         allAppsText.visibility = View.GONE
         moviesText.visibility = View.GONE
         programsText.visibility = View.GONE
+        gamesText.visibility = View.GONE
         otherText.visibility = View.GONE
         updateText.visibility = View.GONE
         settingsText.visibility = View.GONE
@@ -212,6 +223,7 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
         allAppsItem.isFocusable = false
         moviesItem.isFocusable = false
         programsItem.isFocusable = false
+        gamesItem.isFocusable = false
         otherItem.isFocusable = false
         updateItem.isFocusable = false
         settingsItem.isFocusable = false

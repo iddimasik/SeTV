@@ -134,6 +134,36 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
+    <!-- GAMES -->
+    <LinearLayout
+        android:id="@+id/menu_games"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:focusable="true"
+        android:background="@drawable/sidebar_item_bg">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_games"
+            app:tint="@drawable/text_color_focus"
+            android:duplicateParentState="true"/>
+
+        <TextView
+            android:id="@+id/text_games"
+            android:layout_marginStart="16dp"
+            android:text="Игры"
+            android:textSize="18sp"
+            android:textColor="@drawable/text_color_focus"
+            android:duplicateParentState="true"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
     <!-- OTHER -->
     <LinearLayout
         android:id="@+id/menu_other"
