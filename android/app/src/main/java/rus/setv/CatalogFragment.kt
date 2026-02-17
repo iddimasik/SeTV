@@ -312,6 +312,31 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             updateFilterSelection()
         }
 
+        // UP from filterAll, filterInstalled, filterNotInstalled → banner
+        val filterUpToBanner = View.OnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.action == KeyEvent.ACTION_DOWN) {
+                bannerCarousel.requestFocus()
+                true
+            } else false
+        }
+        filterAll.setOnKeyListener(filterUpToBanner)
+        filterInstalled.setOnKeyListener(filterUpToBanner)
+        filterNotInstalled.setOnKeyListener(filterUpToBanner)
+
+        // UP from filterUpdates → last recommended item
+        filterUpdates.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.action == KeyEvent.ACTION_DOWN) {
+                val lastPos = recommendedAdapter.size() - 1
+                if (lastPos >= 0) {
+                    recommendedGrid.findViewHolderForAdapterPosition(lastPos)
+                        ?.itemView?.requestFocus()
+                } else {
+                    bannerCarousel.requestFocus()
+                }
+                true
+            } else false
+        }
+
         // Set initial selection
         updateFilterSelection()
     }
@@ -413,7 +438,12 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
 
         val presenter = AppCardPresenter { openAppDetails(it) }
         presenter.onFirstRowNavigateUp = {
-            filterAll.requestFocus()
+            val col = grid.selectedPosition % currentGridColumns
+            when (col) {
+                0 -> filterAll.requestFocus()
+                1 -> filterNotInstalled.requestFocus()
+                else -> filterUpdates.requestFocus()  // col 2, 3
+            }
         }
         presenter.isFirstRowProvider = {
             grid.selectedPosition < currentGridColumns
