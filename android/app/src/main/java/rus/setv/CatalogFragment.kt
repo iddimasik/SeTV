@@ -85,7 +85,6 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         // Sidebar starts closed, set grid to 4 columns
         updateGridColumns()
 
-        // Load apps only if not already loaded
         if (allAppsList.isEmpty()) {
             loadAppsFromServer()
         }
