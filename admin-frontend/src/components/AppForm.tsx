@@ -329,6 +329,7 @@ const AppForm: React.FC = () => {
                             <option value="">Выбрать</option>
                             <option value="Фильмы и ТВ">Фильмы и ТВ</option>
                             <option value="Программы">Программы</option>
+                            <option value="Игры">Игры</option>
                             <option value="Прочее">Прочее</option>
                         </select>
                     </label>
