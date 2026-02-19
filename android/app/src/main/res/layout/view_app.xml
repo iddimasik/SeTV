@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:background="@drawable/card_focus_background"
     android:clipChildren="false"
     android:clipToPadding="false"
 
@@ -34,15 +33,13 @@
         android:layout_height="match_parent"
 
         android:backgroundTint="#1E1E1E"
-        android:clipChildren="true"
-        android:clipToPadding="true"
 
         app:cardCornerRadius="12dp"
         app:cardPreventCornerOverlap="true"
         app:cardUseCompatPadding="false"
 
-        android:layout_marginStart="3dp"
-        android:layout_marginEnd="3dp">
+        app:strokeColor="#09E490"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -56,7 +53,6 @@
                 android:layout_height="48dp"
                 android:orientation="horizontal">
 
-                <!-- ICON CONTAINER -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -84,7 +80,7 @@
 
                     <TextView
                         android:id="@+id/title_text"
-                        android:layout_width="97dp"
+                        android:layout_width="match_parent"
                         android:layout_height="24dp"
                         android:ellipsize="end"
                         android:includeFontPadding="false"
@@ -115,7 +111,6 @@
                 android:ellipsize="end"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
-
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
