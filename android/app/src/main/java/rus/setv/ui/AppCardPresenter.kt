@@ -4,10 +4,12 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
+import com.google.android.material.card.MaterialCardView
 import rus.setv.R
 import rus.setv.model.AppItem
 import rus.setv.model.AppStatus
@@ -39,15 +41,14 @@ class AppCardPresenter(
         val title = root.findViewById<TextView>(R.id.title_text)
         val category = root.findViewById<TextView>(R.id.category_text)
         val desc = root.findViewById<TextView>(R.id.content_text)
-        val content = root.findViewById<View>(R.id.cardContent)
+        val content = root.findViewById<MaterialCardView>(R.id.cardContent)
         val badge = root.findViewById<ImageView>(R.id.status_badge)
 
         title.text = app.name
         category.text = app.category
         desc.text = app.description
 
-
-        badge.visibility = View.GONE
+        // STATUS BADGE
         val badgeRes = when (app.status) {
             AppStatus.INSTALLED -> R.drawable.ic_installed
             AppStatus.NOT_INSTALLED -> R.drawable.ic_uninstalled
@@ -59,23 +60,30 @@ class AppCardPresenter(
         badge.setImageResource(badgeRes)
         badge.visibility = View.VISIBLE
 
+        // ICON
         Glide.with(root)
             .load(app.iconUrl)
             .placeholder(R.drawable.ic_app_placeholder)
             .error(R.drawable.ic_app_placeholder)
             .into(image)
 
-
         root.setOnFocusChangeListener { _, hasFocus ->
-            val scale = if (hasFocus) 1.08f else 1.0f
-            val elevation = if (hasFocus) 24f else 0f
 
-            content.animate()
+            val scale = if (hasFocus) 1.05f else 1f
+            val elevation = if (hasFocus) 20f else 0f
+
+            root.animate()
                 .scaleX(scale)
                 .scaleY(scale)
-                .setDuration(150)
-                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .setDuration(160)
+                .setInterpolator(DecelerateInterpolator())
                 .start()
+
+            content.strokeWidth = if (hasFocus) {
+                (2 * root.resources.displayMetrics.density).toInt()
+            } else {
+                0
+            }
 
             root.elevation = elevation
         }
@@ -92,12 +100,14 @@ class AppCardPresenter(
                     onFirstRowNavigateUp?.invoke()
                     true
                 }
+
                 keyCode == KeyEvent.KEYCODE_DPAD_LEFT &&
                         event.action == KeyEvent.ACTION_DOWN &&
                         isFirstColumnProvider?.invoke() == true -> {
                     onNavigateLeft?.invoke()
                     true
                 }
+
                 else -> false
             }
         }
