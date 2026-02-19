@@ -17,12 +17,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- BANNERS -->
-        <rus.setv.ui.BannerCarousel
-            android:id="@+id/bannerCarousel"
+        <!-- BANNERS + DOTS -->
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"/>
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <rus.setv.ui.BannerCarousel
+                android:id="@+id/bannerCarousel"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <LinearLayout
+                android:id="@+id/bannerDotsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="1dp"/>
+        </LinearLayout>
 
         <!-- RECOMMENDED BLOCK -->
         <LinearLayout

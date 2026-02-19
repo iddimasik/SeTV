@@ -31,6 +31,8 @@ class BannerCarousel @JvmOverloads constructor(
     var onBannerClick: ((BannerItem) -> Unit)? = null
     var onLeftKey: (() -> Unit)? = null
 
+    var onBannerChanged: ((Int) -> Unit)? = null
+
     private val runnable = object : Runnable {
         override fun run() {
             if (banners.size < 2) return
@@ -41,10 +43,13 @@ class BannerCarousel @JvmOverloads constructor(
             fadeOut.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     imageView.setImageResource(banners[next].imageRes)
+
                     ObjectAnimator.ofFloat(imageView, "alpha", 0f, 1f)
                         .setDuration(animDuration)
                         .start()
+
                     index = next
+                    onBannerChanged?.invoke(index)
                 }
             })
             fadeOut.start()
@@ -105,7 +110,10 @@ class BannerCarousel @JvmOverloads constructor(
         if (banners.isNotEmpty()) {
             imageView.setImageResource(banners[0].imageRes)
             imageView.alpha = 1f
-            postDelayed(runnable, switchDelay)
+            onBannerChanged?.invoke(0)
+            if (banners.size > 1) {
+                postDelayed(runnable, switchDelay)
+            }
         }
     }
 

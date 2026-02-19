@@ -7,6 +7,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -50,12 +51,15 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private lateinit var filterNotInstalled: View
     private lateinit var filterUpdates: View
 
+    private lateinit var bannerDotsContainer: LinearLayout
+
     // DATA
     private val repository = AppsRepository()
     private var category = "ALL"
     private var allAppsList: List<AppItem> = emptyList()
     private var recommendedApps: List<AppItem> = emptyList()
-    private var currentGridColumns = 4
+    private var currentGridColumns = 3  // Always 3 columns
+    private var lastKnownSelectedPosition = 0  // Track real position from callback
     private var selectedAppBeforeDetails: AppItem? = null
 
     // FILTERS
@@ -64,7 +68,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
 
     // RECOMMENDED ROTATION
     private var recIndex = 0
-    private val bannerDelay = 8000L
+    private val bannerDelay = 30000L
 
     // ───────────────────────
     // LIFECYCLE
@@ -155,15 +159,53 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // TOP BANNERS
     // ───────────────────────
     private fun setupTopRow(root: View) {
+
         bannerCarousel = root.findViewById(R.id.bannerCarousel)
-        bannerCarousel.setBanners(
-            listOf(
-                BannerItem("VLC", R.drawable.ic_vlc, "https://www.videolan.org"),
-                BannerItem("YouTube", R.drawable.banner_youtube, "https://youtube.com")
-            )
+        bannerDotsContainer = root.findViewById(R.id.bannerDotsContainer)
+
+        val banners = listOf(
+            BannerItem("VLC", R.drawable.ic_vlc, "https://www.videolan.org"),
+            BannerItem("YouTube", R.drawable.banner_youtube, "https://youtube.com")
         )
+
+        bannerCarousel.setBanners(banners)
+
+        createBannerDots(banners.size)
+
+        bannerCarousel.onBannerChanged = { index ->
+            updateBannerDots(index)
+        }
+
         bannerCarousel.onBannerClick = { openBannerLink(it.url) }
         bannerCarousel.onLeftKey = { openSidebarAndFocus() }
+    }
+
+    private fun createBannerDots(count: Int) {
+        bannerDotsContainer.removeAllViews()
+
+        repeat(count) {
+            val dot = View(requireContext())
+
+            val size = (6 * resources.displayMetrics.density).toInt()
+            val margin = (6 * resources.displayMetrics.density).toInt()
+
+            val params = LinearLayout.LayoutParams(size, size)
+            params.setMargins(margin, 0, margin, 0)
+
+            dot.layoutParams = params
+            dot.setBackgroundResource(R.drawable.dot_selector)
+
+            bannerDotsContainer.addView(dot)
+        }
+
+        updateBannerDots(0)
+    }
+
+    private fun updateBannerDots(activeIndex: Int) {
+        for (i in 0 until bannerDotsContainer.childCount) {
+            val dot = bannerDotsContainer.getChildAt(i)
+            dot.isSelected = i == activeIndex
+        }
     }
 
     // ───────────────────────
@@ -436,22 +478,30 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         grid = root.findViewById(R.id.appsGrid)
 
         val presenter = AppCardPresenter { openAppDetails(it) }
+
         presenter.onFirstRowNavigateUp = {
-            val col = grid.selectedPosition % currentGridColumns
+            val col = lastKnownSelectedPosition % 3
+            android.util.Log.d("CatalogFragment", "UP: lastKnownPos=$lastKnownSelectedPosition, col=$col")
             when (col) {
                 0 -> filterAll.requestFocus()
                 1 -> filterNotInstalled.requestFocus()
-                else -> filterUpdates.requestFocus()  // col 2, 3
+                2 -> filterUpdates.requestFocus()
+                else -> filterUpdates.requestFocus()
             }
         }
         presenter.isFirstRowProvider = {
-            grid.selectedPosition < currentGridColumns
+            lastKnownSelectedPosition < 3
         }
         presenter.onNavigateLeft = {
             openSidebarAndFocus()
         }
         presenter.isFirstColumnProvider = {
-            grid.selectedPosition % currentGridColumns == 0
+            val pos = lastKnownSelectedPosition
+            val size = adapter.size()
+            val isFirst = pos % 3 == 0
+            android.util.Log.d("CatalogFragment",
+                "LEFT check: lastKnownPos=$pos, adapterSize=$size, pos%3=${pos%3}, isFirst=$isFirst")
+            isFirst
         }
 
         adapter = ArrayObjectAdapter(presenter)
@@ -470,6 +520,9 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
                     position: Int,
                     subposition: Int
                 ) {
+                    lastKnownSelectedPosition = position  // Save real position
+                    android.util.Log.d("CatalogFragment", "Selected: position=$position")
+
                     if (position >= currentGridColumns) {
                         hideTopRow()
                     } else {
@@ -483,9 +536,11 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     }
 
     private fun updateGridColumns() {
-        val mainActivity = activity as? MainActivity
-        currentGridColumns = if (mainActivity?.isSidebarOpen == true) 3 else 4
-        grid.setNumColumns(currentGridColumns)
+        // Always keep 3 columns, grid auto-resizes card width based on available space
+        // Sidebar open = less space = narrower cards
+        // Sidebar closed = more space = wider cards
+        currentGridColumns = 3
+        grid.setNumColumns(3)
     }
 
     private fun hideTopRow() {
@@ -530,12 +585,12 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // SIDEBAR
     // ───────────────────────
     override fun onSidebarOpened() {
-        updateGridColumns()
+        // No need to update grid columns - always 3
         restartRecommendedRotation()
     }
 
     override fun onSidebarClosed() {
-        updateGridColumns()
+        // No need to update grid columns - always 3
         restartRecommendedRotation()
     }
 
