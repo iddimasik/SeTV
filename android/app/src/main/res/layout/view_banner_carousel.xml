@@ -6,25 +6,24 @@
     android:layout_height="wrap_content"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:padding="8dp"
-
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
     android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:background="@drawable/card_focus_background">
+    android:focusableInTouchMode="true">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:clickable="true"
-        android:background="@drawable/card_focus_background"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="16dp"
         app:cardUseCompatPadding="false"
         app:cardPreventCornerOverlap="true"
+        app:cardElevation="0dp"
+        app:strokeColor="#09E490"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="#1E1E1E"
         android:layout_marginStart="6dp"
         android:layout_marginEnd="6dp">
 
@@ -32,7 +31,7 @@
             android:id="@+id/bannerImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:duplicateParentState="true"/>
+            android:scaleType="centerCrop"/>
     </com.google.android.material.card.MaterialCardView>
+
 </FrameLayout>

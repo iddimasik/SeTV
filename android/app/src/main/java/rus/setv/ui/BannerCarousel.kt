@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.google.android.material.card.MaterialCardView
@@ -17,6 +18,7 @@ class BannerCarousel @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
+    private val rootContainer: FrameLayout
     private val cardContainer: MaterialCardView
     private val imageView: ImageView
 
@@ -46,45 +48,52 @@ class BannerCarousel @JvmOverloads constructor(
                 }
             })
             fadeOut.start()
+
             postDelayed(this, switchDelay)
         }
     }
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.view_banner_carousel, this, true)
+        LayoutInflater.from(context)
+            .inflate(R.layout.view_banner_carousel, this, true)
 
-        val root = findViewById<FrameLayout>(R.id.bannerRoot)
+        rootContainer = findViewById(R.id.bannerRoot)
         cardContainer = findViewById(R.id.cardContainer)
         imageView = findViewById(R.id.bannerImage)
 
-        root.setOnFocusChangeListener { _, hasFocus ->
-            val scale = if (hasFocus) 1.06f else 1.0f
+        rootContainer.setOnFocusChangeListener { _, hasFocus ->
+
+            val scale = if (hasFocus) 1.05f else 1f
             val elevation = if (hasFocus) 24f else 0f
 
             cardContainer.animate()
                 .scaleX(scale)
                 .scaleY(scale)
                 .setDuration(150)
-                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .setInterpolator(DecelerateInterpolator())
                 .start()
 
-            root.elevation = elevation
+            cardContainer.strokeWidth = if (hasFocus) {
+                (3 * resources.displayMetrics.density).toInt()
+            } else {
+                0
+            }
+
+            rootContainer.elevation = elevation
         }
 
-        root.setOnClickListener {
-            banners.getOrNull(index)?.let { banner ->
-                onBannerClick?.invoke(banner)
+        rootContainer.setOnClickListener {
+            banners.getOrNull(index)?.let {
+                onBannerClick?.invoke(it)
             }
         }
 
-        root.setOnKeyListener { _, keyCode, event ->
+        rootContainer.setOnKeyListener { _, keyCode, event ->
             if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT &&
                 event.action == android.view.KeyEvent.ACTION_DOWN) {
                 onLeftKey?.invoke()
                 true
-            } else {
-                false
-            }
+            } else false
         }
     }
 
@@ -92,6 +101,7 @@ class BannerCarousel @JvmOverloads constructor(
         removeCallbacks(runnable)
         banners = list
         index = 0
+
         if (banners.isNotEmpty()) {
             imageView.setImageResource(banners[0].imageRes)
             imageView.alpha = 1f
