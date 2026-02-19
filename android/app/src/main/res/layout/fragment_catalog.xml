@@ -44,7 +44,8 @@
                 android:maxLines="1"
                 android:text="Рекомендации"
                 android:textColor="@android:color/white"
-                android:textSize="16sp"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 android:paddingStart="12dp"
                 android:paddingEnd="2dp"/>
 

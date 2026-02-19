@@ -3,10 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="36dp"
+    android:layout_height="40dp"
     android:orientation="horizontal"
     android:gravity="center"
-    android:paddingHorizontal="12dp"
+    android:paddingHorizontal="14dp"
     android:paddingVertical="6dp"
     android:background="@drawable/filter_background"
     android:focusable="true"
@@ -15,9 +15,9 @@
 
     <ImageView
         android:id="@+id/filterIcon"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="6dp"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginEnd="8dp"
         android:src="@drawable/ic_apps"
         app:tint="@android:color/white" />
 
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:text="ALL"
         android:textColor="@drawable/text_color_focus"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
 </LinearLayout>
