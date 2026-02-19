@@ -3,6 +3,7 @@ package rus.setv.ui
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -21,6 +22,7 @@ class RecommendedAppView @JvmOverloads constructor(
     private val category: TextView
     private val badgeRecommended: TextView
     private val cardContent: MaterialCardView
+    private val rootContainer: FrameLayout
 
     private var boundApp: AppItem? = null
 
@@ -28,14 +30,15 @@ class RecommendedAppView @JvmOverloads constructor(
         LayoutInflater.from(context)
             .inflate(R.layout.view_recommended_app, this, true)
 
-        val root = findViewById<FrameLayout>(R.id.recommendedRoot)
+        rootContainer = findViewById(R.id.recommendedRoot)
         cardContent = findViewById(R.id.cardContent)
         image = findViewById(R.id.recommendedImage)
         title = findViewById(R.id.recommendedTitle)
         category = findViewById(R.id.recommendedCategory)
         badgeRecommended = findViewById(R.id.badgeRecommended)
 
-        root.setOnFocusChangeListener { _, hasFocus ->
+        rootContainer.setOnFocusChangeListener { _, hasFocus ->
+
             val scale = if (hasFocus) 1.08f else 1f
             val elevation = if (hasFocus) 24f else 0f
 
@@ -43,13 +46,19 @@ class RecommendedAppView @JvmOverloads constructor(
                 .scaleX(scale)
                 .scaleY(scale)
                 .setDuration(150)
-                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                .setInterpolator(DecelerateInterpolator())
                 .start()
 
-            root.elevation = elevation
+            cardContent.strokeWidth = if (hasFocus) {
+                (2 * resources.displayMetrics.density).toInt()
+            } else {
+                0
+            }
+
+            rootContainer.elevation = elevation
         }
 
-        root.setOnClickListener {
+        rootContainer.setOnClickListener {
             boundApp?.let { onAppClick?.invoke(it) }
         }
     }

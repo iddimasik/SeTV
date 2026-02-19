@@ -2,27 +2,29 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/recommendedRoot"
-    android:layout_width="290dp"
+    android:layout_width="320dp"
     android:layout_height="54dp"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:background="@drawable/card_focus_background"
     android:padding="4dp"
     android:clipChildren="false"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:clipToOutline="true">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="16dp"
         app:cardUseCompatPadding="false"
         app:cardPreventCornerOverlap="true"
-        android:backgroundTint="#1E1E1E"
+        app:cardBackgroundColor="#1E1E1E"
+        app:strokeColor="#09E490"
+        app:strokeWidth="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp">
 
-        <FrameLayout
+    <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -61,12 +63,12 @@
 
                     <TextView
                         android:id="@+id/recommendedTitle"
-                        android:layout_width="match_parent"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:textSize="18sp"
+                        android:ellipsize="end"
                         android:maxLines="1"
-                        android:ellipsize="end" />
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/recommendedCategory"
@@ -88,6 +90,7 @@
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="2dp"
                 android:text="Рекомендовано"
+                android:textStyle="bold"
                 android:textSize="9sp"
                 android:textColor="@android:color/black"
                 android:background="@drawable/bg_badge"
