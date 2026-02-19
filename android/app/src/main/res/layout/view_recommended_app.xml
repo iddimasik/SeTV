@@ -63,7 +63,7 @@
 
                     <TextView
                         android:id="@+id/recommendedTitle"
-                        android:layout_width="150dp"
+                        android:layout_width="145dp"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
@@ -90,8 +90,7 @@
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="2dp"
                 android:text="Рекомендовано"
-                android:textStyle="bold"
-                android:textSize="9sp"
+                android:textSize="11sp"
                 android:textColor="@android:color/black"
                 android:background="@drawable/bg_badge"
                 android:visibility="gone" />
