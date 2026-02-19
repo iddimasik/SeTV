@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import rus.setv.adapter.KeyboardAdapter
 import rus.setv.data.repository.AppsRepository
 import rus.setv.model.AppItem
-import rus.setv.ui.AppCardPresenter
+import rus.setv.ui.AppsGridAdapter
 
 class SearchFragment : Fragment(R.layout.fragment_search),
     MainActivity.SidebarListener {
@@ -39,8 +39,8 @@ class SearchFragment : Fragment(R.layout.fragment_search),
     }
 
     // ───── RESULTS
-    private lateinit var appsGrid: VerticalGridView
-    private lateinit var appsAdapter: ArrayObjectAdapter
+    private lateinit var appsGrid: RecyclerView
+    private lateinit var appsAdapter: AppsGridAdapter
 
     // ───── KEYBOARD
     private lateinit var keyboardGrid: RecyclerView
@@ -171,8 +171,9 @@ class SearchFragment : Fragment(R.layout.fragment_search),
     // APPS GRID
     // ─────────────────────────────
     private fun setupAppsGrid() {
-        val presenter = AppCardPresenter { openAppDetails(it) }
-        presenter.onFirstRowNavigateUp = {
+        appsAdapter = AppsGridAdapter { openAppDetails(it) }
+
+        appsAdapter.onFirstRowNavigateUp = { position ->
             val targetPosition = when (keyboardMode) {
                 KeyboardMode.LETTERS -> when (currentLang) {
                     KeyboardLang.RU -> 32  // "123" button for Russian
@@ -182,41 +183,40 @@ class SearchFragment : Fragment(R.layout.fragment_search),
             }
             keyboardGrid.findViewHolderForAdapterPosition(targetPosition)?.itemView?.requestFocus()
         }
-        presenter.isFirstRowProvider = {
-            val cols = if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
-            appsGrid.selectedPosition < cols
-        }
 
-        // Add LEFT key handler to open sidebar from first column
-        presenter.onNavigateLeft = {
+        appsAdapter.onNavigateLeft = { position ->
             openSidebarAndFocus()
         }
-        presenter.isFirstColumnProvider = {
-            val cols = if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
-            appsGrid.selectedPosition % cols == 0
-        }
-
-        appsAdapter = ArrayObjectAdapter(presenter)
 
         appsGrid.apply {
-            adapter = ItemBridgeAdapter(appsAdapter)
-            verticalSpacing = 12
-            horizontalSpacing = 12
+            layoutManager = GridLayoutManager(requireContext(), 3)  // Always 3 columns
+            adapter = appsAdapter
             isFocusable = true
             descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+
+            // Add spacing
+            addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: android.graphics.Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    outRect.set(6, 6, 6, 6)
+                }
+            })
         }
-
-        updateGridColumns()
     }
 
-    private fun updateGridColumns() {
-        val cols =
-            if ((activity as? MainActivity)?.isSidebarOpen == true) 3 else 4
-        appsGrid.setNumColumns(cols)
+    // updateGridColumns not needed - always 3 columns
+
+    override fun onSidebarOpened() {
+        // No grid column updates needed
     }
 
-    override fun onSidebarOpened() = updateGridColumns()
-    override fun onSidebarClosed() = updateGridColumns()
+    override fun onSidebarClosed() {
+        // No grid column updates needed
+    }
 
     // ─────────────────────────────
     // DATA
@@ -280,8 +280,7 @@ class SearchFragment : Fragment(R.layout.fragment_search),
                 }
             }
 
-        appsAdapter.clear()
-        appsAdapter.addAll(0, filtered)
+        appsAdapter.setApps(filtered)
     }
 
     // ─────────────────────────────
@@ -350,7 +349,7 @@ class SearchFragment : Fragment(R.layout.fragment_search),
 
         // Add results provider to block DOWN when no results
         keyboardAdapter.hasResultsProvider = {
-            appsAdapter.size() > 0
+            appsAdapter.itemCount > 0
         }
 
         keyboardLayoutManager.spanSizeLookup =

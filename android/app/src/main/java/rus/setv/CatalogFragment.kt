@@ -12,6 +12,8 @@ import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.ItemBridgeAdapter
 import androidx.leanback.widget.VerticalGridView
@@ -20,7 +22,7 @@ import rus.setv.data.repository.AppsRepository
 import rus.setv.model.AppItem
 import rus.setv.model.AppStatus
 import rus.setv.model.BannerItem
-import rus.setv.ui.AppCardPresenter
+import rus.setv.ui.AppsGridAdapter
 import rus.setv.ui.BannerCarousel
 import rus.setv.ui.RecommendedAppPresenter
 
@@ -38,8 +40,8 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     }
 
     // UI
-    private lateinit var grid: VerticalGridView
-    private lateinit var adapter: ArrayObjectAdapter
+    private lateinit var grid: RecyclerView
+    private lateinit var gridAdapter: AppsGridAdapter
     private lateinit var recommendedGrid: VerticalGridView
     private lateinit var recommendedAdapter: ArrayObjectAdapter
     private lateinit var bannerCarousel: BannerCarousel
@@ -86,8 +88,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         setupStatusFilters(view)
         setupAppsGrid(view)
 
-        // Sidebar starts closed, set grid to 4 columns
-        updateGridColumns()
+        // GridLayoutManager always has 3 columns - no need to update
 
         if (allAppsList.isEmpty()) {
             loadAppsFromServer()
@@ -98,47 +99,61 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         super.onResume()
 
         if (selectedAppBeforeDetails != null) {
-            // Returning from app details - restore adapter if empty
+            // Returning from app details - restore focus
             val appToFocus = selectedAppBeforeDetails
             selectedAppBeforeDetails = null
 
-            // If adapter is empty, restore it WITHOUT reloading data
-            if (adapter.size() == 0 && allAppsList.isNotEmpty()) {
-                applyStatusFilter()
-            }
+            // Update statuses and reapply filter to refresh grid
+            updateAllStatuses()
+            applyStatusFilter()
 
-            // Restart recommended rotation
-            restartRecommendedRotation()
-
-            // Find and focus the app
+            // Find the app position in grid
             grid.post {
-                val position = (0 until adapter.size()).firstOrNull {
-                    (adapter.get(it) as? AppItem)?.packageName == appToFocus?.packageName
+                // Search through ViewHolders to find the app
+                for (i in 0 until gridAdapter.itemCount) {
+                    val viewHolder = grid.findViewHolderForAdapterPosition(i)
+                    if (viewHolder != null) {
+                        // Already visible, check if match
+                        // Will find via scrolling below
+                    }
                 }
 
-                if (position != null && position >= 0) {
-                    // Set topRow visibility based on position
-                    if (position >= currentGridColumns) {
+                // Just scroll and request focus
+                // gridAdapter doesn't expose items, so we use position from allAppsList
+                val filteredList = when (currentStatusFilter) {
+                    StatusFilter.ALL -> allAppsList
+                    StatusFilter.INSTALLED -> allAppsList.filter { it.status == AppStatus.INSTALLED }
+                    StatusFilter.NOT_INSTALLED -> allAppsList.filter { it.status == AppStatus.NOT_INSTALLED }
+                    StatusFilter.UPDATE_AVAILABLE -> allAppsList.filter { it.status == AppStatus.UPDATE_AVAILABLE }
+                }
+
+                val position = filteredList.indexOfFirst {
+                    it.packageName == appToFocus?.packageName
+                }
+
+                if (position >= 0 && position < gridAdapter.itemCount) {
+                    // Hide/show topRow based on position
+                    if (position >= 3) {
                         hideTopRow()
                     } else {
                         showTopRow()
                     }
 
-                    grid.post {
-                        val viewHolder = grid.findViewHolderForAdapterPosition(position)
-                        if (viewHolder != null) {
-                            viewHolder.itemView.requestFocus()
-                        } else {
-                            grid.scrollToPosition(position)
-                            grid.postDelayed({
-                                grid.findViewHolderForAdapterPosition(position)?.itemView?.requestFocus()
-                            }, 100)
-                        }
-                    }
+                    grid.scrollToPosition(position)
+                    grid.postDelayed({
+                        grid.findViewHolderForAdapterPosition(position)?.itemView?.requestFocus()
+                    }, 150)
                 } else {
-                    grid.requestFocus()
+                    // App not found, focus first item
+                    showTopRow()
+                    grid.postDelayed({
+                        grid.findViewHolderForAdapterPosition(0)?.itemView?.requestFocus()
+                    }, 150)
                 }
             }
+
+            // Restart recommended rotation
+            restartRecommendedRotation()
         } else {
             // Normal resume
             updateAllStatuses()
@@ -417,14 +432,20 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
                 allAppsList.filter { it.status == AppStatus.UPDATE_AVAILABLE }
         }
 
-        adapter.clear()
-        adapter.addAll(0, filtered)
+        gridAdapter.setApps(filtered)
+
+        // Debug: log first 10 apps in adapter
+        android.util.Log.d("CatalogFragment", "=== ADAPTER CONTENT ===")
+        for (i in 0 until minOf(10, filtered.size)) {
+            android.util.Log.d("CatalogFragment", "Position $i: ${filtered[i].name}")
+        }
+        android.util.Log.d("CatalogFragment", "Total: ${filtered.size} apps")
+        android.util.Log.d("CatalogFragment", "======================")
 
         grid.post {
-            if (adapter.size() > 0) {
-                grid.setSelectedPosition(0)
-            } else {
-                grid.clearFocus()
+            if (filtered.isNotEmpty()) {
+                grid.scrollToPosition(0)
+                grid.findViewHolderForAdapterPosition(0)?.itemView?.requestFocus()
             }
         }
     }
@@ -477,71 +498,63 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private fun setupAppsGrid(root: View) {
         grid = root.findViewById(R.id.appsGrid)
 
-        val presenter = AppCardPresenter { openAppDetails(it) }
+        gridAdapter = AppsGridAdapter { openAppDetails(it) }
 
-        presenter.onFirstRowNavigateUp = {
-            val col = lastKnownSelectedPosition % 3
-            android.util.Log.d("CatalogFragment", "UP: lastKnownPos=$lastKnownSelectedPosition, col=$col")
+        gridAdapter.onFirstRowNavigateUp = { position ->
+            val col = position % 3
+            android.util.Log.d("CatalogFragment", "UP from pos=$position, col=$col")
             when (col) {
                 0 -> filterAll.requestFocus()
                 1 -> filterNotInstalled.requestFocus()
                 2 -> filterUpdates.requestFocus()
-                else -> filterUpdates.requestFocus()
             }
         }
-        presenter.isFirstRowProvider = {
-            lastKnownSelectedPosition < 3
-        }
-        presenter.onNavigateLeft = {
+
+        gridAdapter.onNavigateLeft = { position ->
+            android.util.Log.d("CatalogFragment", "LEFT from pos=$position")
             openSidebarAndFocus()
         }
-        presenter.isFirstColumnProvider = {
-            val pos = lastKnownSelectedPosition
-            val size = adapter.size()
-            val isFirst = pos % 3 == 0
-            android.util.Log.d("CatalogFragment",
-                "LEFT check: lastKnownPos=$pos, adapterSize=$size, pos%3=${pos%3}, isFirst=$isFirst")
-            isFirst
-        }
-
-        adapter = ArrayObjectAdapter(presenter)
 
         grid.apply {
-            adapter = ItemBridgeAdapter(this@CatalogFragment.adapter)
-            verticalSpacing = 12
-            horizontalSpacing = 12
+            layoutManager = GridLayoutManager(requireContext(), 3)
+            adapter = gridAdapter
             isFocusable = true
             descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
 
-            setOnChildViewHolderSelectedListener(object : androidx.leanback.widget.OnChildViewHolderSelectedListener() {
-                override fun onChildViewHolderSelected(
-                    parent: androidx.recyclerview.widget.RecyclerView,
-                    child: androidx.recyclerview.widget.RecyclerView.ViewHolder?,
-                    position: Int,
-                    subposition: Int
+            // Add spacing between items
+            addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: android.graphics.Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
                 ) {
-                    lastKnownSelectedPosition = position  // Save real position
-                    android.util.Log.d("CatalogFragment", "Selected: position=$position")
+                    outRect.set(6, 6, 6, 6) // 12dp spacing = 6dp on each side
+                }
+            })
 
-                    if (position >= currentGridColumns) {
-                        hideTopRow()
-                    } else {
-                        showTopRow()
+            // Hide/show topRow based on scroll position
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    val layoutManager = recyclerView.layoutManager as? GridLayoutManager
+                    if (layoutManager != null) {
+                        val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
+
+                        // Hide topRow if scrolled to second row or below (position >= 3)
+                        if (firstVisiblePosition >= 3) {
+                            hideTopRow()
+                        } else {
+                            showTopRow()
+                        }
                     }
                 }
             })
         }
-
-        updateGridColumns()
     }
 
-    private fun updateGridColumns() {
-        // Always keep 3 columns, grid auto-resizes card width based on available space
-        // Sidebar open = less space = narrower cards
-        // Sidebar closed = more space = wider cards
-        currentGridColumns = 3
-        grid.setNumColumns(3)
-    }
+    // updateGridColumns not needed - GridLayoutManager always has 3 columns
 
     private fun hideTopRow() {
         if (topRow.visibility == View.VISIBLE) {
