@@ -329,71 +329,116 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // STATUS FILTERS
     // ───────────────────────
     private fun setupStatusFilters(root: View) {
+
         filterAll = root.findViewById(R.id.filterStatusAll)
         filterInstalled = root.findViewById(R.id.filterStatusInstalled)
         filterNotInstalled = root.findViewById(R.id.filterStatusNotInstalled)
         filterUpdates = root.findViewById(R.id.filterStatusUpdates)
 
+        // ───── TEXTS ─────
         filterAll.findViewById<TextView>(R.id.filterText).text = "Все"
         filterInstalled.findViewById<TextView>(R.id.filterText).text = "Установлено"
         filterNotInstalled.findViewById<TextView>(R.id.filterText).text = "Не установлено"
         filterUpdates.findViewById<TextView>(R.id.filterText).text = "Обновления"
 
-        filterAll.findViewById<ImageView>(R.id.filterIcon).setImageResource(R.drawable.ic_apps)
+        // ───── ICONS ─────
+        filterAll.findViewById<ImageView>(R.id.filterIcon)
+            .setImageResource(R.drawable.ic_apps)
+
         filterInstalled.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_installed)
+
         filterNotInstalled.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_uninstalled)
+
         filterUpdates.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_upgrade)
 
+        // ───── CLICK HANDLERS ─────
         filterAll.setOnClickListener {
             currentStatusFilter = StatusFilter.ALL
             applyStatusFilter()
             updateFilterSelection()
         }
+
         filterInstalled.setOnClickListener {
             currentStatusFilter = StatusFilter.INSTALLED
             applyStatusFilter()
             updateFilterSelection()
         }
+
         filterNotInstalled.setOnClickListener {
             currentStatusFilter = StatusFilter.NOT_INSTALLED
             applyStatusFilter()
             updateFilterSelection()
         }
+
         filterUpdates.setOnClickListener {
             currentStatusFilter = StatusFilter.UPDATE_AVAILABLE
             applyStatusFilter()
             updateFilterSelection()
         }
 
+        // ───── SCALE + ELEVATION ANIMATION ─────
+        val filters = listOf(filterAll, filterInstalled, filterNotInstalled, filterUpdates)
+
+        filters.forEach { filter ->
+
+            filter.isFocusable = true
+            filter.isFocusableInTouchMode = true
+
+            filter.setOnFocusChangeListener { v, hasFocus ->
+
+                val scale = if (hasFocus) 1.08f else 1f
+                val elevation = if (hasFocus) 24f else 0f
+
+                v.animate()
+                    .scaleX(scale)
+                    .scaleY(scale)
+                    .setDuration(160)
+                    .setInterpolator(android.view.animation.DecelerateInterpolator())
+                    .start()
+
+                v.elevation = elevation
+            }
+        }
+
+        // ───── NAVIGATION UP ─────
+
         // UP from filterAll, filterInstalled, filterNotInstalled → banner
         val filterUpToBanner = View.OnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.action == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP &&
+                event.action == KeyEvent.ACTION_DOWN
+            ) {
                 bannerCarousel.requestFocus()
                 true
             } else false
         }
+
         filterAll.setOnKeyListener(filterUpToBanner)
         filterInstalled.setOnKeyListener(filterUpToBanner)
         filterNotInstalled.setOnKeyListener(filterUpToBanner)
 
         // UP from filterUpdates → last recommended item
         filterUpdates.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.action == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP &&
+                event.action == KeyEvent.ACTION_DOWN
+            ) {
+
                 val lastPos = recommendedAdapter.size() - 1
+
                 if (lastPos >= 0) {
                     recommendedGrid.findViewHolderForAdapterPosition(lastPos)
                         ?.itemView?.requestFocus()
                 } else {
                     bannerCarousel.requestFocus()
                 }
+
                 true
             } else false
         }
 
-        // Set initial selection
+        // ───── INITIAL STATE ─────
         updateFilterSelection()
     }
 
@@ -553,8 +598,6 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             })
         }
     }
-
-    // updateGridColumns not needed - GridLayoutManager always has 3 columns
 
     private fun hideTopRow() {
         if (topRow.visibility == View.VISIBLE) {

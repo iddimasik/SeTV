@@ -89,7 +89,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="8dp"
-        android:paddingBottom="16dp">
+        android:paddingBottom="12dp">
 
         <LinearLayout
             android:id="@+id/statusFiltersContainer"
@@ -103,6 +103,8 @@
                 layout="@layout/item_filter_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="12dp"/>
 
@@ -111,6 +113,8 @@
                 layout="@layout/item_filter_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
                 android:layout_marginEnd="16dp"/>
 
             <include
@@ -118,14 +122,18 @@
                 layout="@layout/item_filter_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
                 android:layout_marginEnd="16dp"/>
 
             <include
                 android:id="@+id/filterStatusUpdates"
                 layout="@layout/item_filter_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginEnd="6dp"/>
         </LinearLayout>
     </HorizontalScrollView>
 
