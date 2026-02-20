@@ -8,6 +8,6 @@
 
     <!-- Обычное состояние -->
     <item
-        android:color="#80FFFFFF"/>
+        android:color="#80505050"/>
 
 </selector>

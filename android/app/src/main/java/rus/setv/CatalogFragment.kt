@@ -46,6 +46,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private lateinit var recommendedAdapter: ArrayObjectAdapter
     private lateinit var bannerCarousel: BannerCarousel
     private lateinit var topRow: View
+    private var topRowOriginalHeight: Int = 0  // Store original height
     private lateinit var filtersScrollView: View
 
     private lateinit var filterAll: View
@@ -81,6 +82,16 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         topRow = view.findViewById(R.id.topRow)
         filtersScrollView = view.findViewById(R.id.filtersScrollView)
 
+        // Fix topRow height after first layout to prevent changes
+        topRow.post {
+            if (topRowOriginalHeight == 0) {
+                topRowOriginalHeight = topRow.height
+                val params = topRow.layoutParams
+                params.height = topRowOriginalHeight
+                topRow.layoutParams = params
+            }
+        }
+
         setupTopRow(view)
         setupRecommendedRow(view)
         setupStatusFilters(view)
@@ -95,7 +106,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         super.onResume()
 
         if (selectedAppBeforeDetails != null) {
-            // Returning from app details - restore focus
+
             val appToFocus = selectedAppBeforeDetails
             selectedAppBeforeDetails = null
 
@@ -114,8 +125,6 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
                     }
                 }
 
-                // Just scroll and request focus
-                // gridAdapter doesn't expose items, so we use position from allAppsList
                 val filteredList = when (currentStatusFilter) {
                     StatusFilter.ALL -> allAppsList
                     StatusFilter.INSTALLED -> allAppsList.filter { it.status == AppStatus.INSTALLED }
@@ -154,6 +163,9 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             // Normal resume
             updateAllStatuses()
             applyStatusFilter()
+
+            // Restart recommended rotation
+            restartRecommendedRotation()
 
             bannerCarousel.post {
                 bannerCarousel.requestFocus()
@@ -247,7 +259,7 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         override fun run() {
             if (recommendedApps.isEmpty()) return
 
-            val count = 4
+            val count = 3
             val items = mutableListOf<AppItem>()
 
             repeat(count) {
@@ -330,10 +342,26 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         filterNotInstalled = root.findViewById(R.id.filterStatusNotInstalled)
         filterUpdates = root.findViewById(R.id.filterStatusUpdates)
 
-        filterAll.findViewById<TextView>(R.id.filterText).text = "Все"
-        filterInstalled.findViewById<TextView>(R.id.filterText).text = "Установлено"
-        filterNotInstalled.findViewById<TextView>(R.id.filterText).text = "Не установлено"
-        filterUpdates.findViewById<TextView>(R.id.filterText).text = "Обновления"
+        filterAll.findViewById<TextView>(R.id.filterText).apply {
+            text = "Все"
+            isSingleLine = true
+            ellipsize = android.text.TextUtils.TruncateAt.END
+        }
+        filterInstalled.findViewById<TextView>(R.id.filterText).apply {
+            text = "Установлено"
+            isSingleLine = true
+            ellipsize = android.text.TextUtils.TruncateAt.END
+        }
+        filterNotInstalled.findViewById<TextView>(R.id.filterText).apply {
+            text = "Не установлено"
+            isSingleLine = true
+            ellipsize = android.text.TextUtils.TruncateAt.END
+        }
+        filterUpdates.findViewById<TextView>(R.id.filterText).apply {
+            text = "Обновления"
+            isSingleLine = true
+            ellipsize = android.text.TextUtils.TruncateAt.END
+        }
 
         filterAll.findViewById<ImageView>(R.id.filterIcon).setImageResource(R.drawable.ic_apps)
         filterInstalled.findViewById<ImageView>(R.id.filterIcon)
@@ -387,6 +415,24 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
                 }
                 true
             } else false
+        }
+
+        // ───── SCALE + ELEVATION ANIMATION ─────
+        val filters = listOf(filterAll, filterInstalled, filterNotInstalled, filterUpdates)
+        filters.forEach { filter ->
+            filter.isFocusable = true
+            filter.isFocusableInTouchMode = true
+            filter.setOnFocusChangeListener { v, hasFocus ->
+                val scale = if (hasFocus) 1.08f else 1f
+                val elevation = if (hasFocus) 24f else 0f
+                v.animate()
+                    .scaleX(scale)
+                    .scaleY(scale)
+                    .setDuration(160)
+                    .setInterpolator(android.view.animation.DecelerateInterpolator())
+                    .start()
+                v.elevation = elevation
+            }
         }
 
         // Set initial selection
@@ -511,13 +557,24 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             openSidebarAndFocus()
         }
 
+        gridAdapter.onFocusPositionChanged = { position ->
+            if (position < 3) {
+                showTopRow()
+            } else {
+                hideTopRow()
+            }
+        }
+
         grid.apply {
             layoutManager = GridLayoutManager(requireContext(), 3)
             adapter = gridAdapter
             isFocusable = true
             descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
 
-            // Add spacing between items
+            // Prevent clipping of scaled cards
+            clipToPadding = false
+            clipChildren = false
+
             addItemDecoration(object : RecyclerView.ItemDecoration() {
                 override fun getItemOffsets(
                     outRect: android.graphics.Rect,
@@ -526,31 +583,6 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
                     state: RecyclerView.State
                 ) {
                     outRect.set(6, 6, 6, 6) // 12dp spacing = 6dp on each side
-                }
-            })
-
-            // Hide/show topRow based on scroll position
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-
-                    val layoutManager = recyclerView.layoutManager as? GridLayoutManager
-                    if (layoutManager != null) {
-                        val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
-                        val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
-
-                        // Check if any element from first row (0,1,2) is visible
-                        val firstRowVisible = (0..2).any { pos ->
-                            pos in firstVisiblePosition..lastVisiblePosition
-                        }
-
-                        // Hide topRow when first row is not visible (scrolled to second row or below)
-                        if (!firstRowVisible) {
-                            hideTopRow()
-                        } else {
-                            showTopRow()
-                        }
-                    }
                 }
             })
         }

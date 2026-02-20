@@ -108,7 +108,8 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="12dp"/>
+                android:layout_marginEnd="12dp"
+                android:maxWidth="200dp"/>
 
             <include
                 android:id="@+id/filterStatusInstalled"
@@ -117,7 +118,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
-                android:layout_marginEnd="16dp"/>
+                android:layout_marginEnd="16dp"
+                android:maxWidth="200dp"/>
 
             <include
                 android:id="@+id/filterStatusNotInstalled"
@@ -126,7 +128,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
-                android:layout_marginEnd="16dp"/>
+                android:layout_marginEnd="16dp"
+                android:maxWidth="200dp"/>
 
             <include
                 android:id="@+id/filterStatusUpdates"
@@ -135,7 +138,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
-                android:layout_marginEnd="6dp"/>
+                android:layout_marginEnd="6dp"
+                android:maxWidth="200dp"/>
         </LinearLayout>
     </HorizontalScrollView>
 

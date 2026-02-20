@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Когда есть фокус -->
     <item
         android:state_focused="true"
-        android:color="#80595959"/>
+        android:color="#80505050"/>
 
-    <!-- Обычное состояние -->
     <item
-        android:color="#4D595959"/>
+        android:color="#99282828"/>
 
 </selector>

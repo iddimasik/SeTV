@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
 import rus.setv.R
 import rus.setv.model.AppItem
+import androidx.core.graphics.toColorInt
 
 class RecommendedAppView @JvmOverloads constructor(
     context: Context,
@@ -26,6 +27,8 @@ class RecommendedAppView @JvmOverloads constructor(
 
     private var boundApp: AppItem? = null
 
+    var onAppClick: ((AppItem) -> Unit)? = null
+
     init {
         LayoutInflater.from(context)
             .inflate(R.layout.view_recommended_app, this, true)
@@ -37,25 +40,36 @@ class RecommendedAppView @JvmOverloads constructor(
         category = findViewById(R.id.recommendedCategory)
         badgeRecommended = findViewById(R.id.badgeRecommended)
 
+        // ⚠️ ВАЖНО: фокус только у root
+        rootContainer.isFocusable = true
+        rootContainer.isFocusableInTouchMode = true
+
+        // Set default stroke width, color and background
+        val density = context.resources.displayMetrics.density
+        cardContent.strokeWidth = (1 * density).toInt()
+        cardContent.strokeColor = "#80505050".toColorInt()  // White semi-transparent
+        cardContent.setCardBackgroundColor("#99282828".toColorInt())  // Unfocused background
+
         rootContainer.setOnFocusChangeListener { _, hasFocus ->
 
-            val scale = if (hasFocus) 1.08f else 1f
-            val elevation = if (hasFocus) 24f else 0f
-
-            cardContent.animate()
-                .scaleX(scale)
-                .scaleY(scale)
-                .setDuration(150)
-                .setInterpolator(DecelerateInterpolator())
-                .start()
-
-            cardContent.strokeWidth = if (hasFocus) {
-                (2 * resources.displayMetrics.density).toInt()
+            // Change stroke width, color AND background on focus
+            if (hasFocus) {
+                cardContent.strokeWidth = (2 * density).toInt()
+                cardContent.strokeColor = "#09E490".toColorInt()  // Green
+                cardContent.setCardBackgroundColor("#80505050".toColorInt())  // Focused background
             } else {
-                0
+                cardContent.strokeWidth = (1 * density).toInt()
+                cardContent.strokeColor = "#80505050".toColorInt()  // White semi-transparent
+                cardContent.setCardBackgroundColor("#99282828".toColorInt())  // Unfocused background
             }
 
-            rootContainer.elevation = elevation
+            // Мягкий TV-scale (не раздувает карточку)
+            cardContent.animate()
+                .scaleX(if (hasFocus) 1.05f else 1f)
+                .scaleY(if (hasFocus) 1.05f else 1f)
+                .setDuration(120)
+                .setInterpolator(DecelerateInterpolator())
+                .start()
         }
 
         rootContainer.setOnClickListener {
@@ -83,6 +97,4 @@ class RecommendedAppView @JvmOverloads constructor(
         super.onDetachedFromWindow()
         Glide.with(this).clear(image)
     }
-
-    var onAppClick: ((AppItem) -> Unit)? = null
 }

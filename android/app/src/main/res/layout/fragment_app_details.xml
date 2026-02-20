@@ -9,7 +9,7 @@
     android:focusableInTouchMode="false"
     app:cardCornerRadius="20dp"
     app:cardElevation="8dp"
-    app:cardBackgroundColor="#1E1E1E">
+    app:cardBackgroundColor="#BF1E1E1E">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,11 +37,20 @@
                     app:cardCornerRadius="12dp">
 
                     <!-- APP ICON -->
-                    <ImageView
-                        android:id="@+id/appImage"
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="200dp"
                         android:layout_height="200dp"
-                        android:scaleType="centerCrop"/>
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
+
+                        <ImageView
+                            android:id="@+id/appImage"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"/>
+
+                    </com.google.android.material.card.MaterialCardView>
 
                     <!-- INFO -->
                     <LinearLayout
@@ -83,7 +92,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textSize="14sp"
+                                    android:textSize="16sp"
                                     android:textColor="#B0B0B0"
                                     android:text="Версия" />
                             </LinearLayout>
@@ -111,7 +120,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textSize="14sp"
+                                    android:textSize="16sp"
                                     android:textColor="#B0B0B0"
                                     android:text="Размер" />
                             </LinearLayout>
@@ -122,7 +131,7 @@
                             android:id="@+id/appDescription"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="16sp"
+                            android:textSize="20sp"
                             android:textColor="@android:color/white"
                             android:paddingTop="8dp" />
 
@@ -131,7 +140,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@android:color/white"
-                            android:paddingTop="16dp" />
+                            android:paddingTop="22dp" />
 
                         <com.google.android.material.progressindicator.LinearProgressIndicator
                             android:id="@+id/progress"
@@ -172,6 +181,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="56dp"
                 android:text="Назад"
+                android:textSize="18sp"
                 app:cornerRadius="16dp"
                 android:backgroundTint="@color/button_color_focus"
                 style="@style/Widget.MaterialComponents.Button"
@@ -188,11 +198,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="56dp"
                 android:text="Удалить"
+                android:textSize="18sp"
                 android:visibility="gone"
                 app:cornerRadius="16dp"
                 style="@style/Widget.MaterialComponents.Button"
                 android:backgroundTint="@color/red_button_color"
-                android:textColor="@color/text_color_focus"/>
+                android:textColor="@android:color/white"/>
 
             <!-- INSTALL -->
             <com.google.android.material.button.MaterialButton
@@ -201,6 +212,7 @@
                 android:layout_height="56dp"
                 android:layout_marginStart="16dp"
                 android:text="Установить"
+                android:textSize="18sp"
                 app:cornerRadius="16dp"
                 style="@style/Widget.MaterialComponents.Button"
                 android:backgroundTint="@color/button_color_focus"

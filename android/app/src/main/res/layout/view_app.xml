@@ -9,12 +9,9 @@
     android:clipChildren="false"
     android:clipToPadding="false"
 
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:defaultFocusHighlightEnabled="false"
+    android:padding="8dp">
 
-    android:padding="6dp">
-
+    <!-- BADGE -->
     <ImageView
         android:id="@+id/status_badge"
         android:layout_width="25dp"
@@ -24,24 +21,28 @@
         android:visibility="gone"
         android:elevation="8dp"/>
 
+    <!-- CARD -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContent"
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
-        app:cardBackgroundColor="@color/card_background_color"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:defaultFocusHighlightEnabled="false"
+
+        android:clickable="true"
+        android:stateListAnimator="@null"
+
         app:cardCornerRadius="12dp"
         app:cardElevation="0dp"
 
-        android:clickable="false"
-        android:focusable="false"
-        android:stateListAnimator="@null"
-
         app:rippleColor="@android:color/transparent"
 
+        app:cardBackgroundColor="@color/card_background_selector"
         app:strokeColor="@color/card_stroke_selector"
-        app:strokeWidth="2dp">
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -78,7 +79,7 @@
 
                     <TextView
                         android:id="@+id/title_text"
-                        android:layout_width="match_parent"
+                        android:layout_width="170dp"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:ellipsize="end"
@@ -107,6 +108,7 @@
                 android:textSize="16sp"/>
 
         </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>
