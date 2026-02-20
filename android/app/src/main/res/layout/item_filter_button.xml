@@ -26,8 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ALL"
-        android:textColor="@drawable/text_color_focus"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textColor="@color/text_color_focus"
+        android:textSize="18sp" />
 
 </LinearLayout>

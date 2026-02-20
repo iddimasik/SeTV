@@ -4,5 +4,5 @@
     <item android:state_focused="true"
         android:color="#09E490" />
 
-    <item android:color="#808080" />
+    <item android:color="#595959" />
 </selector>

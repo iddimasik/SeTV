@@ -24,7 +24,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_search"
-            app:tint="@drawable/text_color_focus"
+            app:tint="@color/text_color_focus"
             android:duplicateParentState="true"/>
 
         <TextView
@@ -32,7 +32,7 @@
             android:layout_marginStart="16dp"
             android:text="Поиск"
             android:textSize="18sp"
-            android:textColor="@drawable/text_color_focus"
+            android:textColor="@color/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
             android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_apps"
-            app:tint="@drawable/text_color_focus"
+            app:tint="@color/text_color_focus"
             android:duplicateParentState="true"/>
 
         <TextView
@@ -67,7 +67,7 @@
             android:layout_marginStart="16dp"
             android:text="Все приложения"
             android:textSize="18sp"
-            android:textColor="@drawable/text_color_focus"
+            android:textColor="@color/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
             android:layout_width="wrap_content"
@@ -89,7 +89,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_movies"
-            app:tint="@drawable/text_color_focus"
+            app:tint="@color/text_color_focus"
             android:duplicateParentState="true"/>
 
         <TextView
@@ -97,7 +97,7 @@
             android:layout_marginStart="16dp"
             android:text="Фильмы и ТВ"
             android:textSize="18sp"
-            android:textColor="@drawable/text_color_focus"
+            android:textColor="@color/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
             android:layout_width="wrap_content"
@@ -119,7 +119,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_programs"
-            app:tint="@drawable/text_color_focus"
+            app:tint="@color/text_color_focus"
             android:duplicateParentState="true"/>
 
         <TextView
@@ -127,7 +127,7 @@
             android:layout_marginStart="16dp"
             android:text="Программы"
             android:textSize="18sp"
-            android:textColor="@drawable/text_color_focus"
+            android:textColor="@color/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
             android:layout_width="wrap_content"
@@ -149,7 +149,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_games"
-            app:tint="@drawable/text_color_focus"
+            app:tint="@color/text_color_focus"
             android:duplicateParentState="true"/>
 
         <TextView
@@ -157,7 +157,7 @@
             android:layout_marginStart="16dp"
             android:text="Игры"
             android:textSize="18sp"
-            android:textColor="@drawable/text_color_focus"
+            android:textColor="@color/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
             android:layout_width="wrap_content"
@@ -179,7 +179,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_other"
-            app:tint="@drawable/text_color_focus"
+            app:tint="@color/text_color_focus"
             android:duplicateParentState="true"/>
 
         <TextView
@@ -187,7 +187,7 @@
             android:layout_marginStart="16dp"
             android:text="Прочее"
             android:textSize="18sp"
-            android:textColor="@drawable/text_color_focus"
+            android:textColor="@color/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
             android:layout_width="wrap_content"
@@ -215,7 +215,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_update"
-            app:tint="@drawable/text_color_focus"
+            app:tint="@color/text_color_focus"
             android:duplicateParentState="true"/>
 
         <TextView
@@ -223,7 +223,7 @@
             android:layout_marginStart="16dp"
             android:text="Обновить приложение"
             android:textSize="18sp"
-            android:textColor="@drawable/text_color_focus"
+            android:textColor="@color/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
             android:layout_width="wrap_content"
@@ -245,7 +245,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_settings"
-            app:tint="@drawable/text_color_focus"
+            app:tint="@color/text_color_focus"
             android:duplicateParentState="true"/>
 
         <TextView
@@ -253,7 +253,7 @@
             android:layout_marginStart="16dp"
             android:text="Настройки"
             android:textSize="18sp"
-            android:textColor="@drawable/text_color_focus"
+            android:textColor="@color/text_color_focus"
             android:duplicateParentState="true"
             android:visibility="gone"
             android:layout_width="wrap_content"

@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import rus.setv.R
 import rus.setv.model.AppItem
 import rus.setv.model.AppStatus
+import androidx.core.graphics.toColorInt
 
 class AppsGridAdapter(
     private val onClick: (AppItem) -> Unit
@@ -35,7 +36,7 @@ class AppsGridAdapter(
         // Set fixed compact height for card - matching original design
         val density = parent.context.resources.displayMetrics.density
         val layoutParams = view.layoutParams
-        layoutParams.height = (125 * density).toInt() // 100dp height for compact cards
+        layoutParams.height = (140 * density).toInt() // 100dp height for compact cards
         layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
         view.layoutParams = layoutParams
 
@@ -85,25 +86,23 @@ class AppsGridAdapter(
 
             // Focus animation - EXACTLY like original
             itemView.setOnFocusChangeListener { _, hasFocus ->
-                val scale = if (hasFocus) 1.05f else 1f
-                val elevation = if (hasFocus) 20f else 0f
 
-                // Animate the ROOT (itemView), not content
+                val density = itemView.resources.displayMetrics.density
+
+                if (hasFocus) {
+                    content.strokeColor = "#09E490".toColorInt()
+                    content.strokeWidth = (3 * density).toInt()
+                } else {
+                    content.strokeColor = "#80FFFFFF".toColorInt()
+                    content.strokeWidth = (2 * density).toInt()
+                }
+
                 itemView.animate()
-                    .scaleX(scale)
-                    .scaleY(scale)
+                    .scaleX(if (hasFocus) 1.06f else 1f)
+                    .scaleY(if (hasFocus) 1.06f else 1f)
                     .setDuration(160)
                     .setInterpolator(android.view.animation.DecelerateInterpolator())
                     .start()
-
-                // Set stroke on MaterialCardView
-                content.strokeWidth = if (hasFocus) {
-                    (2 * itemView.resources.displayMetrics.density).toInt()
-                } else {
-                    0
-                }
-
-                itemView.elevation = elevation
             }
 
             itemView.setOnClickListener {

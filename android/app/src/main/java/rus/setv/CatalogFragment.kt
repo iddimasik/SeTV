@@ -60,8 +60,6 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     private var category = "ALL"
     private var allAppsList: List<AppItem> = emptyList()
     private var recommendedApps: List<AppItem> = emptyList()
-    private var currentGridColumns = 3  // Always 3 columns
-    private var lastKnownSelectedPosition = 0  // Track real position from callback
     private var selectedAppBeforeDetails: AppItem? = null
 
     // FILTERS
@@ -87,8 +85,6 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
         setupRecommendedRow(view)
         setupStatusFilters(view)
         setupAppsGrid(view)
-
-        // GridLayoutManager always has 3 columns - no need to update
 
         if (allAppsList.isEmpty()) {
             loadAppsFromServer()
@@ -329,116 +325,71 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     // STATUS FILTERS
     // ───────────────────────
     private fun setupStatusFilters(root: View) {
-
         filterAll = root.findViewById(R.id.filterStatusAll)
         filterInstalled = root.findViewById(R.id.filterStatusInstalled)
         filterNotInstalled = root.findViewById(R.id.filterStatusNotInstalled)
         filterUpdates = root.findViewById(R.id.filterStatusUpdates)
 
-        // ───── TEXTS ─────
         filterAll.findViewById<TextView>(R.id.filterText).text = "Все"
         filterInstalled.findViewById<TextView>(R.id.filterText).text = "Установлено"
         filterNotInstalled.findViewById<TextView>(R.id.filterText).text = "Не установлено"
         filterUpdates.findViewById<TextView>(R.id.filterText).text = "Обновления"
 
-        // ───── ICONS ─────
-        filterAll.findViewById<ImageView>(R.id.filterIcon)
-            .setImageResource(R.drawable.ic_apps)
-
+        filterAll.findViewById<ImageView>(R.id.filterIcon).setImageResource(R.drawable.ic_apps)
         filterInstalled.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_installed)
-
         filterNotInstalled.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_uninstalled)
-
         filterUpdates.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_upgrade)
 
-        // ───── CLICK HANDLERS ─────
         filterAll.setOnClickListener {
             currentStatusFilter = StatusFilter.ALL
             applyStatusFilter()
             updateFilterSelection()
         }
-
         filterInstalled.setOnClickListener {
             currentStatusFilter = StatusFilter.INSTALLED
             applyStatusFilter()
             updateFilterSelection()
         }
-
         filterNotInstalled.setOnClickListener {
             currentStatusFilter = StatusFilter.NOT_INSTALLED
             applyStatusFilter()
             updateFilterSelection()
         }
-
         filterUpdates.setOnClickListener {
             currentStatusFilter = StatusFilter.UPDATE_AVAILABLE
             applyStatusFilter()
             updateFilterSelection()
         }
 
-        // ───── SCALE + ELEVATION ANIMATION ─────
-        val filters = listOf(filterAll, filterInstalled, filterNotInstalled, filterUpdates)
-
-        filters.forEach { filter ->
-
-            filter.isFocusable = true
-            filter.isFocusableInTouchMode = true
-
-            filter.setOnFocusChangeListener { v, hasFocus ->
-
-                val scale = if (hasFocus) 1.08f else 1f
-                val elevation = if (hasFocus) 24f else 0f
-
-                v.animate()
-                    .scaleX(scale)
-                    .scaleY(scale)
-                    .setDuration(160)
-                    .setInterpolator(android.view.animation.DecelerateInterpolator())
-                    .start()
-
-                v.elevation = elevation
-            }
-        }
-
-        // ───── NAVIGATION UP ─────
-
         // UP from filterAll, filterInstalled, filterNotInstalled → banner
         val filterUpToBanner = View.OnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP &&
-                event.action == KeyEvent.ACTION_DOWN
-            ) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.action == KeyEvent.ACTION_DOWN) {
                 bannerCarousel.requestFocus()
                 true
             } else false
         }
-
         filterAll.setOnKeyListener(filterUpToBanner)
         filterInstalled.setOnKeyListener(filterUpToBanner)
         filterNotInstalled.setOnKeyListener(filterUpToBanner)
 
         // UP from filterUpdates → last recommended item
         filterUpdates.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP &&
-                event.action == KeyEvent.ACTION_DOWN
-            ) {
-
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.action == KeyEvent.ACTION_DOWN) {
                 val lastPos = recommendedAdapter.size() - 1
-
                 if (lastPos >= 0) {
                     recommendedGrid.findViewHolderForAdapterPosition(lastPos)
                         ?.itemView?.requestFocus()
                 } else {
                     bannerCarousel.requestFocus()
                 }
-
                 true
             } else false
         }
 
-        // ───── INITIAL STATE ─────
+        // Set initial selection
         updateFilterSelection()
     }
 
@@ -586,9 +537,15 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
                     val layoutManager = recyclerView.layoutManager as? GridLayoutManager
                     if (layoutManager != null) {
                         val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
+                        val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
 
-                        // Hide topRow if scrolled to second row or below (position >= 3)
-                        if (firstVisiblePosition >= 3) {
+                        // Check if any element from first row (0,1,2) is visible
+                        val firstRowVisible = (0..2).any { pos ->
+                            pos in firstVisiblePosition..lastVisiblePosition
+                        }
+
+                        // Hide topRow when first row is not visible (scrolled to second row or below)
+                        if (!firstRowVisible) {
                             hideTopRow()
                         } else {
                             showTopRow()
@@ -598,6 +555,8 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             })
         }
     }
+
+    // updateGridColumns not needed - GridLayoutManager always has 3 columns
 
     private fun hideTopRow() {
         if (topRow.visibility == View.VISIBLE) {

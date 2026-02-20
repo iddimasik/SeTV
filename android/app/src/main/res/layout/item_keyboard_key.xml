@@ -5,7 +5,7 @@
     android:layout_margin="6dp"
 
     android:gravity="center"
-    android:textColor="@drawable/text_color_focus"
+    android:textColor="@color/text_color_focus"
     android:textSize="18sp"
 
     android:focusable="true"

@@ -2,11 +2,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/recommendedRoot"
-    android:layout_width="320dp"
-    android:layout_height="54dp"
+    android:layout_width="350dp"
+    android:layout_height="70dp"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:padding="4dp"
+    android:padding="8dp"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:clipToOutline="true">
@@ -18,11 +18,11 @@
         app:cardCornerRadius="12dp"
         app:cardUseCompatPadding="false"
         app:cardPreventCornerOverlap="true"
-        app:cardBackgroundColor="#1E1E1E"
+        app:cardBackgroundColor="#4D818181"
         app:strokeColor="#09E490"
         app:strokeWidth="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp">
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp">
 
     <FrameLayout
             android:layout_width="match_parent"
@@ -63,12 +63,12 @@
 
                     <TextView
                         android:id="@+id/recommendedTitle"
-                        android:layout_width="145dp"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@android:color/white"
-                        android:textSize="18sp" />
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/recommendedCategory"
@@ -90,7 +90,7 @@
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="2dp"
                 android:text="Рекомендовано"
-                android:textSize="11sp"
+                android:textSize="12sp"
                 android:textColor="@android:color/black"
                 android:background="@drawable/bg_badge"
                 android:visibility="gone" />

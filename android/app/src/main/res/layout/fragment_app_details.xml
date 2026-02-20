@@ -33,14 +33,15 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    app:cardCornerRadius="12dp">
 
                     <!-- APP ICON -->
                     <ImageView
                         android:id="@+id/appImage"
                         android:layout_width="200dp"
                         android:layout_height="200dp"
-                        android:scaleType="centerCrop" />
+                        android:scaleType="centerCrop"/>
 
                     <!-- INFO -->
                     <LinearLayout
@@ -172,9 +173,9 @@
                 android:layout_height="56dp"
                 android:text="Назад"
                 app:cornerRadius="16dp"
-                android:backgroundTint="@drawable/button_color_focus"
+                android:backgroundTint="@color/button_color_focus"
                 style="@style/Widget.MaterialComponents.Button"
-                android:textColor="@drawable/text_color_focus"/>
+                android:textColor="@color/text_color_focus"/>
 
             <Space
                 android:layout_width="0dp"
@@ -190,8 +191,8 @@
                 android:visibility="gone"
                 app:cornerRadius="16dp"
                 style="@style/Widget.MaterialComponents.Button"
-                android:backgroundTint="@drawable/red_button_color"
-                android:textColor="@drawable/text_color_focus"/>
+                android:backgroundTint="@color/red_button_color"
+                android:textColor="@color/text_color_focus"/>
 
             <!-- INSTALL -->
             <com.google.android.material.button.MaterialButton
@@ -202,8 +203,8 @@
                 android:text="Установить"
                 app:cornerRadius="16dp"
                 style="@style/Widget.MaterialComponents.Button"
-                android:backgroundTint="@drawable/button_color_focus"
-                android:textColor="@drawable/text_color_focus"/>
+                android:backgroundTint="@color/button_color_focus"
+                android:textColor="@color/text_color_focus"/>
 
         </LinearLayout>
 
