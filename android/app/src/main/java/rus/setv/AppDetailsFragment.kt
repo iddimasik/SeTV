@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -326,16 +327,31 @@ class AppDetailsFragment : Fragment(R.layout.fragment_app_details) {
     // BUTTONS
     // ───────────────────────
     private fun setupButtons() {
-        // Add LEFT key handler only to backButton (leftmost button)
-        backButton.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT &&
-                event.action == android.view.KeyEvent.ACTION_DOWN) {
-                openSidebarAndFocus()
-                true
+        // Block UP key on all buttons when screenshots are not visible
+        val blockUpWhenNoScreenshots = View.OnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP &&
+                event.action == KeyEvent.ACTION_DOWN &&
+                screenshotsList.visibility != View.VISIBLE) {
+                true  // Block UP navigation
             } else {
                 false
             }
         }
+
+        backButton.setOnKeyListener { view, keyCode, event ->
+            // Handle LEFT
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT &&
+                event.action == KeyEvent.ACTION_DOWN) {
+                openSidebarAndFocus()
+                return@setOnKeyListener true
+            }
+
+            // Block UP if no screenshots
+            blockUpWhenNoScreenshots.onKey(view, keyCode, event)
+        }
+
+        installButton.setOnKeyListener(blockUpWhenNoScreenshots)
+        uninstallButton.setOnKeyListener(blockUpWhenNoScreenshots)
 
         installButton.setOnClickListener {
             when {
