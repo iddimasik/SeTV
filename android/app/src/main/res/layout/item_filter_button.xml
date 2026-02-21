@@ -1,32 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+
     android:layout_width="wrap_content"
     android:layout_height="40dp"
-    android:orientation="horizontal"
-    android:gravity="center"
-    android:paddingHorizontal="14dp"
-    android:paddingVertical="6dp"
-    android:background="@drawable/filter_background"
+
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:clickable="true">
+    android:clickable="true"
+    android:defaultFocusHighlightEnabled="false"
 
-    <ImageView
-        android:id="@+id/filterIcon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_apps"
-        app:tint="@android:color/white" />
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="2dp"
+    app:strokeColor="#80505050"
+    app:cardBackgroundColor="#99282828"
+    app:rippleColor="@android:color/transparent">
 
-    <TextView
-        android:id="@+id/filterText"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ALL"
-        android:textColor="@color/text_color_focus"
-        android:textSize="18sp" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="6dp">
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/filterIcon"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_apps"
+            app:tint="@android:color/white" />
+
+        <TextView
+            android:id="@+id/filterText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ALL"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

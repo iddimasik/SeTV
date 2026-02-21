@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -334,14 +335,16 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
     }
 
     // ───────────────────────
-    // STATUS FILTERS
-    // ───────────────────────
+// STATUS FILTERS
+// ───────────────────────
     private fun setupStatusFilters(root: View) {
+
         filterAll = root.findViewById(R.id.filterStatusAll)
         filterInstalled = root.findViewById(R.id.filterStatusInstalled)
         filterNotInstalled = root.findViewById(R.id.filterStatusNotInstalled)
         filterUpdates = root.findViewById(R.id.filterStatusUpdates)
 
+        // TEXT
         filterAll.findViewById<TextView>(R.id.filterText).apply {
             text = "Все"
             isSingleLine = true
@@ -363,49 +366,63 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             ellipsize = android.text.TextUtils.TruncateAt.END
         }
 
-        filterAll.findViewById<ImageView>(R.id.filterIcon).setImageResource(R.drawable.ic_apps)
+        // ICONS
+        filterAll.findViewById<ImageView>(R.id.filterIcon)
+            .setImageResource(R.drawable.ic_apps)
+
         filterInstalled.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_installed)
+
         filterNotInstalled.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_uninstalled)
+
         filterUpdates.findViewById<ImageView>(R.id.filterIcon)
             .setImageResource(R.drawable.ic_upgrade)
 
+        // CLICK LISTENERS
         filterAll.setOnClickListener {
             currentStatusFilter = StatusFilter.ALL
             applyStatusFilter()
             updateFilterSelection()
         }
+
         filterInstalled.setOnClickListener {
             currentStatusFilter = StatusFilter.INSTALLED
             applyStatusFilter()
             updateFilterSelection()
         }
+
         filterNotInstalled.setOnClickListener {
             currentStatusFilter = StatusFilter.NOT_INSTALLED
             applyStatusFilter()
             updateFilterSelection()
         }
+
         filterUpdates.setOnClickListener {
             currentStatusFilter = StatusFilter.UPDATE_AVAILABLE
             applyStatusFilter()
             updateFilterSelection()
         }
 
-        // UP from filterAll, filterInstalled, filterNotInstalled → banner
+        // DPAD UP → banner
         val filterUpToBanner = View.OnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.action == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP &&
+                event.action == KeyEvent.ACTION_DOWN
+            ) {
                 bannerCarousel.requestFocus()
                 true
             } else false
         }
+
         filterAll.setOnKeyListener(filterUpToBanner)
         filterInstalled.setOnKeyListener(filterUpToBanner)
         filterNotInstalled.setOnKeyListener(filterUpToBanner)
 
         // UP from filterUpdates → last recommended item
         filterUpdates.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && event.action == KeyEvent.ACTION_DOWN) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP &&
+                event.action == KeyEvent.ACTION_DOWN
+            ) {
                 val lastPos = recommendedAdapter.size() - 1
                 if (lastPos >= 0) {
                     recommendedGrid.findViewHolderForAdapterPosition(lastPos)
@@ -417,25 +434,40 @@ class CatalogFragment : Fragment(R.layout.fragment_catalog),
             } else false
         }
 
-        // ───── SCALE + ELEVATION ANIMATION ─────
+        // ───── FOCUS STYLE LIKE CARDS ─────
+        val density = resources.displayMetrics.density
         val filters = listOf(filterAll, filterInstalled, filterNotInstalled, filterUpdates)
-        filters.forEach { filter ->
-            filter.isFocusable = true
-            filter.isFocusableInTouchMode = true
-            filter.setOnFocusChangeListener { v, hasFocus ->
-                val scale = if (hasFocus) 1.08f else 1f
-                val elevation = if (hasFocus) 24f else 0f
+
+        filters.forEach { view ->
+
+            val card = view as com.google.android.material.card.MaterialCardView
+
+            view.isFocusable = true
+            view.isFocusableInTouchMode = true
+
+            view.setOnFocusChangeListener { v, hasFocus ->
+
+                if (hasFocus) {
+                    card.strokeWidth = (3 * density).toInt()
+                    card.strokeColor = "#09E490".toColorInt()
+                    card.setCardBackgroundColor("#80505050".toColorInt())
+                } else {
+                    card.strokeWidth = (2 * density).toInt()
+                    card.strokeColor = "#80505050".toColorInt()
+                    card.setCardBackgroundColor("#99282828".toColorInt())
+                }
+
                 v.animate()
-                    .scaleX(scale)
-                    .scaleY(scale)
+                    .scaleX(if (hasFocus) 1.06f else 1f)
+                    .scaleY(if (hasFocus) 1.06f else 1f)
                     .setDuration(160)
                     .setInterpolator(android.view.animation.DecelerateInterpolator())
                     .start()
-                v.elevation = elevation
+
+                v.elevation = if (hasFocus) 20f else 0f
             }
         }
 
-        // Set initial selection
         updateFilterSelection()
     }
 

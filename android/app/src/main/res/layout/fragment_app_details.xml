@@ -144,10 +144,18 @@
 
                         <com.google.android.material.progressindicator.LinearProgressIndicator
                             android:id="@+id/progress"
-                            android:layout_width="match_parent"
+                            android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:visibility="gone"
-                            app:trackThickness="6dp" />
+                            android:paddingTop="12dp"
+
+                            app:trackThickness="6dp"
+
+                            app:indicatorColor="#09E490"
+                            app:trackColor="#FFFFFF"
+
+                            app:trackCornerRadius="3dp"/>
+
 
                     </LinearLayout>
                 </LinearLayout>

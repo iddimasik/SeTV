@@ -5,12 +5,15 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var sidebar: View
+    private lateinit var dimOverlay: View
+    private lateinit var mainContainer: ViewGroup
     var isSidebarOpen = false  // Closed by default
         private set
     private var blockSidebarReopening = false
@@ -26,11 +29,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         sidebar = findViewById(R.id.sidebar_container)
+        dimOverlay = findViewById(R.id.dim_overlay)
+        mainContainer = findViewById(R.id.main_container)
 
         // Set sidebar to closed size initially
         val params = sidebar.layoutParams
         params.width = dpToPx(SIDEBAR_CLOSED_DP)
         sidebar.layoutParams = params
+
+        // Dim overlay initially hidden
+        dimOverlay.visibility = View.GONE
+        dimOverlay.alpha = 0f
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -107,6 +116,16 @@ class MainActivity : AppCompatActivity() {
 
         animateSidebarDp(SIDEBAR_OPEN_DP)
 
+        // Show and fade in dim overlay
+        dimOverlay.visibility = View.VISIBLE
+        dimOverlay.animate()
+            .alpha(1f)
+            .setDuration(220)
+            .start()
+
+        // Block focus on main content
+        mainContainer.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
+
         // Show text labels when sidebar opens
         notifySidebarOpened()
 
@@ -120,6 +139,19 @@ class MainActivity : AppCompatActivity() {
         blockSidebarReopening = true
         android.util.Log.d("MainActivity", "Animating sidebar to CLOSED")
         animateSidebarDp(SIDEBAR_CLOSED_DP)
+
+        // Fade out and hide dim overlay
+        dimOverlay.animate()
+            .alpha(0f)
+            .setDuration(220)
+            .withEndAction {
+                dimOverlay.visibility = View.GONE
+            }
+            .start()
+
+        // Restore focus on main content
+        mainContainer.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+
         // DON'T request focus on main_container - it causes focus to jump to sidebar
         notifySidebarClosed()
         android.util.Log.d("MainActivity", "closeSidebar() finished")
@@ -128,6 +160,26 @@ class MainActivity : AppCompatActivity() {
             blockSidebarReopening = false
             android.util.Log.d("MainActivity", "Block removed, sidebar can reopen now")
         }, 500)
+    }
+
+    fun hideDimOverlay() {
+        dimOverlay.animate()
+            .alpha(0f)
+            .setDuration(220)
+            .withEndAction {
+                dimOverlay.visibility = View.GONE
+            }
+            .start()
+    }
+
+    fun showDimOverlay() {
+        if (isSidebarOpen) {
+            dimOverlay.visibility = View.VISIBLE
+            dimOverlay.animate()
+                .alpha(1f)
+                .setDuration(220)
+                .start()
+        }
     }
 
     private fun notifySidebarOpened() {

@@ -60,6 +60,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings),
             mainActivity?.openSidebar(force = true)
         }
 
+        // Hide dim overlay for Settings screen
+        mainActivity?.hideDimOverlay()
+
         // Focus on settings item in sidebar
         view?.postDelayed({
             android.util.Log.d("SettingsFragment", "Attempting to focus settings item")
@@ -78,6 +81,18 @@ class SettingsFragment : Fragment(R.layout.fragment_settings),
                 android.util.Log.e("SettingsFragment", "Settings item NOT found!")
             }
         }, 100)  // Short delay since sidebar should already be open
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // Restore dim overlay when leaving Settings
+        (activity as? MainActivity)?.showDimOverlay()
+
+        // Restore RIGHT navigation in sidebar
+        val sidebarFragment = requireActivity().supportFragmentManager
+            .findFragmentById(R.id.sidebar_container) as? SidebarFragment
+        sidebarFragment?.enableRightNavigation()
     }
 
     // Prevent sidebar column changes

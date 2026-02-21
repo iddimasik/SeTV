@@ -35,6 +35,8 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
     private val repository = AppsRepository()
     private val UPDATE_APP_PACKAGE = "rus.setv"
 
+    private var blockRightNavigation = false  // Flag to block RIGHT when Settings is open
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -106,11 +108,16 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
                 }
                 keyCode == KeyEvent.KEYCODE_DPAD_RIGHT &&
                         event.action == KeyEvent.ACTION_DOWN -> {
-                    if (closeSidebarOnClick) {
-                        closeSidebar()
+                    // Block RIGHT navigation if Settings screen is open
+                    if (blockRightNavigation) {
+                        true  // Block - do nothing
+                    } else {
+                        if (closeSidebarOnClick) {
+                            closeSidebar()
+                        }
+                        transferFocusToBanner()
+                        true
                     }
-                    transferFocusToBanner()
-                    true
                 }
                 else -> false
             }
@@ -135,6 +142,10 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
     private fun openSettings() {
         // NOTE: Don't close sidebar - settings has no content to focus on
         // Sidebar stays open with focus on settings item
+
+        // Block RIGHT navigation while Settings is open
+        blockRightNavigation = true
+
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.main_container, SettingsFragment())
             .addToBackStack(null)
@@ -187,6 +198,10 @@ class SidebarFragment : Fragment(R.layout.fragment_sidebar), MainActivity.Sideba
     // ───────────────────────
     // SIDEBAR STATE
     // ───────────────────────
+    fun enableRightNavigation() {
+        blockRightNavigation = false
+    }
+
     override fun onSidebarOpened() {
         searchText.visibility = View.VISIBLE
         allAppsText.visibility = View.VISIBLE
